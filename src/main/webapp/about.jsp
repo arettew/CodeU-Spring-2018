@@ -38,6 +38,18 @@
 
       <h1>About the CodeU Chat App</h1>
       <p>
+        <strong>Meet the team!</strong>
+        Here's a list of our team members and some information about them:
+      </p>
+
+      <ul>
+        <li><strong>Rebecca Chen:</strong> Sophomore at Harvard</li>
+        <li><strong>Andres Echeverria:</strong> Sophomore at University of Michigan</li>
+        <li><strong>Gautham Kovvuru:</strong> Sophomore at University of Maryland</li>
+        <li><strong>Abigail Rettew:</strong> Sophomore at Princeton</li>
+      </ul>
+
+      <p>
         This is an example chat application designed to be a starting point
         for your CodeU project team work. Here's some stuff to think about:
       </p>
