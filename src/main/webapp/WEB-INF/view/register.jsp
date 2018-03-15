@@ -27,7 +27,7 @@
 
        <% if(request.getAttribute("error") != null){ %>
            <h2 style="color:red"><%= request.getAttribute("error") %></h2>
-       <% } %>	
+       <% } %>
 
       <form action="/register" method="POST">
         <label for="username">Username: </label>
