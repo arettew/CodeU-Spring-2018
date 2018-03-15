@@ -83,4 +83,4 @@ public class RegisterServletTest {
      .setAttribute("error", "Please enter only letters, numbers, and spaces.");
      Mockito.verify(mockRequestDispatcher).forward(mockRequest, mockResponse);
    }
-} 
+}
