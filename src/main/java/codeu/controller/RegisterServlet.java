@@ -17,5 +17,12 @@ public class RegisterServlet extends HttpServlet {
   throws IOException, ServletException {
 
     response.getWriter().println("<h1>RegisterServlet GET request.</h1>");
+
+    String username = request.getParameter("username");
+    String password = request.getParameter("password");
+    String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+
+    User user = new User(UUID.randomUUID(), username, passwordHash, Instant.now());
+    userStore.addUser(user);
   }
 }
