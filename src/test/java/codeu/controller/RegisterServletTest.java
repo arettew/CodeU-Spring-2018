@@ -23,6 +23,7 @@ public class RegisterServletTest {
   private RequestDispatcher mockRequestDispatcher;
 
   @Before
+
   public void setup() throws IOException{
     registerServlet = new RegisterServlet();
     mockRequest = Mockito.mock(HttpServletRequest.class);
