@@ -28,6 +28,7 @@
       <a>Hello <%= request.getSession().getAttribute("user") %>!</a>
     <% } else{ %>
       <a href="/login">Login</a>
+      <a href="/register">Register</a>
     <% } %>
     <a href="/about.jsp">About</a>
   </nav>
@@ -39,7 +40,7 @@
       <h1>About the CodeU Chat App</h1>
       <p>
         <strong>Meet the team!</strong>
-        Here's a list of our team members and some information about them:
+        Here's some information about our team members:
       </p>
 
       <ul>
