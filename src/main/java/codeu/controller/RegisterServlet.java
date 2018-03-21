@@ -1,5 +1,6 @@
 package codeu.controller;
 
+import org.mindrot.jbcrypt.*;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

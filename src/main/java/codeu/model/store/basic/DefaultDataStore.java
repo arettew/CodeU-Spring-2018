@@ -14,6 +14,7 @@
 
 package codeu.model.store.basic;
 
+import org.mindrot.jbcrypt.*;
 import codeu.model.data.Conversation;
 import codeu.model.data.Message;
 import codeu.model.data.User;

@@ -14,6 +14,7 @@
 
 package codeu.controller;
 
+import org.mindrot.jbcrypt.*;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import java.io.IOException;
@@ -82,7 +83,8 @@ public class LoginServlet extends HttpServlet {
     }
     else {
       request.setAttribute("error", "That username was not found.");
-      request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, repsonse);
+      request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+
     }
   }
 }
