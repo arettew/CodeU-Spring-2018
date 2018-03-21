@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import java.io.PrintWriter;
 import org.mockito.Mockito;
 
 public class RegisterServletTest {
@@ -22,7 +23,7 @@ public class RegisterServletTest {
   private RequestDispatcher mockRequestDispatcher;
 
   @Before
-  public void setup() {
+  public void setup() throws IOException{
     registerServlet = new RegisterServlet();
     mockRequest = Mockito.mock(HttpServletRequest.class);
     mockResponse = Mockito.mock(HttpServletResponse.class);
@@ -69,7 +70,6 @@ public class RegisterServletTest {
     Mockito.verify(mockUserStore).addUser(userArgumentCaptor.capture());
     Assert.assertEquals(userArgumentCaptor.getValue().getName(), "test username");
 
-    //Mockito.verify(mockSession).setAttribute("user", "test username");
     Mockito.verify(mockResponse).sendRedirect("/login");
   }
    @Test

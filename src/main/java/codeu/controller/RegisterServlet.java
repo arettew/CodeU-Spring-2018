@@ -21,6 +21,13 @@ public class RegisterServlet extends HttpServlet {
       throws IOException, ServletException {
 
     request.getRequestDispatcher("/WEB-INF/view/register.jsp").forward(request, response);
+    
+    String username = request.getParameter("username");
+    String password = request.getParameter("password");
+    String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+
+    User user = new User(UUID.randomUUID(), username, passwordHash, Instant.now());
+    userStore.addUser(user);
   }
 
 
