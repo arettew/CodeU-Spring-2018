@@ -1,3 +1,8 @@
+<%@ page import="codeu.model.data.User" %>
+<%
+User user = (User) request.getAttribute("userProfile");
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,7 +29,7 @@
   </nav>
 
   <div id="container">
-    <h1>Profile</h1>
+    <h1><%= user.getName() %>'s Profile Page</h1>
   </div>
 
 
