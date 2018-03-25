@@ -13,6 +13,7 @@ import java.util.UUID;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import java.time.Instant;
+import org.junit.Assert;
 
 public class ProfileServletTest {
   private ProfileServlet profileServlet;
@@ -49,7 +50,7 @@ public class ProfileServletTest {
 
     profileServlet.doGet(mockRequest, mockResponse);
 
-    Mockito.verify(mockRequest).setAttribute("userProfile", fakeUser);
+    Mockito.verify(mockRequest).setAttribute("profileOwner", "test_user");
     Mockito.verify(mockRequestDispatcher).forward(mockRequest, mockResponse);
   } 
 
@@ -62,5 +63,39 @@ public class ProfileServletTest {
     profileServlet.doGet(mockRequest, mockResponse);
 
     Mockito.verify(mockResponse).sendRedirect("/conversations");
+  }
+
+  @Test
+  public void testDoPost() throws IOException, ServletException {
+    Mockito.when(mockRequest.getRequestURI()).thenReturn("/profile/test_user");
+    Mockito.when(mockSession.getAttribute("user")).thenReturn("test_user");
+
+    UUID fakeUserID = UUID.randomUUID();
+    User fakeUser = new User(fakeUserID, "test_user", "password", Instant.now());
+    Mockito.when(mockUserStore.getUser("test_user")).thenReturn(fakeUser);
+
+    Mockito.when(mockRequest.getParameter("about")).thenReturn("new_message");
+
+    profileServlet.doPost(mockRequest, mockResponse);
+
+    Assert.assertEquals(fakeUser.getAbout(), "new_message");
+    Mockito.verify(mockResponse).sendRedirect("/profile/test_user");
+  }
+
+  @Test
+  public void testDoPost_noMatch() throws IOException, ServletException {
+    Mockito.when(mockRequest.getRequestURI()).thenReturn("/profile/test_user");
+    Mockito.when(mockSession.getAttribute("user")).thenReturn("bad_user");
+
+    UUID fakeUserID = UUID.randomUUID();
+    User fakeUser = new User(fakeUserID, "test_user", "password", Instant.now());
+    Mockito.when(mockUserStore.getUser("test_user")).thenReturn(fakeUser);
+
+    Mockito.when(mockRequest.getParameter("about")).thenReturn("new_message");
+
+    profileServlet.doPost(mockRequest, mockResponse);
+
+    Assert.assertEquals(fakeUser.getAbout(), "Hi! I'm test_user!");
+    Mockito.verify(mockResponse).sendRedirect("/profile/test_user");
   }
 }
