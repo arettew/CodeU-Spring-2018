@@ -38,6 +38,9 @@ public class PersistentDataStore {
   // Handle to Google AppEngine's Datastore service.
   private DatastoreService datastore;
 
+  //  List of UserEntities that can be used alter user data
+  private List<Entity> userEntities; 
+
   /**
    * Constructs a new PersistentDataStore and sets up its state to begin loading objects from the
    * Datastore service.
@@ -55,6 +58,7 @@ public class PersistentDataStore {
   public List<User> loadUsers() throws PersistentDataStoreException {
 
     List<User> users = new ArrayList<>();
+    userEntities = new ArrayList<>();
 
     // Retrieve all users from the datastore.
     Query query = new Query("chat-users");
@@ -67,8 +71,9 @@ public class PersistentDataStore {
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
-        User user = new User(uuid, userName, password, creationTime);
+        User user = new User(uuid, userName, password, about, creationTime);
         users.add(user);
+        userEntities.add(entity);
       } catch (Exception e) {
         // In a production environment, errors should be very rare. Errors which may
         // occur include network errors, Datastore service errors, authorization errors,
@@ -156,6 +161,22 @@ public class PersistentDataStore {
     userEntity.setProperty("about", user.getAbout());
     userEntity.setProperty("creation_time", user.getCreationTime().toString());
     datastore.put(userEntity);
+  }
+
+  /** Change some property of a user then re-add to datastore. Currently only changing the
+   * the about message are supported. This method may be inefficient 
+   * when there are many users. 
+   */
+  public void update(User user) {
+    // This will be inefficient for many users
+    for (Entity userEntity : userEntities) {
+      String userName = (String) userEntity.getProperty("username");
+      if (userName.equals(user.getName())) {
+        userEntity.setProperty("about", user.getAbout());
+        datastore.put(userEntity);
+        break;
+      }
+    }
   }
 
   /** Write a Message object to the Datastore service. */

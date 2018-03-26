@@ -34,7 +34,13 @@ String profileOwnerName = (String) request.getAttribute("profileOwner");
     <hr>
     
     <h2>About <%= profileOwnerName %></h2>
-    <p><%= UserStore.getInstance().getUser(profileOwnerName).getAbout() %> </p>
+    <% String about = 
+      UserStore.getInstance().getUser(profileOwnerName).getAbout(); %>
+    <% if(about == null){ %>
+      <p>Hello I'm <%= profileOwnerName %>!</p>
+    <% } else{ %>
+      <p><%= about %></a>
+    <% } %>
 
     <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
       <h3>Edit your about me. Only you can see this.</h3>

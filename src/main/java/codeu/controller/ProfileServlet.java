@@ -89,6 +89,7 @@ public class ProfileServlet extends HttpServlet {
       owner.setAbout(cleanedAboutMessage);
 
       // TODO: Make sure that the change to the message is properly stored
+      userStore.updateUser(owner);
 
       //  Redirect to a GET request
       response.sendRedirect("/profile/" + ownerName);
