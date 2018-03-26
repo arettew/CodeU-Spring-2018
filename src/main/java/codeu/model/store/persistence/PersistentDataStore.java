@@ -168,7 +168,12 @@ public class PersistentDataStore {
    * when there are many users. 
    */
   public void update(User user) {
-    // This will be inefficient for many users
+    /** This will be inefficient for many users. I believe this could be done in constant time without 
+     *  storing entity objects if the Entity objects were saved with known keys related to the users
+     *  (keys as usernames or user IDs), though I believe this would require remaking the users currently 
+     *  stored in the datastore in order to reassign the keys. 
+     *  --Abby 
+     */
     for (Entity userEntity : userEntities) {
       String userName = (String) userEntity.getProperty("username");
       if (userName.equals(user.getName())) {

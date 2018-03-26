@@ -38,6 +38,23 @@ public class UserTest {
   }
 
   @Test
+  public void testAltCreate() {
+    UUID id = UUID.randomUUID();
+    String name = "test_username";
+    String about = "unique message";
+    Instant creation = Instant.now();
+    String password = "password";
+
+    User user = new User(id, name, password, about, creation);
+
+    Assert.assertEquals(id, user.getId());
+    Assert.assertEquals(name, user.getName());
+    Assert.assertEquals(password, user.getPassword());
+    Assert.assertEquals("unique message", user.getAbout());
+    Assert.assertEquals(creation, user.getCreationTime());
+  }
+
+  @Test
   public void changeAbout() {
     UUID id= UUID.randomUUID();
     String name = "test_username";

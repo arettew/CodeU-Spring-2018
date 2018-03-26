@@ -19,7 +19,7 @@ String profileOwnerName = (String) request.getAttribute("profileOwner");
 <body>
   
   <nav>
-    <a id="navTitle" href = "/">CodeU Chatt App</a>
+    <a id="navTitle" href = "/">CodeU Chat App</a>
     <a href="/conversations">Conversation</a>
     <% if(request.getSession().getAttribute("user") != null){ %>
       <a>Hello <%= request.getSession().getAttribute("user") %>!</a>
@@ -50,6 +50,10 @@ String profileOwnerName = (String) request.getAttribute("profileOwner");
         <button type="submit">Submit</button>
       </form>
     <% } %>
+  </div>
+
+  <div id="container">
+    <h1>Messages will go here?</h1>
   </div>
 
 

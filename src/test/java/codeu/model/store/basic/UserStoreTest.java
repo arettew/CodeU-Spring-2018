@@ -74,6 +74,17 @@ public class UserStoreTest {
     Mockito.verify(mockPersistentStorageAgent).writeThrough(inputUser);
   }
 
+  @Test 
+  public void testUpdateUser() {
+    USER_ONE.setAbout("unique_message");
+    userStore.updateUser(USER_ONE);
+
+    User resultUser = userStore.getUser(USER_ONE.getName());
+
+    Assert.assertEquals(USER_ONE.getAbout(), resultUser.getAbout());
+    Mockito.verify(mockPersistentStorageAgent).update(USER_ONE);
+  }
+
   @Test
   public void testIsUserRegistered_true() {
     Assert.assertTrue(userStore.isUserRegistered(USER_ONE.getName()));
