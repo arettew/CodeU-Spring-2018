@@ -1,7 +1,12 @@
 <%@ page import="codeu.model.data.User" %>
 <%@ page import="codeu.model.store.basic.UserStore" %>
+<%@ page import="codeu.model.data.Message" %>
+<%@ page import="codeu.model.store.basic.MessageStore" %>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.UUID"%>
 <%
 String profileOwnerName = (String) request.getAttribute("profileOwner");
+UUID profileOwnerId = (UUID) request.getAttribute("OwnerID");
 %>
 
 <!DOCTYPE html>
@@ -9,15 +14,30 @@ String profileOwnerName = (String) request.getAttribute("profileOwner");
 <head>
   <title>Profile</title>
   <link rel="stylesheet" href="/css/main.css">
+
   <style>
     label {
       display: inline-block;
       width: 100px;
     }
+    #messages {
+      background-color: white;
+      height: 500px;
+      overflow-y: scroll;
+    }
   </style>
+
+  <script>
+    // scroll the messages div to the bottom
+    function scrollMessage() {
+      var messageDiv = document.getElementById('messages');
+      messageDiv.scrollTop = messageDiv.scrollHeight;
+    };
+  </script>
 </head>
-<body>
-  
+
+<body onload="scrollMessage()"> 
+
   <nav>
     <a id="navTitle" href = "/">CodeU Chat App</a>
     <a href="/conversations">Conversation</a>
@@ -50,6 +70,21 @@ String profileOwnerName = (String) request.getAttribute("profileOwner");
         <button type="submit">Submit</button>
       </form>
     <% } %>
+    <h2><%= profileOwnerName %>'s sent messages</h2>
+    <div id="messages">
+      <ul>
+    <% 
+         List<Message> user_messages = MessageStore.getInstance()
+                                         .getMessagesByOwner(profileOwnerId); 
+    %>
+    <% for (Message message : user_messages) { %>
+    <%   if(message.getContent() != null && !message.getContent().isEmpty()) { %>
+          <li> <b> <%= message.getCreationTime() %> </b>: <%= message.getContent() %> </li>
+    <%   } %>      
+    <% } %>
+      </ul>
+    </div>
+
   </div>
 
   <div id="container">
