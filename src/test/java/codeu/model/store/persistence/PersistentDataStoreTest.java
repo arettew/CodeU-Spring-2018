@@ -76,6 +76,38 @@ public class PersistentDataStoreTest {
   }
 
   @Test
+  public void testSaveAndLoadAdmins() throws PersistentDataStoreException {
+    UUID idOne = UUID.randomUUID();
+    String nameOne = "test_username_one";
+    String passwordOne = "password_one";
+    Instant creationOne = Instant.ofEpochMilli(1000);
+    Boolean isAdminOne = false;
+    User inputUserOne = new User(idOne, nameOne, passwordOne, creationOne, isAdminOne);
+
+    UUID idTwo = UUID.randomUUID();
+    String nameTwo = "test_username_two";
+    String passwordTwo = "password_two";
+    Instant creationTwo = Instant.ofEpochMilli(2000);
+    Boolean isAdminTwo = true;
+    User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, creationTwo, isAdminTwo);
+
+    // save
+    persistentDataStore.writeThrough(inputUserOne);
+    persistentDataStore.writeThrough(inputUserTwo);
+
+    // load
+    List<User> resultAdmins = persistentDataStore.loadAdmins();
+
+    // confirm that what we saved matches what we loaded; should only load userTwo
+    User resultAdminTwo = resultAdmins.get(0);
+    Assert.assertEquals(idTwo, resultAdminTwo.getId());
+    Assert.assertEquals(nameTwo, resultAdminTwo.getName());
+    Assert.assertEquals(passwordTwo, resultAdminTwo.getPassword());
+    Assert.assertEquals(creationTwo, resultAdminTwo.getCreationTime());
+    Assert.assertEquals(isAdminTwo, resultAdminTwo.getIsAdmin());
+  }
+
+  @Test
   public void testSaveAndLoadConversations() throws PersistentDataStoreException {
     UUID idOne = UUID.randomUUID();
     UUID ownerOne = UUID.randomUUID();

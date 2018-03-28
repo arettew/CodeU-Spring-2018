@@ -33,6 +33,12 @@ public class PersistentStorageAgentTest {
   }
 
   @Test
+  public void testLoadAdmins() throws PersistentDataStoreException {
+    persistentStorageAgent.loadAdmins();
+    Mockito.verify(mockPersistentDataStore).loadAdmins();
+  }
+
+  @Test
   public void testLoadConversations() throws PersistentDataStoreException {
     persistentStorageAgent.loadConversations();
     Mockito.verify(mockPersistentDataStore).loadConversations();
