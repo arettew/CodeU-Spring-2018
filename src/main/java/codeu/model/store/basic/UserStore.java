@@ -16,6 +16,7 @@ package codeu.model.store.basic;
 
 import codeu.model.data.User;
 import codeu.model.store.persistence.PersistentStorageAgent;
+import codeu.model.store.persistence.PersistentDataStoreException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -102,6 +103,11 @@ public class UserStore {
   public void addUser(User user) {
     users.add(user);
     persistentStorageAgent.writeThrough(user);
+  }
+
+  /** Update the information of a known user */
+  public void updateUser(User user) {
+    persistentStorageAgent.update(user);
   }
 
   /** Return true if the given username is known to the application. */
