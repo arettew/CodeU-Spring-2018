@@ -81,6 +81,41 @@ public class PersistentDataStore {
   }
 
   /**
+   * Loads all User objects who are admins from the Datastore service and returns them in a List.
+   *
+   * @throws PersistentDataStoreException if an error was detected during the load from the
+   *     Datastore service
+   */
+  public List<User> loadAdmins() throws PersistentDataStoreException {
+
+    List<User> admins = new ArrayList<>();
+
+    // Retrieve all users from the datastore.
+    Query query = new Query("chat-users");
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity entity : results.asIterable()) {
+      try {
+        UUID uuid = UUID.fromString((String) entity.getProperty("uuid"));
+        String userName = (String) entity.getProperty("username");
+        String password = (String) entity.getProperty("password");
+        Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
+        Boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
+        User admin = new User(uuid, userName, password, creationTime, isAdmin);
+        if (isAdmin) {
+          admins.add(admin);
+        }
+      } catch (Exception e) {
+        // In a production environment, errors should be very rare. Errors which may
+        // occur include network errors, Datastore service errors, authorization errors,
+        // database entity definition mismatches, or service mismatches.
+        throw new PersistentDataStoreException(e);
+      }
+    }
+    return admins;
+  }
+
+  /**
    * Loads all Conversation objects from the Datastore service and returns them in a List.
    *
    * @throws PersistentDataStoreException if an error was detected during the load from the
