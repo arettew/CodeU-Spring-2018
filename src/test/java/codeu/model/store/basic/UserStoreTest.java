@@ -17,11 +17,11 @@ public class UserStoreTest {
   private PersistentStorageAgent mockPersistentStorageAgent;
 
   private final User USER_ONE =
-      new User(UUID.randomUUID(), "test_username_one", "password one", Instant.ofEpochMilli(1000), false);
+      new User(UUID.randomUUID(), "test_username_one", "password one", "about_one", Instant.ofEpochMilli(1000), false);
   private final User USER_TWO =
-      new User(UUID.randomUUID(), "test_username_two", "password two", Instant.ofEpochMilli(2000), false);
+      new User(UUID.randomUUID(), "test_username_two", "password two", "about_two", Instant.ofEpochMilli(2000), false);
   private final User USER_THREE =
-      new User(UUID.randomUUID(), "test_username_three", "password three", Instant.ofEpochMilli(3000), false);
+      new User(UUID.randomUUID(), "test_username_three", "password three", "about_three", Instant.ofEpochMilli(3000), false);
 
   @Before
   public void setup() {
@@ -65,13 +65,24 @@ public class UserStoreTest {
 
   @Test
   public void testAddUser() {
-    User inputUser = new User(UUID.randomUUID(), "test_username", "password", Instant.now(), false);
+    User inputUser = new User(UUID.randomUUID(), "test_username", "password", "about", Instant.now(), false);
 
     userStore.addUser(inputUser);
     User resultUser = userStore.getUser("test_username");
 
     assertEquals(inputUser, resultUser);
     Mockito.verify(mockPersistentStorageAgent).writeThrough(inputUser);
+  }
+
+  @Test 
+  public void testUpdateUser() {
+    USER_ONE.setAbout("unique_message");
+    userStore.updateUser(USER_ONE);
+
+    User resultUser = userStore.getUser(USER_ONE.getName());
+
+    Assert.assertEquals(USER_ONE.getAbout(), resultUser.getAbout());
+    Mockito.verify(mockPersistentStorageAgent).update(USER_ONE);
   }
 
   @Test

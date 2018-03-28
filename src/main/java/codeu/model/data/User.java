@@ -22,6 +22,7 @@ public class User {
   private final UUID id;
   private final String name;
   private final String password;
+  private String about; 
   private final Instant creation;
   private final Boolean isAdmin;
 
@@ -31,15 +32,17 @@ public class User {
    * @param id the ID of this User
    * @param name the username of this User
    * @param password the password of this User
+   * @param about the about me message of this User 
    * @param creation the creation time of this User
-   * @param isAdmin whether User is an admin or not
    */
-  public User(UUID id, String name, String password, Instant creation, Boolean isAdmin) {
+   public User(UUID id, String name, String password, String about, Instant creation, Boolean isAdmin) {
     this.id = id;
     this.name = name;
     this.password = password;
+    this.about = "Hi! I'm " + name + "!";
     this.creation = creation;
     this.isAdmin = isAdmin;
+
   }
 
   /** Returns the ID of this User. */
@@ -51,10 +54,12 @@ public class User {
   public String getName() {
     return name;
   }
-
+  
+  /** Returns the password of this User */
   public String getPassword() {
     return password;
   }
+
   /** Returns the creation time of this User. */
   public Instant getCreationTime() {
     return creation;
@@ -63,5 +68,15 @@ public class User {
   /** Returns whether User is admin or not. */
   public Boolean getIsAdmin() {
     return isAdmin;
+  }
+
+  /** Returns the "about me" message of this User. */
+  public String getAbout() {
+    return about;
+  }
+
+  /** Changes the "about me" message of this User */
+  public void setAbout(String aboutMessage) {
+    this.about = aboutMessage;
   }
 }

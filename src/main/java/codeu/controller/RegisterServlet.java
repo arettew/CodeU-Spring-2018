@@ -31,12 +31,14 @@ public class RegisterServlet extends HttpServlet {
 
     String username = request.getParameter("username");
     String password = request.getParameter("password");
+    String about = request.getParameter("about");
     Boolean isAdmin = false;
 
     if (request.getParameter("admin password") == "123") {
       isAdmin = true;
       return;
     }
+    String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
 
     if (!username.matches("[\\w*\\s*]*")) {
       request.setAttribute("error", "Please enter only letters, numbers, and spaces.");
@@ -50,7 +52,7 @@ public class RegisterServlet extends HttpServlet {
       return;
     }
 
-    User user = new User(UUID.randomUUID(), username, password, Instant.now(), isAdmin);
+    User user = new User(UUID.randomUUID(), username, passwordHash, about, Instant.now(), isAdmin);
     userStore.addUser(user);
 
     response.sendRedirect("/login");
