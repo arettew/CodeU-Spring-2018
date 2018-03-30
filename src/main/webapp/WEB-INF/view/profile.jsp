@@ -49,6 +49,25 @@ String profileOwnerName = (String) request.getAttribute("profileOwner");
         <br/>
         <button type="submit">Submit</button>
       </form>
+
+      <p> Would you like to allow your messages to be deleted after you've hit a high amount?</p>
+      <form action="/profile/<%= profileOwnerName%>" method="POST">
+        <% Boolean allowMessageDel = 
+          UserStore.getInstance().getUser(profileOwnerName).getAllowMessageDel(); %>
+        <input type="radio" name="delete" value="yes" 
+          <%if(allowMessageDel) { %> 
+            checked
+            <% } %> 
+        >
+        Yes<br>
+        <input type="radio" name="delete" value="no"
+          <%if(!allowMessageDel) { %> 
+            checked
+            <% } %> 
+        >
+        No<br>
+        <button type="submit">Submit</button>
+      </form>
     <% } %>
   </div>
 

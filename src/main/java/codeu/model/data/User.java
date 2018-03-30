@@ -23,6 +23,7 @@ public class User {
   private final String name;
   private final String password;
   private String about; 
+  private Boolean allowMessageDel;
   private final Instant creation;
 
   /**
@@ -32,13 +33,15 @@ public class User {
    * @param name the username of this User
    * @param password the password of this User
    * @param about the about me message of this User 
+   * @param allowMessageDel does this User want messages deleted?
    * @param creation the creation time of this User
    */
-  public User(UUID id, String name, String password, String about, Instant creation) {
+  public User(UUID id, String name, String password, String about, Boolean delete, Instant creation) {
     this.id = id;
     this.name = name;
     this.password = password;
     this.about = about;
+    this.allowMessageDel = delete;
     this.creation = creation;
   }
 
@@ -49,6 +52,7 @@ public class User {
    * @param name the username of this User
    * @param password the password of this User
    * @param about the about me message of this User 
+   * @param allowMessageDel does this User want messages deleted?
    * @param creation the creation time of this User
    */
    public User(UUID id, String name, String password, Instant creation) {
@@ -56,6 +60,7 @@ public class User {
     this.name = name;
     this.password = password;
     this.about = "Hi! I'm " + name + "!";
+    this.allowMessageDel = true;
     this.creation = creation;
   }
 
@@ -87,5 +92,14 @@ public class User {
   /** Changes the "about me" message of this User */
   public void setAbout(String aboutMessage) {
     this.about = aboutMessage;
+  }
+
+  /** Returns whether this User allows message deletion */
+  public Boolean getAllowMessageDel() {
+    return allowMessageDel;
+  }
+
+  public void setAllowMessageDel(Boolean delete) {
+    this.allowMessageDel = delete;
   }
 }

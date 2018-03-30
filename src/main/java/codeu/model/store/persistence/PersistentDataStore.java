@@ -70,8 +70,9 @@ public class PersistentDataStore {
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
+        Boolean delete = (Boolean) entity.getProperty("allowMessageDel");
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
-        User user = new User(uuid, userName, password, about, creationTime);
+        User user = new User(uuid, userName, password, about, delete, creationTime);
         users.add(user);
         userEntities.add(entity);
       } catch (Exception e) {
@@ -163,8 +164,7 @@ public class PersistentDataStore {
     datastore.put(userEntity);
   }
 
-  /** Change some property of a user then re-add to datastore. Currently only changing the
-   * the about message are supported. This method may be inefficient 
+  /** Change some property of a user then re-add to datastore. This method may be inefficient 
    * when there are many users. 
    */
   public void update(User user) {
@@ -178,6 +178,7 @@ public class PersistentDataStore {
       String userName = (String) userEntity.getProperty("username");
       if (userName.equals(user.getName())) {
         userEntity.setProperty("about", user.getAbout());
+        userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
         datastore.put(userEntity);
         break;
       }
