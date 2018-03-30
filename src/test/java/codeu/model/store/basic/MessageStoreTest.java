@@ -79,6 +79,47 @@ public class MessageStoreTest {
     Mockito.verify(mockPersistentStorageAgent).writeThrough(inputMessage);
   }
 
+  @Test 
+  public void testDeleteMessage() {
+    UUID inputConversationId = UUID.randomUUID();
+    Message inputMessage =
+        new Message(
+            UUID.randomUUID(),
+            inputConversationId,
+            UUID.randomUUID(),
+            "test message",
+            Instant.now());
+
+    messageStore.addMessage(inputMessage);
+    messageStore.deleteMessage(inputMessage);
+
+    List<Message> resultMessages = messageStore.getMessagesInConversation(inputConversationId);
+    Assert.assertEquals(resultMessages.size(), 0);
+    Mockito.verify(mockPersistentStorageAgent).delete(inputMessage);
+  }
+
+  public void testDeleteOldMessage() {
+    UUID userId = UUID.randomUUID();
+    Message inputMessage = 
+      new Message(
+        UUID.randomUUID(),
+        CONVERSATION_ID_ONE,
+        userId,
+        "test message",
+        Instant.now());
+    messageStore.addMessage(MESSAGE_ONE);
+    messageStore.addMessage(MESSAGE_TWO);
+    messageStore.addMessage(inputMessage);
+
+    messageStore.deleteOldMessage(userId);
+
+    List<Message> resultMessages = messageStore.getMessagesInConversation(CONVERSATION_ID_ONE);
+    
+    Assert.assertEquals(resultMessages.size(), 2);
+    assertEquals(MESSAGE_ONE, resultMessages.get(0));
+    assertEquals(MESSAGE_TWO, resultMessages.get(1));
+  }
+
   private void assertEquals(Message expectedMessage, Message actualMessage) {
     Assert.assertEquals(expectedMessage.getId(), actualMessage.getId());
     Assert.assertEquals(expectedMessage.getConversationId(), actualMessage.getConversationId());

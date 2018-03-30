@@ -24,6 +24,7 @@ public class User {
   private final String password;
   private String about; 
   private Boolean allowMessageDel;
+  private int messagesSent; 
   private final Instant creation;
 
   /**
@@ -33,15 +34,18 @@ public class User {
    * @param name the username of this User
    * @param password the password of this User
    * @param about the about me message of this User 
-   * @param allowMessageDel does this User want messages deleted?
+   * @param allow_message_del does this User want messages deleted?
+   * @param messages_sent number of messages this user sent 
    * @param creation the creation time of this User
    */
-  public User(UUID id, String name, String password, String about, Boolean delete, Instant creation) {
+  public User(UUID id, String name, String password, String about, Boolean delete, 
+              int messagesSent, Instant creation) {
     this.id = id;
     this.name = name;
     this.password = password;
     this.about = about;
     this.allowMessageDel = delete;
+    this.messagesSent = messagesSent;
     this.creation = creation;
   }
 
@@ -52,7 +56,8 @@ public class User {
    * @param name the username of this User
    * @param password the password of this User
    * @param about the about me message of this User 
-   * @param allowMessageDel does this User want messages deleted?
+   * @param allow_message_del does this User want messages deleted?
+   * @param messages_sent the number of messages this user sent
    * @param creation the creation time of this User
    */
    public User(UUID id, String name, String password, Instant creation) {
@@ -61,6 +66,7 @@ public class User {
     this.password = password;
     this.about = "Hi! I'm " + name + "!";
     this.allowMessageDel = true;
+    this.messagesSent = 0; 
     this.creation = creation;
   }
 
@@ -99,7 +105,13 @@ public class User {
     return allowMessageDel;
   }
 
+  /** Sets whether this User allows message deletion */
   public void setAllowMessageDel(Boolean delete) {
     this.allowMessageDel = delete;
+  }
+
+  /** Gets messages sent by this User */
+  public int getMessagesSent() {
+    return this.messagesSent;
   }
 }
