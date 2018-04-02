@@ -84,7 +84,6 @@ UUID profileOwnerId = (UUID) request.getAttribute("OwnerID");
     <% } %>
       </ul>
     </div>
-
   </div>
 
 </body>
