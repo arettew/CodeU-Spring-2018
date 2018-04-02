@@ -87,10 +87,5 @@ UUID profileOwnerId = (UUID) request.getAttribute("OwnerID");
 
   </div>
 
-  <div id="container">
-    <h1>Messages will go here?</h1>
-  </div>
-
-
 </body>
 </html>
