@@ -4,9 +4,12 @@
 <%@ page import="codeu.model.store.basic.MessageStore" %>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.UUID"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="java.text.SimpleDateFormat"%>
 <%
 String profileOwnerName = (String) request.getAttribute("profileOwner");
 UUID profileOwnerId = (UUID) request.getAttribute("OwnerID");
+SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 %>
 
 <!DOCTYPE html>
@@ -79,7 +82,8 @@ UUID profileOwnerId = (UUID) request.getAttribute("OwnerID");
     %>
     <% for (Message message : user_messages) { %>
     <%   if(message.getContent() != null && !message.getContent().isEmpty()) { %>
-          <li> <b> <%= message.getCreationTime() %> </b>: <%= message.getContent() %> </li>
+          <li> <b> <%= formatter.format(Date.from(message.getCreationTime())) %> </b>: 
+                   <%= message.getContent() %> </li>
     <%   } %>      
     <% } %>
       </ul>
