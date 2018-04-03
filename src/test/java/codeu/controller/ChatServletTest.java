@@ -196,4 +196,25 @@ public class ChatServletTest {
 
     Mockito.verify(mockResponse).sendRedirect("/chat/test_conversation");
   }
+  
+  @Test
+  public void testDoPost_TooManyMessages() throws IOException, ServletException {
+    Mockito.when(mockRequest.getRequestURI()).thenReturn("/chat/test_conversation");
+    Mockito.when(mockSession.getAttribute("user")).thenReturn("test_username");
+
+    UUID userId = UUID.randomUUID();
+    User fakeUser = new User(userId, "test_username","password", "", true, 15000, Instant.now());
+    Mockito.when(mockUserStore.getUser("test_username")).thenReturn(fakeUser);
+
+    Conversation fakeConversation =
+        new Conversation(UUID.randomUUID(), UUID.randomUUID(), "test_conversation", Instant.now());
+    Mockito.when(mockConversationStore.getConversationWithTitle("test_conversation"))
+        .thenReturn(fakeConversation);
+
+    Mockito.when(mockRequest.getParameter("message")).thenReturn("Test message.");
+
+    chatServlet.doPost(mockRequest, mockResponse);
+
+    Mockito.verify(mockMessageStore).deleteOldMessage(userId);
+  } 
 }

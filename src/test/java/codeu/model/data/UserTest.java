@@ -34,6 +34,7 @@ public class UserTest {
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
     Assert.assertEquals("Hi! I'm test_username!", user.getAbout());
+    Assert.assertEquals(true, user.getAllowMessageDel());
     Assert.assertEquals(creation, user.getCreationTime());
   }
 
@@ -44,13 +45,16 @@ public class UserTest {
     String about = "unique message";
     Instant creation = Instant.now();
     String password = "password";
+    int messagesSent = 0;
 
-    User user = new User(id, name, password, about, creation);
+    User user = new User(id, name, password, about, false, messagesSent, creation);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
     Assert.assertEquals("unique message", user.getAbout());
+    Assert.assertEquals(false, user.getAllowMessageDel());
+    Assert.assertEquals(messagesSent, user.getMessagesSent());
     Assert.assertEquals(creation, user.getCreationTime());
   }
 
