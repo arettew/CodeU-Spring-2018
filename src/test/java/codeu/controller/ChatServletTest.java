@@ -169,6 +169,7 @@ public class ChatServletTest {
     Assert.assertEquals("Test message.", messageArgumentCaptor.getValue().getContent());
 
     Mockito.verify(mockResponse).sendRedirect("/chat/test_conversation");
+    Assert.assertEquals(fakeUser.getMessagesSent(), 1);
   }
 
   @Test
@@ -216,5 +217,6 @@ public class ChatServletTest {
     chatServlet.doPost(mockRequest, mockResponse);
 
     Mockito.verify(mockMessageStore).deleteOldMessage(userId);
+    Assert.assertEquals(15000, fakeUser.getMessagesSent());
   } 
 }

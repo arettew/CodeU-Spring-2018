@@ -135,6 +135,10 @@ public class ChatServlet extends HttpServlet {
       //  User has sent too many messages 
       messageStore.deleteOldMessage(user.getId());
     } 
+    else {
+      user.setMessagesSent(user.getMessagesSent() + 1);
+      userStore.updateUser(user);
+    }
 
     String requestUrl = request.getRequestURI();
     String conversationTitle = requestUrl.substring("/chat/".length());

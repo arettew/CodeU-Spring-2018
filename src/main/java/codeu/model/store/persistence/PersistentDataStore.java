@@ -181,6 +181,7 @@ public class PersistentDataStore {
       if (userName.equals(user.getName())) {
         userEntity.setProperty("about", user.getAbout());
         userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
+        userEntity.setProperty("messagesSent", user.getMessagesSent());
         datastore.put(userEntity);
         return;
       }
@@ -205,6 +206,8 @@ public class PersistentDataStore {
       UUID messageId = UUID.fromString(messageIdString);
       if (message.getId().equals(messageId)) {
         datastore.delete(messageEntity.getKey());
+        UUID authorId = message.getAuthorId();
+
         return;
       }
     }

@@ -19,6 +19,7 @@ import codeu.model.store.persistence.PersistentStorageAgent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import codeu.model.store.basic.UserStore;
 
 /**
  * Store class that uses in-memory data structures to hold values and automatically loads from and

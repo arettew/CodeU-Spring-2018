@@ -114,4 +114,9 @@ public class User {
   public int getMessagesSent() {
     return this.messagesSent;
   }
+
+  /** Sets messages sent by this User */
+  public void setMessagesSent(int messagesSent) {
+    this.messagesSent = messagesSent;
+  }
 }
