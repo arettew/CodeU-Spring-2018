@@ -109,7 +109,8 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 
     <% for (UUID key: keys) { %>
     <%  if (userConversations.get(key)) { %>
-          <li> <%= ConversationStore.getInstance().getConversationWithId(key).getTitle() %> </li>
+    <%    Conversation conversation = ConversationStore.getInstance().getConversationWithId(key);%>
+          <li><a href="../chat/<%=conversation.getTitle()%>"> <%= conversation.getTitle() %> </a> </li>
     <%  } %>  
     <% }  %>
 
