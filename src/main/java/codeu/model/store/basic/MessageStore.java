@@ -16,6 +16,7 @@ package codeu.model.store.basic;
 
 import codeu.model.data.Message;
 import codeu.model.store.persistence.PersistentStorageAgent;
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -126,7 +127,21 @@ public class MessageStore {
     return messagesInConversation;
   }
 
-  /** Sets the List of Messages stored by this MessageStore as well as messagesByAuthorId. */
+  /** Access the current set of Messages sent by a specific user. */
+  public List<Message> getMessagesByAuthor(UUID authorId) {
+
+    List<Message> authorMessages = new ArrayList<>(messages);
+
+    //Removes messages from the list if their authorId doesn't match to the one given
+    authorMessages.removeIf(message-> !message.getAuthorId().equals(authorId));
+
+    //Sorts using the overriden compareTo method on the Message class
+    Collections.sort(authorMessages);
+
+    return authorMessages;
+  }
+
+  /** Sets the List of Messages stored by this MessageStore. */
   public void setMessages(List<Message> messages) {
     this.messages = messages;
     for (Message message: messages) {
