@@ -53,7 +53,7 @@ public class ProfileServlet extends HttpServlet {
       }
 
       request.setAttribute("profileOwner", user.getName());
-      request.setAttribute("OwnerID", user.getId());
+      request.setAttribute("ownerId", user.getId());
       request.getRequestDispatcher("/WEB-INF/view/profile.jsp").forward(request, response);
     }
 

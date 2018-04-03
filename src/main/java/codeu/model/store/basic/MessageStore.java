@@ -15,13 +15,12 @@
 package codeu.model.store.basic;
 
 import codeu.model.data.Message;
-import codeu.model.data.MessageTimeComparator;
 import codeu.model.store.persistence.PersistentStorageAgent;
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.Queue;
-import java.util.PriorityQueue;
+import java.util.function.Predicate;
 
 /**
  * Store class that uses in-memory data structures to hold values and automatically loads from and
@@ -106,18 +105,16 @@ public class MessageStore {
   }
 
   /** Access the current set of Messages sent by a specific user. */
-  public Queue<Message> getMessagesByOwner(UUID authorid) {
+  public List<Message> getMessagesByAuthor(UUID authorId) {
 
-    Queue<Message> messagesByOwner = new PriorityQueue<>(messages.size(), 
-                                                         new MessageTimeComparator());
+    //Removes messages from the list if their authorId doesn't match to the one given
+    Predicate<Message> messagePredicate = m-> !m.getAuthorId().equals(authorId);
+    messages.removeIf(messagePredicate);
 
-    for (Message message : messages) {
-      if (message.getAuthorId().equals(authorid)) {
-        messagesByOwner.add(message);
-      }
-    }
+    //Sorts using the overriden compareTo method on the Message class
+    Collections.sort(messages);
 
-    return messagesByOwner;
+    return new ArrayList<>(messages);
   }
 
   /** Sets the List of Messages stored by this MessageStore. */
