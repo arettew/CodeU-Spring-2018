@@ -5,6 +5,8 @@
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.Date"%>
+<%@ page import="java.util.Queue"%>
+<%@ page import="java.util.PriorityQueue"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%
 String profileOwnerName = (String) request.getAttribute("profileOwner");
@@ -74,17 +76,23 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
       </form>
     <% } %>
     <h2><%= profileOwnerName %>'s sent messages</h2>
+
+    <!--This is where the user's sent messages will show up -->
     <div id="messages">
       <ul>
-    <% 
-         List<Message> user_messages = MessageStore.getInstance()
+    <% //This queue acts as a priority queue. Everytime you pop, the oldest message is returned
+       Queue<Message> user_messages = MessageStore.getInstance()
                                          .getMessagesByOwner(profileOwnerId); 
     %>
-    <% for (Message message : user_messages) { %>
-    <%   if(message.getContent() != null && !message.getContent().isEmpty()) { %>
-          <li> <b> <%= formatter.format(Date.from(message.getCreationTime())) %> </b>: 
-                   <%= message.getContent() %> </li>
+    <% int initial_size = user_messages.size(); %>
+    <% for (int i = 0; i < initial_size; ++i) { %>
+    <%   // If the message is not empty, then print it %>
+    <%   if(user_messages.peek().getContent() != null && 
+                                              !user_messages.peek().getContent().isEmpty()) { %>
+          <li> <b> <%= formatter.format(Date.from(user_messages.peek().getCreationTime())) %> 
+          </b>: <%= user_messages.peek().getContent() %> </li>
     <%   } %>      
+    <%   user_messages.remove(); %>
     <% } %>
       </ul>
     </div>
