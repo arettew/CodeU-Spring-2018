@@ -153,6 +153,8 @@ public class ChatServlet extends HttpServlet {
 
     messageStore.addMessage(message);
 
+    user.addConversation(conversation.getId());
+
     // redirect to a GET request
     response.sendRedirect("/chat/" + conversationTitle);
   }

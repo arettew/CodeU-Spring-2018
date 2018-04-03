@@ -2,7 +2,11 @@
 <%@ page import="codeu.model.store.basic.UserStore" %>
 <%@ page import="codeu.model.data.Message" %>
 <%@ page import="codeu.model.store.basic.MessageStore" %>
+<%@ page import="codeu.model.data.Conversation" %>
+<%@ page import="codeu.model.store.basic.ConversationStore" %>
 <%@ page import="java.util.List"%>
+<%@ page import="java.util.Set"%>
+<%@ page import="java.util.LinkedHashMap"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.text.SimpleDateFormat"%>
@@ -73,9 +77,9 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
         <button type="submit">Submit</button>
       </form>
     <% } %>
-    <h2><%= profileOwnerName %>'s sent messages</h2>
 
     <!--This is where the user's sent messages will show up -->
+    <h2><%= profileOwnerName %>'s sent messages</h2>
     <div id="messages">
       <ul>
     <% //This list contains messages written by the profile owner in order sorted by time
@@ -92,6 +96,24 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 
       </ul>
     </div>
+
+    <!-- This is where the user's non private conversations will be listed -->
+    <h2> <%= profileOwnerName %>'s conversations </h2>
+    <div id ="conversations">
+      <ul>
+    <% //This map contains the conversations where the profile owner has participated
+       User profileOwner = UserStore.getInstance().getUser(profileOwnerName);
+       LinkedHashMap<UUID, Boolean> userConversations = profileOwner.getConversations();
+       Set<UUID> keys = userConversations.keySet();
+    %>
+
+    <% for (UUID key: keys) { %>
+    <%  if (userConversations.get(key)) { %>
+          <li> <%= ConversationStore.getInstance().getConversationWithId(key).getTitle() %> </li>
+    <%  } %>  
+    <% }  %>
+
+    </ul>
   </div>
 
 </body>

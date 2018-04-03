@@ -16,6 +16,7 @@ package codeu.model.data;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.LinkedHashMap;
 
 /** Class representing a registered user. */
 public class User {
@@ -24,6 +25,7 @@ public class User {
   private final String password;
   private String about; 
   private final Instant creation;
+  private LinkedHashMap<UUID, Boolean>  conversations;
 
   /**
    * Constructs a new User.
@@ -33,6 +35,7 @@ public class User {
    * @param password the password of this User
    * @param about the about me message of this User 
    * @param creation the creation time of this User
+   *
    */
   public User(UUID id, String name, String password, String about, Instant creation) {
     this.id = id;
@@ -40,6 +43,7 @@ public class User {
     this.password = password;
     this.about = about;
     this.creation = creation;
+    this.conversations = new LinkedHashMap();
   }
 
   /**
@@ -57,6 +61,7 @@ public class User {
     this.password = password;
     this.about = "Hi! I'm " + name + "!";
     this.creation = creation;
+    this.conversations = new LinkedHashMap();
   }
 
   /** Returns the ID of this User. */
@@ -87,5 +92,17 @@ public class User {
   /** Changes the "about me" message of this User */
   public void setAbout(String aboutMessage) {
     this.about = aboutMessage;
+  }
+
+  /** Returns the conversations in which the user has sent a message. */
+  public LinkedHashMap<UUID, Boolean> getConversations() {
+    return conversations;
+  }
+
+  /** Adds a conversation to the list */
+  public void addConversation(UUID conversationId) {
+    if (!conversations.containsKey(conversationId)) {
+      conversations.put(conversationId, true);
+    }
   }
 }
