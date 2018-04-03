@@ -5,8 +5,6 @@
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.Date"%>
-<%@ page import="java.util.Queue"%>
-<%@ page import="java.util.PriorityQueue"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%
 String profileOwnerName = (String) request.getAttribute("profileOwner");
