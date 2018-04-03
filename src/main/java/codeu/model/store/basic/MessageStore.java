@@ -19,6 +19,8 @@ import codeu.model.store.persistence.PersistentStorageAgent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
 import codeu.model.store.basic.UserStore;
 
 /**
@@ -60,10 +62,15 @@ public class MessageStore {
   /** The in-memory list of Messages. */
   private List<Message> messages;
 
+  /** The in-memory list of Messages, organized by author Id */
+  private Map<UUID, List<Message>> messagesByAuthorId;
+
+
   /** This class is a singleton, so its constructor is private. Call getInstance() instead. */
   private MessageStore(PersistentStorageAgent persistentStorageAgent) {
     this.persistentStorageAgent = persistentStorageAgent;
     messages = new ArrayList<>();
+    messagesByAuthorId = new HashMap<>();
   }
 
   /**
@@ -96,7 +103,7 @@ public class MessageStore {
   }
 
   /** Delete an old message sent by this User */
-  public void deleteOldMessage(UUID userId) {
+  public void deleteOldMessages(UUID userId) {
     for (Message message : messages) {
       if (userId.equals(message.getAuthorId())) {
         deleteMessage(message);
@@ -119,8 +126,19 @@ public class MessageStore {
     return messagesInConversation;
   }
 
-  /** Sets the List of Messages stored by this MessageStore. */
+  /** Sets the List of Messages stored by this MessageStore as well as messagesByAuthorId. */
   public void setMessages(List<Message> messages) {
     this.messages = messages;
+    for (Message message: messages) {
+      UUID authorId = message.getAuthorId();
+      if (messagesByAuthorId.containsKey(authorId)) {
+        messagesByAuthorId.get(authorId).add(message);
+      }
+      else {
+        List<Message> messagesFromAuthor = new ArrayList();
+        messagesFromAuthor.add(message);
+        messagesByAuthorId.put(authorId, messagesFromAuthor);
+      }
+    }
   }
 }

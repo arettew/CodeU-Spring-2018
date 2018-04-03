@@ -23,7 +23,7 @@ public class User {
   private final String name;
   private final String password;
   private String about; 
-  private Boolean allowMessageDel;
+  private boolean allowMessageDel;
   private int messagesSent; 
   private final Instant creation;
 
@@ -38,13 +38,13 @@ public class User {
    * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
    */
-  public User(UUID id, String name, String password, String about, Boolean delete, 
+  public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
               int messagesSent, Instant creation) {
     this.id = id;
     this.name = name;
     this.password = password;
     this.about = about;
-    this.allowMessageDel = delete;
+    this.allowMessageDel = allowMessageDel;
     this.messagesSent = messagesSent;
     this.creation = creation;
   }
@@ -116,7 +116,7 @@ public class User {
   }
 
   /** Sets messages sent by this User */
-  public void setMessagesSent(int messagesSent) {
-    this.messagesSent = messagesSent;
+  public void incMessagesSent() {
+    this.messagesSent++;
   }
 }

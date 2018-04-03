@@ -98,7 +98,8 @@ public class MessageStoreTest {
     Mockito.verify(mockPersistentStorageAgent).delete(inputMessage);
   }
 
-  public void testDeleteOldMessage() {
+  @Test
+  public void testDeleteOldMessages() {
     UUID userId = UUID.randomUUID();
     Message inputMessage = 
       new Message(
@@ -107,15 +108,15 @@ public class MessageStoreTest {
         userId,
         "test message",
         Instant.now());
+
+    messageStore.addMessage(inputMessage);
     messageStore.addMessage(MESSAGE_ONE);
     messageStore.addMessage(MESSAGE_TWO);
-    messageStore.addMessage(inputMessage);
 
-    messageStore.deleteOldMessage(userId);
+    messageStore.deleteOldMessages(userId);
 
     List<Message> resultMessages = messageStore.getMessagesInConversation(CONVERSATION_ID_ONE);
     
-    Assert.assertEquals(resultMessages.size(), 2);
     assertEquals(MESSAGE_ONE, resultMessages.get(0));
     assertEquals(MESSAGE_TWO, resultMessages.get(1));
   } 

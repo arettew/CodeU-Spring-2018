@@ -103,7 +103,7 @@ public class ProfileServlet extends HttpServlet {
       }
 
       //  Redirect to a GET request
-      response.sendRedirect("/profile/" + ownerName); 
+      response.sendRedirect("/profile/" + ownerName);
     } 
 
 }

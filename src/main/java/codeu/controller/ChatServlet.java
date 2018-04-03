@@ -133,10 +133,10 @@ public class ChatServlet extends HttpServlet {
     
     if ((user.getMessagesSent() > MAX_MESSAGES) && (user.getAllowMessageDel())) {
       //  User has sent too many messages 
-      messageStore.deleteOldMessage(user.getId());
+      messageStore.deleteOldMessages(user.getId());
     } 
     else {
-      user.setMessagesSent(user.getMessagesSent() + 1);
+      user.incMessagesSent();
       userStore.updateUser(user);
     }
 

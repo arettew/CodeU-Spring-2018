@@ -216,7 +216,7 @@ public class ChatServletTest {
 
     chatServlet.doPost(mockRequest, mockResponse);
 
-    Mockito.verify(mockMessageStore).deleteOldMessage(userId);
+    Mockito.verify(mockMessageStore).deleteOldMessages(userId);
     Assert.assertEquals(15000, fakeUser.getMessagesSent());
   } 
 }

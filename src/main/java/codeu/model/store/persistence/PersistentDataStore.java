@@ -27,6 +27,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class handles all interactions with Google App Engine's Datastore service. On startup it
@@ -39,10 +41,10 @@ public class PersistentDataStore {
   private DatastoreService datastore;
 
   //  List of UserEntities that can be used alter user data
-  private List<Entity> userEntities; 
+  private Map<UUID, Entity> userEntitiesById; 
   
   //  List of Message Entities that can be used to alter message data
-  private List<Entity> messageEntities;  
+  private Map<UUID, Entity> messageEntitiesById;  
 
   /**
    * Constructs a new PersistentDataStore and sets up its state to begin loading objects from the
@@ -61,7 +63,7 @@ public class PersistentDataStore {
   public List<User> loadUsers() throws PersistentDataStoreException {
 
     List<User> users = new ArrayList<>();
-    userEntities = new ArrayList<>();
+    userEntitiesById = new HashMap<>();
 
     // Retrieve all users from the datastore.
     Query query = new Query("chat-users");
@@ -78,7 +80,7 @@ public class PersistentDataStore {
         Instant creationTime = Instant.parse((String) entity.getProperty("creation"));
         User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime);
         users.add(user);
-        userEntities.add(entity);
+        userEntitiesById.put(uuid, entity);
       } catch (Exception e) {
         // In a production environment, errors should be very rare. Errors which may
         // occur include network errors, Datastore service errors, authorization errors,
@@ -132,7 +134,7 @@ public class PersistentDataStore {
   public List<Message> loadMessages() throws PersistentDataStoreException {
 
     List<Message> messages = new ArrayList<>();
-    messageEntities = new ArrayList<>();
+    messageEntitiesById = new HashMap<>();
 
     // Retrieve all messages from the datastore.
     Query query = new Query("chat-messages");
@@ -147,7 +149,7 @@ public class PersistentDataStore {
         String content = (String) entity.getProperty("content");
         Message message = new Message(uuid, conversationUuid, authorUuid, content, creationTime);
         messages.add(message);
-        messageEntities.add(entity);
+        messageEntitiesById.put(uuid, entity);
       } catch (Exception e) {
         // In a production environment, errors should be very rare. Errors which may
         // occur include network errors, Datastore service errors, authorization errors,
@@ -176,16 +178,15 @@ public class PersistentDataStore {
    * when there are many users. 
    */
   public void update(User user) {
-    for (Entity userEntity : userEntities) {
-      String userName = (String) userEntity.getProperty("username");
-      if (userName.equals(user.getName())) {
-        userEntity.setProperty("about", user.getAbout());
-        userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
-        userEntity.setProperty("messagesSent", user.getMessagesSent());
-        datastore.put(userEntity);
-        return;
-      }
-    }
+    UUID userId = user.getId();
+    if (!userEntitiesById.containsKey(userId))
+      return;
+    
+    Entity userEntity = userEntitiesById.get(userId);
+    userEntity.setProperty("about", user.getAbout());
+    userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
+    userEntity.setProperty("messagesSent", user.getMessagesSent());
+    datastore.put(userEntity);
   }
 
   /** Write a Message object to the Datastore service. */
@@ -201,16 +202,13 @@ public class PersistentDataStore {
 
   /** Delete a Message object from the Datastore service */
   public void delete(Message message) {
-    for (Entity messageEntity : messageEntities) {
-      String messageIdString = (String) messageEntity.getProperty("uuid");
-      UUID messageId = UUID.fromString(messageIdString);
-      if (message.getId().equals(messageId)) {
-        datastore.delete(messageEntity.getKey());
-        UUID authorId = message.getAuthorId();
-
-        return;
-      }
+    UUID messageId = message.getId();
+    if (!messageEntitiesById.containsKey(messageId)) {
+      return;
     }
+
+    Entity messageEntity = messageEntitiesById.get(messageId);
+    datastore.delete(messageEntity.getKey());
   }
 
   /** Write a Conversation object to the Datastore service. */
