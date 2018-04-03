@@ -104,11 +104,11 @@ public class MessageStore {
 
   /** Delete an old message sent by this User */
   public void deleteOldMessages(UUID userId) {
-    for (Message message : messages) {
-      if (userId.equals(message.getAuthorId())) {
-        deleteMessage(message);
-        return;
-      }
+    if (messagesByAuthorId.containsKey(userId)) {
+      List<Message> messagesByAuthor = messagesByAuthorId.get(userId);
+      Message messageToRemove = messagesByAuthor.get(0);
+      messagesByAuthor.remove(messageToRemove);
+      messages.remove(messageToRemove);
     }
   }
 
