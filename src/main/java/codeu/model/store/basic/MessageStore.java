@@ -130,11 +130,10 @@ public class MessageStore {
   /** Access the current set of Messages sent by a specific user. */
   public List<Message> getMessagesByAuthor(UUID authorId) {
 
-    List<Message> authorMessages = new ArrayList<>(messages);
-
-    //Removes messages from the list if their authorId doesn't match to the one given
-    authorMessages.removeIf(message-> !message.getAuthorId().equals(authorId));
-
+    if (!messagesByAuthorId.containsKey(authorId)) {
+      return null;
+    }
+    List<Message> authorMessages = messagesByAuthorId.get(authorId);
     //Sorts using the overriden compareTo method on the Message class
     Collections.sort(authorMessages);
 
