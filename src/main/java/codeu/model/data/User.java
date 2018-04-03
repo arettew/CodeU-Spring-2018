@@ -34,8 +34,8 @@ public class User {
    * @param name the username of this User
    * @param password the password of this User
    * @param about the about me message of this User 
-   * @param allow_message_del does this User want messages deleted?
-   * @param messages_sent number of messages this user sent 
+   * @param allowMesssageDel does this User want messages deleted?
+   * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
    */
   public User(UUID id, String name, String password, String about, Boolean delete, 
@@ -56,8 +56,8 @@ public class User {
    * @param name the username of this User
    * @param password the password of this User
    * @param about the about me message of this User 
-   * @param allow_message_del does this User want messages deleted?
-   * @param messages_sent the number of messages this user sent
+   * @param allowMessageDel does this User want messages deleted?
+   * @param messagesSent the number of messages this user sent
    * @param creation the creation time of this User
    */
    public User(UUID id, String name, String password, Instant creation) {

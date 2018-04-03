@@ -174,8 +174,8 @@ public class PersistentDataStoreTest {
     Assert.assertEquals(contentTwo, resultMessageTwo.getContent());
     Assert.assertEquals(creationTwo, resultMessageTwo.getCreationTime());
 
-    //  delete
-    persistentDataStore.delete(inputMessageOne);
+    //  delete 
+    persistentDataStore.delete(inputMessageOne); 
 
     //  reload
     resultMessages = persistentDataStore.loadMessages();
@@ -186,6 +186,6 @@ public class PersistentDataStoreTest {
     Assert.assertEquals(conversationTwo, resultMessageTwo.getConversationId());
     Assert.assertEquals(authorTwo, resultMessageTwo.getAuthorId());
     Assert.assertEquals(contentTwo, resultMessageTwo.getContent());
-    Assert.assertEquals(creationTwo, resultMessageTwo.getCreationTime());
+    Assert.assertEquals(creationTwo, resultMessageTwo.getCreationTime());  
   }
 }

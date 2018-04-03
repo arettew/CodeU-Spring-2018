@@ -118,7 +118,7 @@ public class MessageStoreTest {
     Assert.assertEquals(resultMessages.size(), 2);
     assertEquals(MESSAGE_ONE, resultMessages.get(0));
     assertEquals(MESSAGE_TWO, resultMessages.get(1));
-  }
+  } 
 
   private void assertEquals(Message expectedMessage, Message actualMessage) {
     Assert.assertEquals(expectedMessage.getId(), actualMessage.getId());

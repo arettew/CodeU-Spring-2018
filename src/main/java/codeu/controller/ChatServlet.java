@@ -130,11 +130,11 @@ public class ChatServlet extends HttpServlet {
       response.sendRedirect("/login");
       return;
     }
-
+    
     if ((user.getMessagesSent() > MAX_MESSAGES) && (user.getAllowMessageDel())) {
       //  User has sent too many messages 
       messageStore.deleteOldMessage(user.getId());
-    }
+    } 
 
     String requestUrl = request.getRequestURI();
     String conversationTitle = requestUrl.substring("/chat/".length());

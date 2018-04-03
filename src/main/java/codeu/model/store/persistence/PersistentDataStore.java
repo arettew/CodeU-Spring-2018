@@ -40,9 +40,9 @@ public class PersistentDataStore {
 
   //  List of UserEntities that can be used alter user data
   private List<Entity> userEntities; 
-
+  
   //  List of Message Entities that can be used to alter message data
-  private List<Entity> messageEntities; 
+  private List<Entity> messageEntities;  
 
   /**
    * Constructs a new PersistentDataStore and sets up its state to begin loading objects from the
@@ -73,9 +73,9 @@ public class PersistentDataStore {
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
-        Boolean delete = (Boolean) entity.getProperty("allow_message_del");
-        int messagesSent = ((Long) entity.getProperty("messages_sent")).intValue();
-        Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
+        Boolean delete = (Boolean) entity.getProperty("allowMessageDel");
+        int messagesSent = ((Long) entity.getProperty("messagesSent")).intValue();
+        Instant creationTime = Instant.parse((String) entity.getProperty("creation"));
         User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime);
         users.add(user);
         userEntities.add(entity);
@@ -166,9 +166,9 @@ public class PersistentDataStore {
     userEntity.setProperty("username", user.getName());
     userEntity.setProperty("password", user.getPassword());
     userEntity.setProperty("about", user.getAbout());
-    userEntity.setProperty("messages_sent", user.getMessagesSent());
-    userEntity.setProperty("allow_message_del", user.getAllowMessageDel());
-    userEntity.setProperty("creation_time", user.getCreationTime().toString());
+    userEntity.setProperty("messagesSent", user.getMessagesSent());
+    userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
+    userEntity.setProperty("creation", user.getCreationTime().toString());
     datastore.put(userEntity);
   }
 
