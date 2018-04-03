@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 /**
  * Store class that uses in-memory data structures to hold values and automatically loads from and
@@ -107,14 +106,15 @@ public class MessageStore {
   /** Access the current set of Messages sent by a specific user. */
   public List<Message> getMessagesByAuthor(UUID authorId) {
 
+    List<Message> authorMessages = new ArrayList<>(messages);
+
     //Removes messages from the list if their authorId doesn't match to the one given
-    Predicate<Message> messagePredicate = m-> !m.getAuthorId().equals(authorId);
-    messages.removeIf(messagePredicate);
+    authorMessages.removeIf(message-> !message.getAuthorId().equals(authorId));
 
     //Sorts using the overriden compareTo method on the Message class
-    Collections.sort(messages);
+    Collections.sort(authorMessages);
 
-    return new ArrayList<>(messages);
+    return authorMessages;
   }
 
   /** Sets the List of Messages stored by this MessageStore. */
