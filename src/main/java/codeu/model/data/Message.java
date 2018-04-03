@@ -68,7 +68,7 @@ public class Message implements Comparable<Message> {
     return creation;
   }
 
-  /** Compares the messages by sent time */
+  /** Compares the messages by time sent */
   @Override
   public int compareTo(Message other) {
     return this.creation.compareTo(other.creation);
