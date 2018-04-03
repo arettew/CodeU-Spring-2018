@@ -16,6 +16,7 @@ package codeu.model.data;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.LinkedHashMap;
 
 /** Class representing a registered user. */
 public class User {
@@ -26,6 +27,7 @@ public class User {
   private boolean allowMessageDel;
   private int messagesSent; 
   private final Instant creation;
+  private LinkedHashMap<UUID, Boolean>  conversations;
 
   /**
    * Constructs a new User.
@@ -37,6 +39,7 @@ public class User {
    * @param allowMesssageDel does this User want messages deleted?
    * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
+   *
    */
   public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
               int messagesSent, Instant creation) {
@@ -47,6 +50,7 @@ public class User {
     this.allowMessageDel = allowMessageDel;
     this.messagesSent = messagesSent;
     this.creation = creation;
+    this.conversations = new LinkedHashMap();
   }
 
   /**
@@ -68,6 +72,7 @@ public class User {
     this.allowMessageDel = true;
     this.messagesSent = 0; 
     this.creation = creation;
+    this.conversations = new LinkedHashMap();
   }
 
   /** Returns the ID of this User. */
@@ -118,5 +123,16 @@ public class User {
   /** Sets messages sent by this User */
   public void incMessagesSent() {
     this.messagesSent++;
+
+  /** Returns the conversations in which the user has sent a message. */
+  public LinkedHashMap<UUID, Boolean> getConversations() {
+    return conversations;
+  }
+
+  /** Adds a conversation to the list */
+  public void addConversation(UUID conversationId) {
+    if (!conversations.containsKey(conversationId)) {
+      conversations.put(conversationId, true);
+    }
   }
 }
