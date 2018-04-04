@@ -75,6 +75,7 @@ public class ProfileServletTest {
     Mockito.when(mockUserStore.getUser("test_user")).thenReturn(fakeUser);
 
     Mockito.when(mockRequest.getParameter("about")).thenReturn("new_message");
+    Mockito.when(mockRequest.getParameter("whichForm")).thenReturn("about");
 
     profileServlet.doPost(mockRequest, mockResponse);
 
@@ -92,6 +93,7 @@ public class ProfileServletTest {
     Mockito.when(mockUserStore.getUser("test_user")).thenReturn(fakeUser);
 
     Mockito.when(mockRequest.getParameter("about")).thenReturn("new_message");
+    Mockito.when(mockRequest.getParameter("whichForm")).thenReturn("about");
 
     profileServlet.doPost(mockRequest, mockResponse);
 

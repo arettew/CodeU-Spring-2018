@@ -9,6 +9,7 @@ import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import java.util.UUID;
 
 /**
   * Servlet class responsible for user profile pages
@@ -83,25 +84,32 @@ public class ProfileServlet extends HttpServlet {
         return;
       } 
 
-      if (request.getParameter("delete") != null) {
-        //  The user wants to change whether or not their messages will be deleted
-        String delete = request.getParameter("delete");
+      switch (request.getParameter("whichForm")) {
+        case "about":
+          //About message was posted
+          String aboutMessage = request.getParameter("about");
 
-        boolean allowMessageDel = (delete.equals("yes"));
-        owner.setAllowMessageDel(allowMessageDel);
+          //This cleans the message of HTML
+          String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
+          owner.setAbout(cleanedAboutMessage);
 
-        userStore.updateUser(owner);
+          break;
+        case "hidden":
+          //Conversation to hide was posted
+          UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
+          owner.hideConversation(conversationToHide);
+
+          break;
+        case "messageDeletion":
+          //  The user wants to change whether or not their messages will be deleted
+          String delete = request.getParameter("delete");
+
+          boolean allowMessageDel = (delete.equals("yes"));
+          owner.setAllowMessageDel(allowMessageDel);
+          break;
       }
-      else {
-        //  The user wants to change their profile message
-        String aboutMessage = request.getParameter("about");
 
-        //  This cleans the message of HTML
-        String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
-        owner.setAbout(cleanedAboutMessage);
-
-        userStore.updateUser(owner);
-      }
+      userStore.updateUser(owner);
 
       //  Redirect to a GET request
       response.sendRedirect("/profile/" + ownerName);

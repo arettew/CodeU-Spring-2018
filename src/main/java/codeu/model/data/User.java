@@ -135,4 +135,11 @@ public class User {
       conversations.put(conversationId, true);
     }
   }
+
+  /** Sets conversation value to false (will be private). */
+  public void hideConversation(UUID conversationId) {
+    if (conversations.containsKey(conversationId)) {
+      conversations.put(conversationId, false);
+    }
+  }
 }

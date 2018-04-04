@@ -73,6 +73,7 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
       <h3>Edit your about me. Only you can see this.</h3>
       <form action="/profile/<%= profileOwnerName%>" method="POST">
         <input type="text" name="about">
+        <input type="hidden" name="whichForm" value ="about">
         <br/>
         <button type="submit">Submit</button>
       </form>
@@ -93,6 +94,7 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
             <% } %> 
         >
         No<br>
+        <input type="hidden" name="whichForm" value ="messageDeletion">
         <button type="submit">Submit</button>
       </form>
     <% } %>
@@ -132,7 +134,12 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
     <% for (UUID key: keys) { %>
     <%  if (userConversations.get(key)) { %>
     <%    Conversation conversation = ConversationStore.getInstance().getConversationById(key);%>
-          <li><a href="../chat/<%=conversation.getTitle()%>"> <%= conversation.getTitle() %> </a> </li>
+          <li><a href="../chat/<%=conversation.getTitle()%>"> <%= conversation.getTitle() %> </a> 
+            <form action="/profile/<%= profileOwnerName%>" method="POST">
+              <input type="hidden" name="whichForm" value ="hidden">
+              <button type="submit" name="convToHide" value="<%= key %>">Hide</button>
+            </form>
+          </li>
     <%  } %>  
     <% }  %>
 
