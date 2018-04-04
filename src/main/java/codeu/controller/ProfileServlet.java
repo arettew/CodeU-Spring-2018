@@ -9,6 +9,7 @@ import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import java.util.UUID;
 
 /**
   * Servlet class responsible for user profile pages
@@ -83,11 +84,23 @@ public class ProfileServlet extends HttpServlet {
         return;
       } 
 
-      String aboutMessage = request.getParameter("about");
+      switch(request.getParameter("whichForm")){
+        case "about":
+          //About message was posted
+          String aboutMessage = request.getParameter("about");
 
-      //  This cleans the message of HTML
-      String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
-      owner.setAbout(cleanedAboutMessage);
+          //This cleans the message of HTML
+          String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
+          owner.setAbout(cleanedAboutMessage);
+
+          break;
+        case "hidden":
+          //Conversation to hide was posted
+          UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
+          owner.hideConversation(conversationToHide);
+
+          break;
+      }
 
       // TODO: Make sure that the change to the message is properly stored
       userStore.updateUser(owner);
