@@ -1,3 +1,9 @@
+<%@ page import="codeu.model.data.User" %>
+<%@ page import="codeu.model.store.basic.UserStore" %>
+<%
+String numUsers = (String) request.getSession().getAttribute("numUsers");
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,9 +34,10 @@
         <strong>Site Statistics</strong>
         Here are some site stats:
       </p>
-
+      <!-- TO-DO: (rchen) link backend -->
       <ul>
-        <li><strong>Most Active User:</strong> (hard coded) rebecca </li>
+        <!-- shows up as null for some reason? -->
+        <li><strong>Users:</strong> <%= numUsers %> </li>
         <li><strong>Newest User:</strong> (hard coded) gautham </li>
         <li><strong>Wordiest User:</strong> (hard coded) andres </li>
       </ul>

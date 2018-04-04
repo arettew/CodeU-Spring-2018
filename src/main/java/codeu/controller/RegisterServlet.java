@@ -32,11 +32,10 @@ public class RegisterServlet extends HttpServlet {
     String username = request.getParameter("username");
     String password = request.getParameter("password");
     String about = request.getParameter("about");
-    Boolean isAdmin = false;
+    boolean isAdmin = false;
 
-    if (request.getParameter("admin password") == "123") {
+    if (request.getParameter("admin_password") == "123") {
       isAdmin = true;
-      return;
     }
     String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
 

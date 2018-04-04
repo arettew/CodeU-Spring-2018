@@ -60,6 +60,21 @@ public class UserTest {
   }
 
   @Test
+  public void changeAdminStatus() {
+    UUID id= UUID.randomUUID();
+    String name = "test_username";
+    Instant creation = Instant.now();
+    String about = "about";
+    String password = "password";
+    Boolean isAdmin = false;
+
+    User user = new User(id, name, password, about, creation, isAdmin);
+    user.setAdmin();
+
+    Assert.assertEquals(true, user.getIsAdmin());
+  }
+
+  @Test
   public void changeAbout() {
     UUID id= UUID.randomUUID();
     String name = "test_username";

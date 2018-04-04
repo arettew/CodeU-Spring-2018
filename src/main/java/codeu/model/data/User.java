@@ -24,7 +24,7 @@ public class User {
   private final String password;
   private String about; 
   private final Instant creation;
-  private final Boolean isAdmin;
+  private boolean isAdmin;
 
   /**
    * Constructs a new User.
@@ -35,7 +35,7 @@ public class User {
    * @param about the about me message of this User 
    * @param creation the creation time of this User
    */
-   public User(UUID id, String name, String password, String about, Instant creation, Boolean isAdmin) {
+   public User(UUID id, String name, String password, String about, Instant creation, boolean isAdmin) {
     this.id = id;
     this.name = name;
     this.password = password;
@@ -68,6 +68,10 @@ public class User {
   /** Returns whether User is admin or not. */
   public Boolean getIsAdmin() {
     return isAdmin;
+  }
+  /** Changes admin status of User */
+  public void setAdmin() {
+    this.isAdmin = !(this.isAdmin)  ;
   }
 
   /** Returns the "about me" message of this User. */

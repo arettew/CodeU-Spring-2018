@@ -86,4 +86,24 @@
     <url-pattern>/profile/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>LeaderboardServlet</servlet-name>
+    <servlet-class>codeu.controller.LeaderboardServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>LeaderboardServlet</servlet-name>
+    <url-pattern>/leaderboard/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>AdminServlet</servlet-name>
+    <servlet-class>codeu.controller.AdminServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>AdminServlet</servlet-name>
+    <url-pattern>/adminpage/*</url-pattern>
+  </servlet-mapping>
+
 </web-app>

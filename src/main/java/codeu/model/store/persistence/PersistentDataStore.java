@@ -108,6 +108,9 @@ public class PersistentDataStore {
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
         String about = (String) entity.getProperty("about");
         Boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
+        if(!isAdmin) {
+          continue;
+        }
         User admin = new User(uuid, userName, password, about, creationTime, isAdmin);
         if (isAdmin) {
           admins.add(admin);

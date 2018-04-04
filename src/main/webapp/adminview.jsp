@@ -27,7 +27,7 @@
         <strong>Site Statistics</strong>
         Here are some site stats:
       </p>
-
+      <!-- TO:DO (rchen): link backend --> 
       <ul>
       	<li><strong>Users:</strong> (hard coded) 42 </li>
       	<li><strong>Conversations:</strong> (hard coded) 127 </li>
