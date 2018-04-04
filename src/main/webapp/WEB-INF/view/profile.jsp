@@ -101,6 +101,14 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
     <!-- This is where the user's non private conversations will be listed -->
     <h2> <%= profileOwnerName %>'s conversations </h2>
     <div id ="conversations">
+      
+    <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
+        <form action="/profile/<%= profileOwnerName%>" method="POST">
+          <input type="hidden" name="whichForm" value ="reset">
+          <button type="submit">Show All Conversations</button>
+        </form>
+    <%  } %>      
+
       <ul>
     <% //This map contains the conversations where the profile owner has participated
        User profileOwner = UserStore.getInstance().getUser(profileOwnerName);
@@ -111,14 +119,16 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
     <% for (UUID key: keys) { %>
     <%  if (userConversations.get(key)) { %>
     <%    Conversation conversation = ConversationStore.getInstance().getConversationWithId(key);%>
-          <li><a href="../chat/<%=conversation.getTitle()%>"> <%= conversation.getTitle() %> </a> 
-            <form action="/profile/<%= profileOwnerName%>" method="POST">
-              <input type="hidden" name="whichForm" value ="hidden">
-              <button type="submit" name="convToHide" value="<%= key %>">Hide</button>
-            </form>
-          </li>
-    <%  } %>  
-    <% }  %>
+    <%    if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
+            <li><a href="../chat/<%=conversation.getTitle()%>"> <%= conversation.getTitle() %> </a>
+              <form action="/profile/<%= profileOwnerName%>" method="POST">
+                <input type="hidden" name="whichForm" value ="hidden">
+                <button type="submit" name="convToHide" value="<%= key %>">Hide</button>
+              </form>
+            </li>
+    <%    } %>
+    <%  }   %>  
+    <% }    %>
 
     </ul>
   </div>

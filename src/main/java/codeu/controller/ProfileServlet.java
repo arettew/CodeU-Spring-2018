@@ -100,6 +100,12 @@ public class ProfileServlet extends HttpServlet {
           owner.hideConversation(conversationToHide);
 
           break;
+
+        case "reset":
+          //User wants to show all their conversations again
+          owner.resetConversations();
+
+          break;
       }
 
       // TODO: Make sure that the change to the message is properly stored

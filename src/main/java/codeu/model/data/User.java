@@ -16,6 +16,7 @@ package codeu.model.data;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.Set;
 import java.util.LinkedHashMap;
 
 /** Class representing a registered user. */
@@ -111,5 +112,12 @@ public class User {
     if (conversations.containsKey(conversationId)) {
       conversations.put(conversationId, false);
     }
+  }
+
+  /** Resets all conversation Booleans to true. */
+  public void resetConversations() {
+    conversations.replaceAll((k,v)-> {
+      return true;
+    });
   }
 }
