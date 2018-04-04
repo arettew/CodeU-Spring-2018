@@ -106,6 +106,12 @@ public class ProfileServlet extends HttpServlet {
 
           boolean allowMessageDel = (delete.equals("yes"));
           owner.setAllowMessageDel(allowMessageDel);
+
+          break;
+        case "reset":
+          //User wants to show all their conversations again
+          owner.resetConversations();
+          
           break;
       }
 
