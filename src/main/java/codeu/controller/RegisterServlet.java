@@ -31,6 +31,12 @@ public class RegisterServlet extends HttpServlet {
 
     String username = request.getParameter("username");
     String password = request.getParameter("password");
+    String about = request.getParameter("about");
+    boolean isAdmin = false;
+
+    if (request.getParameter("admin_password") == "123") {
+      isAdmin = true;
+    }
     String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
 
     if (!username.matches("[\\w*\\s*]*")) {
@@ -45,7 +51,7 @@ public class RegisterServlet extends HttpServlet {
       return;
     }
 
-    User user = new User(UUID.randomUUID(), username, passwordHash, Instant.now());
+    User user = new User(UUID.randomUUID(), username, passwordHash, about, Instant.now(), isAdmin);
     userStore.addUser(user);
 
     response.sendRedirect("/login");

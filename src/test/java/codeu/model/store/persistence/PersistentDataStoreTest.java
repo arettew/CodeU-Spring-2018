@@ -41,14 +41,18 @@ public class PersistentDataStoreTest {
     UUID idOne = UUID.randomUUID();
     String nameOne = "test_username_one";
     String passwordOne = "password_one";
+    String aboutOne = "Hi! I'm test_username_one!";
     Instant creationOne = Instant.ofEpochMilli(1000);
-    User inputUserOne = new User(idOne, nameOne, passwordOne, creationOne);
+    Boolean isAdminOne = false;
+    User inputUserOne = new User(idOne, nameOne, passwordOne, aboutOne, creationOne, isAdminOne);
 
     UUID idTwo = UUID.randomUUID();
     String nameTwo = "test_username_two";
     String passwordTwo = "password_two";
+    String aboutTwo = "Hi! I'm test_username_two!";
     Instant creationTwo = Instant.ofEpochMilli(2000);
-    User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, creationTwo);
+    Boolean isAdminTwo = true;
+    User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, aboutTwo, creationTwo, isAdminTwo);
 
     // save
     persistentDataStore.writeThrough(inputUserOne);
@@ -62,15 +66,52 @@ public class PersistentDataStoreTest {
     Assert.assertEquals(idOne, resultUserOne.getId());
     Assert.assertEquals(nameOne, resultUserOne.getName());
     Assert.assertEquals(passwordOne, resultUserOne.getPassword());
-    Assert.assertEquals("Hi! I'm test_username_one!", resultUserOne.getAbout());
+    Assert.assertEquals(aboutOne, resultUserOne.getAbout());
     Assert.assertEquals(creationOne, resultUserOne.getCreationTime());
+    Assert.assertEquals(isAdminOne, resultUserOne.getIsAdmin());
 
     User resultUserTwo = resultUsers.get(1);
     Assert.assertEquals(idTwo, resultUserTwo.getId());
     Assert.assertEquals(nameTwo, resultUserTwo.getName());
     Assert.assertEquals(passwordTwo, resultUserTwo.getPassword());
-    Assert.assertEquals("Hi! I'm test_username_two!", resultUserTwo.getAbout());
+    Assert.assertEquals(aboutTwo, resultUserTwo.getAbout());
     Assert.assertEquals(creationTwo, resultUserTwo.getCreationTime());
+    Assert.assertEquals(isAdminTwo, resultUserTwo.getIsAdmin());
+  }
+
+  @Test
+  public void testSaveAndLoadAdmins() throws PersistentDataStoreException {
+    UUID idOne = UUID.randomUUID();
+    String nameOne = "test_username_one";
+    String passwordOne = "password_one";
+    String aboutOne = "Hi! I'm test_username_one!";
+    Instant creationOne = Instant.ofEpochMilli(1000);
+    Boolean isAdminOne = false;
+    User inputUserOne = new User(idOne, nameOne, passwordOne, aboutOne, creationOne, isAdminOne);
+
+    UUID idTwo = UUID.randomUUID();
+    String nameTwo = "test_username_two";
+    String passwordTwo = "password_two";
+    String aboutTwo = "Hi! I'm test_username_two!";
+    Instant creationTwo = Instant.ofEpochMilli(2000);
+    Boolean isAdminTwo = true;
+    User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, aboutTwo, creationTwo, isAdminTwo);
+
+    // save
+    persistentDataStore.writeThrough(inputUserOne);
+    persistentDataStore.writeThrough(inputUserTwo);
+
+    // load
+    List<User> resultAdmins = persistentDataStore.loadAdmins();
+
+    // confirm that what we saved matches what we loaded; should only load userTwo
+    User resultAdminTwo = resultAdmins.get(0);
+    Assert.assertEquals(idTwo, resultAdminTwo.getId());
+    Assert.assertEquals(nameTwo, resultAdminTwo.getName());
+    Assert.assertEquals(passwordTwo, resultAdminTwo.getPassword());
+    Assert.assertEquals(aboutTwo, resultAdminTwo.getAbout());
+    Assert.assertEquals(creationTwo, resultAdminTwo.getCreationTime());
+    Assert.assertEquals(isAdminTwo, resultAdminTwo.getIsAdmin());
   }
 
   @Test

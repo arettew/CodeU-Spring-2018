@@ -70,6 +70,16 @@ public class PersistentStorageAgent {
   }
 
   /**
+   * Retrieve all User objects who are admins from the Datastore service. The returned list may be empty.
+   *
+   * @throws PersistentDataStoreException if an error was detected during the load from the
+   *     Datastore service
+   */
+  public List<User> loadAdmins() throws PersistentDataStoreException {
+    return persistentDataStore.loadAdmins();
+  }
+
+  /**
    * Retrieve all Conversation objects from the Datastore service. The returned list may be empty.
    *
    * @throws PersistentDataStoreException if an error was detected during the load from the

@@ -120,6 +120,15 @@ public class UserStore {
     return false;
   }
 
+  public int getNumUsers() {
+    int count = 0;
+    for (User user : users) {
+      count = count + 1;
+    }
+    System.out.println(count);
+    return count;
+  }
+
   /**
    * Sets the List of Users stored by this UserStore. This should only be called once, when the data
    * is loaded from Datastore.
@@ -127,4 +136,5 @@ public class UserStore {
   public void setUsers(List<User> users) {
     this.users = users;
   }
+
 }
