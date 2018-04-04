@@ -35,6 +35,9 @@
         <br/>
         <label for="password">Password: </label>
         <input type="password" name="password" id="password">
+        <br/>
+        <label for="admin password">Admin Password: </label>
+        <input type="admin password" name="admin password" id="admin password">
         <br/><br/>
         <button type="submit">Submit</button>
       </form>

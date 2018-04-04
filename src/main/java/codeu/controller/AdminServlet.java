@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /** Servlet class responsible for the login page. */
-public class LoginServlet extends HttpServlet {
+public class AdminServlet extends HttpServlet {
 
   /** Store class that gives access to Users. */
   private UserStore userStore;
@@ -37,13 +37,24 @@ public class LoginServlet extends HttpServlet {
   }
 
   /**
-   * This function fires when a user requests the /login URL. It simply forwards the request to
-   * login.jsp.
+   * This function fires when a user requests the /adminview URL. It checks whether the user is an admin
+   * If they are, they will be forwarded to adminview.jsp, if not
+   * they are forwarded to conversations.jsp
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+
+    String requestURL = request.getRequestURI();
+    String userName = requestURL.substring("/adminview/".length());
+    User user = userStore.getUser(userName);
+    if (!user.getIsAdmin()) {
+      
+      System.out.println("user not admin");
+      response.sendRedirect("/conversations");
+    }
+
+    request.getRequestDispatcher("/WEB-INF/view/adminview.jsp").forward(request, response);
   }
 
   /**
@@ -54,26 +65,7 @@ public class LoginServlet extends HttpServlet {
    @Override
  public void doPost(HttpServletRequest request, HttpServletResponse response)
      throws IOException, ServletException {
-   String username = request.getParameter("username");
-   String password = request.getParameter("password");
 
-   if (userStore.isUserRegistered(username)) {
-     User user = userStore.getUser(username);
-     
-     if (BCrypt.checkpw(password, user.getPassword())) {
-      request.getSession().setAttribute("user", username);
-
-      response.sendRedirect("/conversations");
-     }
-     else {
-       request.setAttribute("error", "Invalid password.");
-       request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
-     }
-   }
-   else {
-     request.setAttribute("error", "That username was not found.");
-     request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
-   }
- }
+  }
 
 }
