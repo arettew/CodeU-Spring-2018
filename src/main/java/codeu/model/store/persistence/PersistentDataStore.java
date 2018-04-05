@@ -75,7 +75,7 @@ public class PersistentDataStore {
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
-        Boolean delete = (Boolean) entity.getProperty("allowMessageDel");
+        boolean delete = (boolean) entity.getProperty("allowMessageDel");
         int messagesSent = ((Long) entity.getProperty("messagesSent")).intValue();
         Instant creationTime = Instant.parse((String) entity.getProperty("creation"));
         User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime);
@@ -174,13 +174,12 @@ public class PersistentDataStore {
     datastore.put(userEntity);
   }
 
-  /** Change some property of a user then re-add to datastore. This method may be inefficient 
-   * when there are many users. 
-   */
+  /** Change some property of a user then re-add to datastore. */
   public void update(User user) {
     UUID userId = user.getId();
-    if (!userEntitiesById.containsKey(userId))
+    if (!userEntitiesById.containsKey(userId)) {
       return;
+    }
     
     Entity userEntity = userEntitiesById.get(userId);
     userEntity.setProperty("about", user.getAbout());

@@ -83,6 +83,19 @@ public class MessageStore {
     boolean loaded = false;
     try {
       messages.addAll(DefaultDataStore.getInstance().getAllMessages());
+      for (Message message : messages) {
+        UUID authorId = message.getAuthorId();
+        if (messagesByAuthorId.containsKey(authorId)) {
+          List<Message> messagesByAuthor = messagesByAuthorId.get(authorId);
+          messagesByAuthor.add(message);
+          messagesByAuthorId.put(message.getAuthorId(), messagesByAuthor);
+        }
+        else {
+          List<Message> messagesByAuthor = new ArrayList<>();
+          messagesByAuthor.add(message);
+          messagesByAuthorId.put(message.getAuthorId(), messagesByAuthor);
+        }
+      }
       loaded = true;
     } catch (Exception e) {
       loaded = false;
@@ -104,13 +117,14 @@ public class MessageStore {
   }
 
   /** Delete an old message sent by this User */
-  public void deleteOldMessages(UUID userId) {
-    if (messagesByAuthorId.containsKey(userId)) {
-      List<Message> messagesByAuthor = messagesByAuthorId.get(userId);
-      Message messageToRemove = messagesByAuthor.get(0);
-      messagesByAuthor.remove(messageToRemove);
-      messages.remove(messageToRemove);
-    }
+  public void deleteOldMessages(UUID userId, int numOfMessages) {
+    List<Message> messagesByAuthor = getMessagesByAuthor(userId); 
+    int numToRemove = Math.min(numOfMessages, messagesByAuthor.size());
+      for (int i = 0; i < numToRemove; i++) {
+        Message messageToRemove = messagesByAuthor.get(0);
+        messagesByAuthor.remove(messageToRemove);
+        messages.remove(messageToRemove);
+      }
   }
 
   /** Access the current set of Messages within the given Conversation. */
@@ -131,7 +145,7 @@ public class MessageStore {
   public List<Message> getMessagesByAuthor(UUID authorId) {
 
     if (!messagesByAuthorId.containsKey(authorId)) {
-      return null;
+      return  new ArrayList<>();
     }
     List<Message> authorMessages = messagesByAuthorId.get(authorId);
     //Sorts using the overriden compareTo method on the Message class
@@ -143,7 +157,7 @@ public class MessageStore {
   /** Sets the List of Messages stored by this MessageStore. */
   public void setMessages(List<Message> messages) {
     this.messages = messages;
-    for (Message message: messages) {
+    for (Message message : messages) {
       UUID authorId = message.getAuthorId();
       if (messagesByAuthorId.containsKey(authorId)) {
         messagesByAuthorId.get(authorId).add(message);

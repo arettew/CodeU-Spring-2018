@@ -87,7 +87,7 @@ public class ProfileServlet extends HttpServlet {
         //  The user wants to change whether or not their messages will be deleted
         String delete = request.getParameter("delete");
 
-        Boolean allowMessageDel = (delete.equals("yes"));
+        boolean allowMessageDel = (delete.equals("yes"));
         owner.setAllowMessageDel(allowMessageDel);
 
         userStore.updateUser(owner);

@@ -113,7 +113,7 @@ public class MessageStoreTest {
     messageStore.addMessage(MESSAGE_ONE);
     messageStore.addMessage(MESSAGE_TWO);
 
-    messageStore.deleteOldMessages(userId);
+    messageStore.deleteOldMessages(userId, 1);
 
     List<Message> resultMessages = messageStore.getMessagesInConversation(CONVERSATION_ID_ONE);
     
