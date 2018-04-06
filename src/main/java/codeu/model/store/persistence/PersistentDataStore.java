@@ -71,7 +71,7 @@ public class PersistentDataStore {
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
-        Boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
+        boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
         User user = new User(uuid, userName, password, about, creationTime, isAdmin);
         users.add(user);
         userEntities.add(entity);
@@ -102,15 +102,16 @@ public class PersistentDataStore {
 
     for (Entity entity : results.asIterable()) {
       try {
-        UUID uuid = UUID.fromString((String) entity.getProperty("uuid"));
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
         String about = (String) entity.getProperty("about");
-        Boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
+        // changing to is_admin gives null pointer exception?
+        boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
         if(!isAdmin) {
           continue;
         }
+        UUID uuid = UUID.fromString((String) entity.getProperty("uuid"));
         User admin = new User(uuid, userName, password, about, creationTime, isAdmin);
         if (isAdmin) {
           admins.add(admin);

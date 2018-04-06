@@ -17,6 +17,8 @@ public class AdminServlet extends HttpServlet {
 
   /** Store class that gives access to Users. */
   private UserStore userStore;
+  private ServletUrlStrings UrlStrings;
+  public static final String ADMIN_URL = "/adminView/";
 
   /**
    * Set up state for handling login-related requests. This method is only called when running in a
@@ -46,7 +48,7 @@ public class AdminServlet extends HttpServlet {
       throws IOException, ServletException {
 
     String requestURL = request.getRequestURI();
-    String userName = requestURL.substring("/adminview/".length());
+    String userName = requestURL.substring(ADMIN_URL.length());
     User user = userStore.getUser(userName);
     if (!user.getIsAdmin()) {
       
@@ -54,18 +56,7 @@ public class AdminServlet extends HttpServlet {
       response.sendRedirect("/conversations");
     }
 
-    request.getRequestDispatcher("/WEB-INF/view/adminview.jsp").forward(request, response);
-  }
-
-  /**
-   * This function fires when a user submits the login form. It gets the username and password from
-   * the submitted form data, checks that they're valid, and either adds the user to the session
-   * so we know the user is logged in or shows an error to the user.
-   */
-   @Override
- public void doPost(HttpServletRequest request, HttpServletResponse response)
-     throws IOException, ServletException {
-
+    request.getRequestDispatcher(UrlStrings.getAdminviewJsp()).forward(request, response);
   }
 
 }

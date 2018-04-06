@@ -36,7 +36,7 @@ String numUsers = (String) request.getSession().getAttribute("numUsers");
       </p>
       <!-- TO-DO: (rchen) link backend -->
       <ul>
-        <!-- shows up as null for some reason? -->
+        <!-- numUsers shows up as null for some reason? -->
         <li><strong>Users:</strong> <%= numUsers %> </li>
         <li><strong>Newest User:</strong> (hard coded) gautham </li>
         <li><strong>Wordiest User:</strong> (hard coded) andres </li>

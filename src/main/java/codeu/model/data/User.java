@@ -34,6 +34,7 @@ public class User {
    * @param password the password of this User
    * @param about the about me message of this User 
    * @param creation the creation time of this User
+   * @param isAdmin the isAdmin value of this User
    */
    public User(UUID id, String name, String password, String about, Instant creation, boolean isAdmin) {
     this.id = id;
@@ -70,8 +71,8 @@ public class User {
     return isAdmin;
   }
   /** Changes admin status of User */
-  public void setAdmin() {
-    this.isAdmin = !(this.isAdmin)  ;
+  public void invertAdminStatus() {
+    this.isAdmin = !(this.isAdmin);
   }
 
   /** Returns the "about me" message of this User. */

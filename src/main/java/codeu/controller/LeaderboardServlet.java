@@ -30,6 +30,7 @@ public class LeaderboardServlet extends HttpServlet {
 
   /** Store class that gives access to Users. */
   private UserStore userStore;
+  private ServletUrlStrings UrlStrings;
 
   /**
    * Set up state for handling login-related requests. This method is only called when running in a
@@ -59,18 +60,7 @@ public class LeaderboardServlet extends HttpServlet {
     int numUsers = userStore.getNumUsers();
     request.getSession().setAttribute("numUsers", numUsers);
 
-    request.getRequestDispatcher("/WEB-INF/view/leaderboard.jsp").forward(request, response);
-  }
-
-  /**
-   * This function fires when a user submits the login form. It gets the username and password from
-   * the submitted form data, checks that they're valid, and either adds the user to the session
-   * so we know the user is logged in or shows an error to the user.
-   */
-   @Override
- public void doPost(HttpServletRequest request, HttpServletResponse response)
-     throws IOException, ServletException {
-
+    request.getRequestDispatcher(UrlStrings.getLeadershipJsp()).forward(request, response);
   }
 
 }

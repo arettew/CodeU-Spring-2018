@@ -43,7 +43,7 @@ public class PersistentDataStoreTest {
     String passwordOne = "password_one";
     String aboutOne = "Hi! I'm test_username_one!";
     Instant creationOne = Instant.ofEpochMilli(1000);
-    Boolean isAdminOne = false;
+    boolean isAdminOne = false;
     User inputUserOne = new User(idOne, nameOne, passwordOne, aboutOne, creationOne, isAdminOne);
 
     UUID idTwo = UUID.randomUUID();
@@ -51,7 +51,7 @@ public class PersistentDataStoreTest {
     String passwordTwo = "password_two";
     String aboutTwo = "Hi! I'm test_username_two!";
     Instant creationTwo = Instant.ofEpochMilli(2000);
-    Boolean isAdminTwo = true;
+    boolean isAdminTwo = true;
     User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, aboutTwo, creationTwo, isAdminTwo);
 
     // save
@@ -86,7 +86,7 @@ public class PersistentDataStoreTest {
     String passwordOne = "password_one";
     String aboutOne = "Hi! I'm test_username_one!";
     Instant creationOne = Instant.ofEpochMilli(1000);
-    Boolean isAdminOne = false;
+    boolean isAdminOne = false;
     User inputUserOne = new User(idOne, nameOne, passwordOne, aboutOne, creationOne, isAdminOne);
 
     UUID idTwo = UUID.randomUUID();
@@ -94,7 +94,7 @@ public class PersistentDataStoreTest {
     String passwordTwo = "password_two";
     String aboutTwo = "Hi! I'm test_username_two!";
     Instant creationTwo = Instant.ofEpochMilli(2000);
-    Boolean isAdminTwo = true;
+    boolean isAdminTwo = true;
     User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, aboutTwo, creationTwo, isAdminTwo);
 
     // save

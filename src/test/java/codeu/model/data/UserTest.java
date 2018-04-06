@@ -28,7 +28,7 @@ public class UserTest {
     Instant creation = Instant.now();
     String password = "password";
     String about = "Hi! I'm test_username!";
-    Boolean isAdmin = false;
+    boolean isAdmin = false;
 
     User user = new User(id, name, password, about, creation, isAdmin);
 
@@ -47,7 +47,7 @@ public class UserTest {
     String about = "Hi! I'm test_username!";
     Instant creation = Instant.now();
     String password = "password";
-    Boolean isAdmin = false;
+    boolean isAdmin = false;
 
     User user = new User(id, name, password, about, creation, isAdmin);
 
@@ -66,10 +66,10 @@ public class UserTest {
     Instant creation = Instant.now();
     String about = "about";
     String password = "password";
-    Boolean isAdmin = false;
+    boolean isAdmin = false;
 
     User user = new User(id, name, password, about, creation, isAdmin);
-    user.setAdmin();
+    user.invertAdminStatus();
 
     Assert.assertEquals(true, user.getIsAdmin());
   }
@@ -81,7 +81,7 @@ public class UserTest {
     Instant creation = Instant.now();
     String about = "about";
     String password = "password";
-    Boolean isAdmin = false;
+    boolean isAdmin = false;
 
     User user = new User(id, name, password, about, creation, isAdmin);
     user.setAbout("new_message");

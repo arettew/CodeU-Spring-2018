@@ -121,12 +121,7 @@ public class UserStore {
   }
 
   public int getNumUsers() {
-    int count = 0;
-    for (User user : users) {
-      count = count + 1;
-    }
-    System.out.println(count);
-    return count;
+    return users.size();
   }
 
   /**
