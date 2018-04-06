@@ -27,31 +27,51 @@ public class UserTest {
     String name = "test_username";
     Instant creation = Instant.now();
     String password = "password";
+    String about = "Hi! I'm test_username!";
+    boolean isAdmin = false;
 
-    User user = new User(id, name, password, creation);
+    User user = new User(id, name, password, about, creation, isAdmin);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
-    Assert.assertEquals("Hi! I'm test_username!", user.getAbout());
+    Assert.assertEquals(about, user.getAbout());
     Assert.assertEquals(creation, user.getCreationTime());
+    Assert.assertEquals(isAdmin, user.getIsAdmin());
   }
 
   @Test
   public void testAltCreate() {
     UUID id = UUID.randomUUID();
     String name = "test_username";
-    String about = "unique message";
+    String about = "Hi! I'm test_username!";
     Instant creation = Instant.now();
     String password = "password";
+    boolean isAdmin = false;
 
-    User user = new User(id, name, password, about, creation);
+    User user = new User(id, name, password, about, creation, isAdmin);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
-    Assert.assertEquals("unique message", user.getAbout());
+    Assert.assertEquals(about, user.getAbout());
     Assert.assertEquals(creation, user.getCreationTime());
+    Assert.assertEquals(isAdmin, user.getIsAdmin());
+  }
+
+  @Test
+  public void changeAdminStatus() {
+    UUID id= UUID.randomUUID();
+    String name = "test_username";
+    Instant creation = Instant.now();
+    String about = "about";
+    String password = "password";
+    boolean isAdmin = false;
+
+    User user = new User(id, name, password, about, creation, isAdmin);
+    user.invertAdminStatus();
+
+    Assert.assertEquals(true, user.getIsAdmin());
   }
 
   @Test
@@ -59,11 +79,13 @@ public class UserTest {
     UUID id= UUID.randomUUID();
     String name = "test_username";
     Instant creation = Instant.now();
+    String about = "about";
     String password = "password";
+    boolean isAdmin = false;
 
-    User user = new User(id, name, password, creation);
+    User user = new User(id, name, password, about, creation, isAdmin);
     user.setAbout("new_message");
 
-    Assert.assertEquals(user.getAbout(), "new_message");
+    Assert.assertEquals("new_message", user.getAbout());
   }
 }

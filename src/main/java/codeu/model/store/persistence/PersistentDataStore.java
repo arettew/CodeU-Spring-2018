@@ -71,7 +71,8 @@ public class PersistentDataStore {
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
-        User user = new User(uuid, userName, password, about, creationTime);
+        boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
+        User user = new User(uuid, userName, password, about, creationTime, isAdmin);
         users.add(user);
         userEntities.add(entity);
       } catch (Exception e) {
@@ -83,6 +84,46 @@ public class PersistentDataStore {
     }
 
     return users;
+  }
+
+  /**
+   * Loads all User objects who are admins from the Datastore service and returns them in a List.
+   *
+   * @throws PersistentDataStoreException if an error was detected during the load from the
+   *     Datastore service
+   */
+  public List<User> loadAdmins() throws PersistentDataStoreException {
+
+    List<User> admins = new ArrayList<>();
+
+    // Retrieve all users from the datastore.
+    Query query = new Query("chat-users");
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity entity : results.asIterable()) {
+      try {
+        String userName = (String) entity.getProperty("username");
+        String password = (String) entity.getProperty("password");
+        Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
+        String about = (String) entity.getProperty("about");
+        // changing to is_admin gives null pointer exception?
+        boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
+        if(!isAdmin) {
+          continue;
+        }
+        UUID uuid = UUID.fromString((String) entity.getProperty("uuid"));
+        User admin = new User(uuid, userName, password, about, creationTime, isAdmin);
+        if (isAdmin) {
+          admins.add(admin);
+        }
+      } catch (Exception e) {
+        // In a production environment, errors should be very rare. Errors which may
+        // occur include network errors, Datastore service errors, authorization errors,
+        // database entity definition mismatches, or service mismatches.
+        throw new PersistentDataStoreException(e);
+      }
+    }
+    return admins;
   }
 
   /**
@@ -160,6 +201,7 @@ public class PersistentDataStore {
     userEntity.setProperty("password", user.getPassword());
     userEntity.setProperty("about", user.getAbout());
     userEntity.setProperty("creation_time", user.getCreationTime().toString());
+    userEntity.setProperty("isAdmin", user.getIsAdmin());
     datastore.put(userEntity);
   }
 
