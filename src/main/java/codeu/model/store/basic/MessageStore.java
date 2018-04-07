@@ -91,9 +91,7 @@ public class MessageStore {
           messagesByAuthorId.put(message.getAuthorId(), messagesByAuthor);
         }
         else {
-          List<Message> messagesByAuthor = new ArrayList<>();
-          messagesByAuthor.add(message);
-          messagesByAuthorId.put(message.getAuthorId(), messagesByAuthor);
+          messagesByAuthorId.computeIfAbsent(authorId, key -> new ArrayList()).add(message);
         }
       }
       loaded = true;
@@ -120,11 +118,9 @@ public class MessageStore {
   public void deleteOldMessages(UUID userId, int numOfMessages) {
     List<Message> messagesByAuthor = getMessagesByAuthor(userId); 
     int numToRemove = Math.min(numOfMessages, messagesByAuthor.size());
-      for (int i = 0; i < numToRemove; i++) {
-        Message messageToRemove = messagesByAuthor.get(0);
-        messagesByAuthor.remove(messageToRemove);
-        messages.remove(messageToRemove);
-      }
+    List<Message> messagesToDelete = messagesByAuthor.subList(0, numToRemove);
+    messages.removeAll(messagesToDelete);
+    messagesToDelete.clear();
   }
 
   /** Access the current set of Messages within the given Conversation. */
