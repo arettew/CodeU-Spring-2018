@@ -155,14 +155,7 @@ public class MessageStore {
     this.messages = messages;
     for (Message message : messages) {
       UUID authorId = message.getAuthorId();
-      if (messagesByAuthorId.containsKey(authorId)) {
-        messagesByAuthorId.get(authorId).add(message);
-      }
-      else {
-        List<Message> messagesFromAuthor = new ArrayList();
-        messagesFromAuthor.add(message);
-        messagesByAuthorId.put(authorId, messagesFromAuthor);
-      }
+      messagesByAuthorId.computeIfAbsent(authorId, key -> new ArrayList()).add(message);
     }
   }
 }
