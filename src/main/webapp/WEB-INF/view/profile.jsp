@@ -2,6 +2,7 @@
 <%@ page import="codeu.model.store.basic.UserStore" %>
 <%@ page import="codeu.model.data.Message" %>
 <%@ page import="codeu.model.store.basic.MessageStore" %>
+<%@ page import="codeu.model.store.basic.ConversationStore" %>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.Date"%>
@@ -99,13 +100,16 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
       <ul>
     <% //This list contains messages written by the profile owner in order sorted by time
        List<Message> userMessages = MessageStore.getInstance().getMessagesByAuthor(profileOwnerId);
+       ConversationStore conversationStore = ConversationStore.getInstance();
     %>
 
     <% for (Message message : userMessages) { %>
     <%   // If the message is not empty, then print it %>
     <%   if(message.getContent() != null && !message.getContent().isEmpty()) { %>
           <li> <b> <%= formatter.format(Date.from(message.getCreationTime()))  %> 
-          </b>: <%= message.getContent() %> </li>
+          </b>: <a href=<%= "/chat/" 
+                + conversationStore.getConversationById(message.getConversationId()).getTitle() %> > 
+            <%= message.getContent() %> </a> </li>
     <%   } %>      
     <% }   %>
 
