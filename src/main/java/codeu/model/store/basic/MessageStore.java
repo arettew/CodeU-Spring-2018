@@ -106,4 +106,14 @@ public class MessageStore {
   public void setMessages(List<Message> messages) {
     this.messages = messages;
   }
+
+  public List<Message> getMessagesByUserId(UUID author){
+    List<Message> ans = new ArrayList<Message>();
+    for(Message m : messages){
+      if(m.getAuthorId().equals(author)){
+        ans.add(m);
+      }
+    }
+    return ans;
+  }
 }

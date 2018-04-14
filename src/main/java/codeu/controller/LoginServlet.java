@@ -14,7 +14,7 @@
 
 package codeu.controller;
 
-import org.mindrot.jbcrypt.*;
+import org.mindrot.jbcrypt.BCrypt;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import java.io.IOException;

@@ -107,10 +107,11 @@ public class UserStore {
 
   /** Deletes user2 if user1 is an admin and returns user2 if deleted, null if not */
   public User deleteUser(User user1, User user2){
-    // if(user1.isAdmin) {
-      return users.remove(user2);
+    // if(user1.isAdmin && users.contains(user2)) {
+      users.remove(user2);
+      return user2;
     // }
-    return null;
+    // return null;
   }
 
   /** Update the information of a known user */
@@ -135,4 +136,12 @@ public class UserStore {
   public void setUsers(List<User> users) {
     this.users = users;
   }
+
+  public List<User> getUsers() throws PersistentDataStoreException {
+    return persistentStorageAgent.loadUsers();
+  }
+
+  /*public User getNewestUser(){
+    return users.get(users.size()-1);
+  }*/
 }
