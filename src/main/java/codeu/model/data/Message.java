@@ -18,7 +18,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 /** Class representing a message. Messages are sent by a User in a Conversation. */
-public class Message {
+public class Message implements Comparable<Message> {
 
   private final UUID id;
   private final UUID conversation;
@@ -68,7 +68,15 @@ public class Message {
     return creation;
   }
 
+
   public int getWords(){
     return content.trim().split("\\s+").length;
+  }
+}
+
+  /** Compares the messages by time sent */
+  @Override
+  public int compareTo(Message other) {
+    return this.creation.compareTo(other.creation);
   }
 }
