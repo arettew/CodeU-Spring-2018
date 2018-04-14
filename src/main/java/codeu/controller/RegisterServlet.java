@@ -36,7 +36,7 @@ public class RegisterServlet extends HttpServlet {
     String about = request.getParameter("about");
     boolean isAdmin = false;
 
-    if (request.getParameter("admin_password") == ADMIN_PASSWORD) {
+    if (ADMIN_PASSWORD.equals(request.getParameter("admin_password"))) {
       isAdmin = true;
     }
     String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());

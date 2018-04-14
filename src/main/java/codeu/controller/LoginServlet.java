@@ -4,6 +4,7 @@ package codeu.controller;
 import org.mindrot.jbcrypt.*;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
+import codeu.controller.ServletUrlStrings;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
@@ -43,7 +44,7 @@ public class LoginServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-    request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+    request.getRequestDispatcher(ServletUrlStrings.loginJsp).forward(request, response);
   }
 
   /**
@@ -67,12 +68,12 @@ public class LoginServlet extends HttpServlet {
      }
      else {
        request.setAttribute("error", "Invalid password.");
-       request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+       request.getRequestDispatcher(ServletUrlStrings.loginJsp).forward(request, response);
      }
    }
    else {
      request.setAttribute("error", "That username was not found.");
-     request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
+     request.getRequestDispatcher(ServletUrlStrings.loginJsp).forward(request, response);
    }
  }
 

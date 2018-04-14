@@ -4,6 +4,9 @@ package codeu.controller;
 import org.mindrot.jbcrypt.*;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
+import codeu.model.store.basic.ConversationStore;
+import codeu.model.store.basic.MessageStore;
+import codeu.controller.ServletUrlStrings;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
@@ -17,7 +20,8 @@ public class AdminServlet extends HttpServlet {
 
   /** Store class that gives access to Users. */
   private UserStore userStore;
-  private ServletUrlStrings UrlStrings;
+  private ConversationStore conversationStore;
+  private MessageStore messageStore;
   public static final String ADMIN_URL = "/adminView/";
 
   /**
@@ -51,12 +55,19 @@ public class AdminServlet extends HttpServlet {
     String userName = requestURL.substring(ADMIN_URL.length());
     User user = userStore.getUser(userName);
     if (!user.getIsAdmin()) {
-      
       System.out.println("user not admin");
       response.sendRedirect("/conversations");
     }
 
-    request.getRequestDispatcher(UrlStrings.getAdminviewJsp()).forward(request, response);
+    int numMessages = messageStore.getNumMessages();
+    int numConversations = conversationStore.getNumConversations();
+    int numUsers = userStore.getNumUsers();
+
+    request.setAttribute("numMessages", numMessages);
+    request.setAttribute("numConversations", numConversations);
+    request.setAttribute("numUsers", numUsers);
+
+    request.getRequestDispatcher(ServletUrlStrings.adminViewJsp).forward(request, response);
   }
 
 }

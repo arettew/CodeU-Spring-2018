@@ -14,9 +14,10 @@
 
 package codeu.controller;
 
-import org.mindrot.jbcrypt.*;
+// import org.mindrot.jbcrypt.*;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
+import codeu.controller.ServletUrlStrings;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
@@ -30,7 +31,6 @@ public class LeaderboardServlet extends HttpServlet {
 
   /** Store class that gives access to Users. */
   private UserStore userStore;
-  private ServletUrlStrings UrlStrings;
 
   /**
    * Set up state for handling login-related requests. This method is only called when running in a
@@ -56,11 +56,10 @@ public class LeaderboardServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-
+      
     int numUsers = userStore.getNumUsers();
-    request.getSession().setAttribute("numUsers", numUsers);
-
-    request.getRequestDispatcher(UrlStrings.getLeadershipJsp()).forward(request, response);
+    request.setAttribute("numUsers", numUsers);
+    request.getRequestDispatcher(ServletUrlStrings.leadershipJsp).forward(request, response);
   }
 
 }

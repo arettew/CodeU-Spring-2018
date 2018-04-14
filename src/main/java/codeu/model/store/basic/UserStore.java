@@ -119,7 +119,8 @@ public class UserStore {
     }
     return false;
   }
-
+  
+  // returns number of users
   public int getNumUsers() {
     return users.size();
   }

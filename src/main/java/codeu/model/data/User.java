@@ -67,7 +67,7 @@ public class User {
   }
 
   /** Returns whether User is admin or not. */
-  public Boolean getIsAdmin() {
+  public boolean getIsAdmin() {
     return isAdmin;
   }
   /** Changes admin status of User */

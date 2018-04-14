@@ -1,3 +1,17 @@
+<%@ page import="codeu.model.data.User" %>
+<%@ page import="codeu.model.store.basic.UserStore" %>
+<%@ page import="codeu.model.data.Message" %>
+<%@ page import="codeu.model.store.basic.MessageStore" %>
+<%@ page import="codeu.model.store.basic.ConversationStore" %>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.UUID"%>
+<%@ page import="java.util.Date"%>
+<%
+String numUsers = (String) request.getAttribute("numUsers");
+String numConversations = (String) request.getAttribute("numConversations");
+String numMessages = (String) request.getAttribute("numMessages");
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,9 +43,9 @@
       </p>
       <!-- TO:DO (rchen): link backend --> 
       <ul>
-      	<li><strong>Users:</strong> (hard coded) 42 </li>
-      	<li><strong>Conversations:</strong> (hard coded) 127 </li>
-      	<li><strong>Messages:</strong> (hard coded) 1,337 </li>
+      	<li><strong>Users:</strong> <%= numUsers %> </li>
+      	<li><strong>Conversations:</strong> <%= numConversations %> </li>
+      	<li><strong>Messages:</strong> <%= numMessages %> </li>
         <li><strong>Most Active User:</strong> (hard coded) rebecca </li>
         <li><strong>Newest User:</strong> (hard coded) gautham </li>
         <li><strong>Wordiest User:</strong> (hard coded) andres </li>

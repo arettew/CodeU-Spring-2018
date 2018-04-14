@@ -1,7 +1,12 @@
 <%@ page import="codeu.model.data.User" %>
 <%@ page import="codeu.model.store.basic.UserStore" %>
+<%@ page import="codeu.model.data.Message" %>
+<%@ page import="codeu.model.store.basic.MessageStore" %>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.UUID"%>
+<%@ page import="java.util.Date"%>
 <%
-String numUsers = (String) request.getSession().getAttribute("numUsers");
+String numUsers = (String) request.getAttribute("numUsers");
 %>
 
 <!DOCTYPE html>
