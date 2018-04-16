@@ -16,7 +16,10 @@ package codeu.model.store.basic;
 
 import codeu.model.data.Conversation;
 import codeu.model.store.persistence.PersistentStorageAgent;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.function.*;
+import java.util.Map;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,6 +61,8 @@ public class ConversationStore {
 
   /** The in-memory list of Conversations. */
   private List<Conversation> conversations;
+  private Map<String, Conversation> conversationsByTitle;
+  private Map<UUID, Conversation> conversationsById;
 
   /** This class is a singleton, so its constructor is private. Call getInstance() instead. */
   private ConversationStore(PersistentStorageAgent persistentStorageAgent) {
@@ -91,6 +96,7 @@ public class ConversationStore {
   public void addConversation(Conversation conversation) {
     conversations.add(conversation);
     persistentStorageAgent.writeThrough(conversation);
+    updateConversationMaps(conversation);
   }
 
   /** Check whether a Conversation title is already known to the application. */
@@ -106,26 +112,25 @@ public class ConversationStore {
 
   /** Find and return the Conversation with the given title. */
   public Conversation getConversationWithTitle(String title) {
-    for (Conversation conversation : conversations) {
-      if (conversation.getTitle().equals(title)) {
-        return conversation;
-      }
-    }
-    return null;
+    return conversationsByTitle.get(title);
   }
 
   /** Find and return the Conversation with the given UUID. */
   public Conversation getConversationWithId(UUID id) {
-    for (Conversation conversation : conversations) {
-      if (conversation.getId().equals(id)) {
-        return conversation;
-      }
-    }
-    return null;
+    return conversationsById.get(id);
   }
 
   /** Sets the List of Conversations stored by this ConversationStore. */
   public void setConversations(List<Conversation> conversations) {
     this.conversations = conversations;
+    conversationsByTitle = conversations.stream().collect(Collectors.toMap(Conversation::getTitle, 
+                                                                           Function.identity()));
+    conversationsById = conversations.stream().collect(Collectors.toMap(Conversation::getId, 
+                                                                     Function.identity()));
+  }
+
+  public void updateConversationMaps(Conversation conversation) {
+    conversationsByTitle.put(conversation.getTitle(), conversation);
+    conversationsById.put(conversation.getId(), conversation);
   }
 }
