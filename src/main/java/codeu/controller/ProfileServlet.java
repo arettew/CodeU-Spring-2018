@@ -84,7 +84,10 @@ public class ProfileServlet extends HttpServlet {
         return;
       } 
 
+      // The parameter whichForm from profile.jsp determines which form was submitted. This is 
+      // helpful to handle each post request differently.
       switch (request.getParameter("whichForm")) {
+
         case "about":
           //About message was posted
           String aboutMessage = request.getParameter("about");
@@ -94,6 +97,7 @@ public class ProfileServlet extends HttpServlet {
           owner.setAbout(cleanedAboutMessage);
 
           break;
+
         case "hidden":
           //Conversation to hide was posted
           UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
@@ -110,8 +114,8 @@ public class ProfileServlet extends HttpServlet {
           break;
         case "reset":
           //User wants to show all their conversations again
-          owner.resetConversations();
-          
+          owner.showAllConversations();
+
           break;
       }
 
