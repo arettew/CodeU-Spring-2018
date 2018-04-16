@@ -17,7 +17,8 @@ package codeu.model.data;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.Set;
-import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.HashMap;
 
 /** Class representing a registered user. */
 public class User {
@@ -26,7 +27,7 @@ public class User {
   private final String password;
   private String about; 
   private final Instant creation;
-  private LinkedHashMap<UUID, Boolean>  conversations;
+  private Map<UUID, Boolean>  conversationVisibilities;
 
   /**
    * Constructs a new User.
@@ -44,7 +45,7 @@ public class User {
     this.password = password;
     this.about = about;
     this.creation = creation;
-    this.conversations = new LinkedHashMap();
+    this.conversationVisibilities = new HashMap();
   }
 
   /**
@@ -62,7 +63,7 @@ public class User {
     this.password = password;
     this.about = "Hi! I'm " + name + "!";
     this.creation = creation;
-    this.conversations = new LinkedHashMap();
+    this.conversationVisibilities = new HashMap();
   }
 
   /** Returns the ID of this User. */
@@ -95,29 +96,23 @@ public class User {
     this.about = aboutMessage;
   }
 
-  /** Returns the conversations in which the user has sent a message. */
-  public LinkedHashMap<UUID, Boolean> getConversations() {
-    return conversations;
+  /** Returns the conversation in which the user has sent a message. */
+  public Map<UUID, Boolean> getConversations() {
+    return conversationVisibilities;
   }
 
   /** Adds a conversation to the list */
   public void addConversation(UUID conversationId) {
-    if (!conversations.containsKey(conversationId)) {
-      conversations.put(conversationId, true);
-    }
+    conversationVisibilities.putIfAbsent(conversationId, true);
   }
 
   /** Sets conversation value to false (will be private). */
   public void hideConversation(UUID conversationId) {
-    if (conversations.containsKey(conversationId)) {
-      conversations.put(conversationId, false);
-    }
+    conversationVisibilities.computeIfPresent(conversationId, (k, v) -> false);
   }
 
   /** Resets all conversation Booleans to true. */
-  public void resetConversations() {
-    conversations.replaceAll((k,v)-> {
-      return true;
-    });
+  public void showAllConversations() {
+    conversationVisibilities.replaceAll((k, v) -> true);
   }
 }
