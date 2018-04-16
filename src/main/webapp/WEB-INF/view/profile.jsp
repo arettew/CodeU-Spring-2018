@@ -6,7 +6,7 @@
 <%@ page import="codeu.model.store.basic.ConversationStore" %>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Set"%>
-<%@ page import="java.util.LinkedHashMap"%>
+<%@ page import="java.util.Map"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.text.SimpleDateFormat"%>
@@ -135,11 +135,11 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
       <ul>
     <% //This map contains the conversations where the profile owner has participated
        User profileOwner = UserStore.getInstance().getUser(profileOwnerName);
-       LinkedHashMap<UUID, Boolean> userConversations = profileOwner.getConversations();
-       Set<UUID> keys = userConversations.keySet();
+       Map<UUID, Boolean> userConversations = profileOwner.getConversations();
+       Set<UUID> uuids = userConversations.keySet();
     %>
 
-    <% for (UUID key: keys) { %>
+    <% for (UUID key: uuids) { %>
     <%  if (userConversations.get(key)) { %>
     <%    Conversation conversation = ConversationStore.getInstance().getConversationById(key);%>
     <%    if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
