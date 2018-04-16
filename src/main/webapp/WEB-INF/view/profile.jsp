@@ -59,14 +59,27 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
   <div id="container">
     <h1><%= profileOwnerName %>'s Profile Page</h1>
     <hr>
-    
+
+    <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
+
+      <h3> Upload a profile picture: </h3> <br />
+      <form action = "UploadServlet" method = "post"
+         enctype = "multipart/form-data">
+         <input type = "file" name = "profilePic" size = "50" accept="image/*" />
+         <input type="hidden" name="whichForm" value ="profilePic">
+         <br />
+         <input type = "submit" value = "Upload" />
+      </form>
+
+    <% } %>
+
     <h2>About <%= profileOwnerName %></h2>
     <% String about = 
       UserStore.getInstance().getUser(profileOwnerName).getAbout(); %>
     <% if(about == null){ %>
       <p>Hello I'm <%= profileOwnerName %>!</p>
     <% } else{ %>
-      <p><%= about %></a>
+      <p><%= about %></a></p>
     <% } %>
 
     <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
