@@ -1,20 +1,30 @@
 package codeu.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.Part;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import java.util.UUID;
+import java.util.Base64.Encoder;
+import java.util.Base64;
+import java.util.Vector;
+import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 /**
   * Servlet class responsible for user profile pages
   */
-
+@MultipartConfig
 public class ProfileServlet extends HttpServlet {
   
   /** Store class that gives access to users */
@@ -84,35 +94,67 @@ public class ProfileServlet extends HttpServlet {
         return;
       } 
 
-      switch(request.getParameter("whichForm")){
-        case "about":
-          //About message was posted
-          String aboutMessage = request.getParameter("about");
+      //  If whichform is null, it means the profile pic got uploaded because servlets can't handle
+      //  multipart form data the same way.
+      if (request.getParameter("whichForm") != null) {
+        switch(request.getParameter("whichForm")){
+          case "about":
+            //About message was posted
+            String aboutMessage = request.getParameter("about");
 
-          //This cleans the message of HTML
-          String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
-          owner.setAbout(cleanedAboutMessage);
+            //This cleans the message of HTML
+            String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
+            owner.setAbout(cleanedAboutMessage);
 
-          break;
-        case "hidden":
-          //Conversation to hide was posted
-          UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
-          owner.hideConversation(conversationToHide);
+            break;
+          case "hidden":
+            //Conversation to hide was posted
+            UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
+            owner.hideConversation(conversationToHide);
 
-          break;
+            break;
 
-        case "reset":
-          //User wants to show all their conversations again
-          owner.resetConversations();
+          case "reset":
+            //User wants to show all their conversations again
+            owner.resetConversations();
 
-          break;
+            break;
+        }
+      } else {
+          //  User wants to upload a profile picture
+          Part filePart = request.getPart("picture");
+          InputStream fileContent = filePart.getInputStream();
+          String encodedImage = encodeImagetoBase64(fileContent, filePart);
+          owner.setImage(encodedImage);
       }
 
-      // TODO: Make sure that the change to the message is properly stored
+      //Updates info before refreshing
       userStore.updateUser(owner);
 
       //  Redirect to a GET request
       response.sendRedirect("/profile/" + ownerName);
-    } 
+    }
+
+  //  Helper function which converts from an inputstream to Base64
+  private String encodeImagetoBase64(InputStream fileContent, Part filePart) {
+    String encodedImage = null;
+
+    try{
+      // Reading the bytes from the File
+      byte[] inputBytes = new byte[(int)filePart.getSize()];
+      fileContent.read(inputBytes);
+
+      encodedImage = Base64.getEncoder().encodeToString(inputBytes);
+
+      return encodedImage;
+
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+        return null;
+    } catch (IOException e) {
+        e.printStackTrace();
+        return null;
+    }
+  }
 
 }
