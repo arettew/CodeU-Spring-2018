@@ -17,6 +17,7 @@ package codeu.model.store.persistence;
 import codeu.model.data.Conversation;
 import codeu.model.data.Message;
 import codeu.model.data.User;
+import com.google.appengine.api.datastore.Text;
 import codeu.model.store.persistence.PersistentDataStoreException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -70,8 +71,9 @@ public class PersistentDataStore {
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
+        Text image = (Text) entity.getProperty("profilePicture");
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
-        User user = new User(uuid, userName, password, about, creationTime);
+        User user = new User(uuid, userName, password, about, creationTime, image);
         users.add(user);
         userEntities.add(entity);
       } catch (Exception e) {
@@ -160,6 +162,7 @@ public class PersistentDataStore {
     userEntity.setProperty("password", user.getPassword());
     userEntity.setProperty("about", user.getAbout());
     userEntity.setProperty("creation_time", user.getCreationTime().toString());
+    userEntity.setProperty("profilePicture", user.getImageAsText());
     datastore.put(userEntity);
   }
 
@@ -178,6 +181,7 @@ public class PersistentDataStore {
       String userName = (String) userEntity.getProperty("username");
       if (userName.equals(user.getName())) {
         userEntity.setProperty("about", user.getAbout());
+        userEntity.setProperty("profilePicture", user.getImageAsText());
         datastore.put(userEntity);
         break;
       }
