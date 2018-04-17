@@ -60,15 +60,19 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
     <h1><%= profileOwnerName %>'s Profile Page</h1>
     <hr>
 
+    <% String base64Image = UserStore.getInstance().getUser(profileOwnerName).getImage(); %>
+    <% if(base64Image != null) { %>
+    <%  String format = "data:image/*;base64, "; %>
+        <img src="<%= format + base64Image %>" alt="<%= profileOwnerName%>" />
+    <% } %>
     <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
 
-      <h3> Upload a profile picture: </h3> <br />
-      <form action = "UploadServlet" method = "post"
-         enctype = "multipart/form-data">
-         <input type = "file" name = "profilePic" size = "50" accept="image/*" />
-         <input type="hidden" name="whichForm" value ="profilePic">
+      <h3> Update your Profile Picture: </h3>
+      <form action ="/profile/<%= profileOwnerName%>" method = "POST" 
+            enctype ="multipart/form-data">
+         <input type ="file" name ="picture" accept="image/*" />
          <br />
-         <input type = "submit" value = "Upload" />
+         <button type ="submit">Upload</button>
       </form>
 
     <% } %>
