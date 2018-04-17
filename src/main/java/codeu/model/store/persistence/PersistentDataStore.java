@@ -17,6 +17,7 @@ package codeu.model.store.persistence;
 import codeu.model.data.Conversation;
 import codeu.model.data.Message;
 import codeu.model.data.User;
+import com.google.appengine.api.datastore.Text;
 import codeu.model.store.persistence.PersistentDataStoreException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -91,6 +92,8 @@ public class PersistentDataStore {
           creationTime = Instant.parse((String) entity.getProperty("creation"));
         }
 
+        Text image = (Text) entity.getProperty("profilePicture");
+
         // Retrieving the individual lists of Keys and Values for the conversationVisibilities map.
         List<String> conversationIdsString = (List<String>) entity.getProperty("conversationIds");
         List<UUID> conversationIds = convertListtoUUID(conversationIdsString);
@@ -103,7 +106,7 @@ public class PersistentDataStore {
         }
 
         User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime,
-                             conversationVisibilities);
+                             image, conversationVisibilities);
         users.add(user);
         userEntitiesById.put(uuid, entity);
       } catch (Exception e) {
@@ -196,6 +199,7 @@ public class PersistentDataStore {
     userEntity.setProperty("messagesSent", user.getMessagesSent());
     userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
     userEntity.setProperty("creation", user.getCreationTime().toString());
+    userEntity.setProperty("profilePicture", user.getImageAsText());
 
     /** Since the map of conversationVisibilities can't be stored on the user entity, a list of
     *   its keys and a separate list of its values are stored. UUIDs are also not supported, so
@@ -222,6 +226,7 @@ public class PersistentDataStore {
     userEntity.setProperty("about", user.getAbout());
     userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
     userEntity.setProperty("messagesSent", user.getMessagesSent());
+    userEntity.setProperty("profilePicture", user.getImageAsText());
 
     /** Since the map of conversationVisibilities can't be stored on the user entity, a list of
     *   its keys and a separate list of its values are stored. UUIDs are also not supported, so
