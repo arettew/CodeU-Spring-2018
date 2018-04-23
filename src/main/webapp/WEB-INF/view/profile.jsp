@@ -76,7 +76,7 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 
       <p> Would you like to allow your messages to be deleted after you've hit a high amount?</p>
       <form action="/profile/<%= profileOwnerName%>" method="POST">
-        <% Boolean allowMessageDel = 
+        <% boolean allowMessageDel = 
           UserStore.getInstance().getUser(profileOwnerName).getAllowMessageDel(); %>
         <input type="radio" name="delete" value="yes" 
           <%if(allowMessageDel) { %> 

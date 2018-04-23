@@ -55,7 +55,7 @@ public class UserTest {
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
     Assert.assertEquals("unique message", user.getAbout());
-    Assert.assertEquals(false, user.getAllowMessageDel());
+    Assert.assertEquals(allowMessageDel, user.getAllowMessageDel());
     Assert.assertEquals(messagesSent, user.getMessagesSent());
     Assert.assertEquals(creation, user.getCreationTime());
   }
@@ -66,6 +66,7 @@ public class UserTest {
     String name = "test_username";
     Instant creation = Instant.now();
     String password = "password";
+    boolean allowMessageDel = false;
 
     User user = new User(id, name, password, creation);
     user.setAbout("new_message");
@@ -74,6 +75,6 @@ public class UserTest {
 
     Assert.assertEquals(user.getAbout(), "new_message");
     Assert.assertEquals(user.getMessagesSent(), 1);
-    Assert.assertEquals(user.getAllowMessageDel(), false);
+    Assert.assertEquals(user.getAllowMessageDel(), allowMessageDel);
   }
 }

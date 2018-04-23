@@ -84,11 +84,8 @@ public class MessageStore {
     try {
       messages.addAll(DefaultDataStore.getInstance().getAllMessages());
       for (Message message : messages) {
-        UUID authorId = message.getAuthorId();
-        if (messagesByAuthorId.containsKey(authorId)) {
-          messagesByAuthorId.get(authorId).add(message);
-        }
-        messagesByAuthorId.computeIfAbsent(authorId, k -> new ArrayList()).add(message);
+        messagesByAuthorId.computeIfAbsent(
+          message.getAuthorId(), k -> new ArrayList()).add(message);
       }
       loaded = true;
     } catch (Exception e) {
@@ -150,11 +147,8 @@ public class MessageStore {
   public void setMessages(List<Message> messages) {
     this.messages = messages;
     for (Message message : messages) {
-      UUID authorId = message.getAuthorId();
-      if (messagesByAuthorId.containsKey(authorId)) {
-        messagesByAuthorId.get(authorId).add(message);
-      }
-      messagesByAuthorId.computeIfAbsent(authorId, k -> new ArrayList()).add(message);
+      messagesByAuthorId.computeIfAbsent(
+        message.getAuthorId(), k -> new ArrayList()).add(message);
     }
   }
 }

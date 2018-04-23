@@ -101,7 +101,7 @@ public class User {
   }
 
   /** Returns whether this User allows message deletion */
-  public Boolean getAllowMessageDel() {
+  public boolean getAllowMessageDel() {
     return allowMessageDel;
   }
 
