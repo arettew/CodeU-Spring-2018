@@ -29,7 +29,7 @@ public class User {
   private boolean allowMessageDel;
   private int messagesSent; 
   private final Instant creation;
-  private Map<UUID, Boolean>  conversationVisibilities;
+  private Map<UUID, Boolean> conversationVisibilities;
 
   /**
    * Constructs a new User.
