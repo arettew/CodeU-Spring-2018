@@ -27,7 +27,7 @@ public class User {
   private final String password;
   private String about; 
   private final Instant creation;
-  private Map<UUID, Boolean>  conversationVisibilities;
+  private Map<UUID, Boolean> conversationVisibilities;
 
   /**
    * Constructs a new User.
