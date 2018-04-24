@@ -20,6 +20,12 @@ public class ProfileServlet extends HttpServlet {
   /** Store class that gives access to users */
   private UserStore userStore;
 
+  /** Constant strings that describe the request for the DoPost function */
+  private static final String REQUEST_ABOUT = "about";
+  private static final String REQUEST_HIDDEN = "hidden";
+  private static final String REQUEST_RESET = "reset";
+  private static final String REQUEST_MESSAGEDELETION = "messageDeletion";
+
   /** Set up state for handling profile requests. */
   @Override
   public void init() throws ServletException {
@@ -87,8 +93,8 @@ public class ProfileServlet extends HttpServlet {
       // The parameter whichForm from profile.jsp determines which form was submitted. This is 
       // helpful to handle each post request differently.
       switch (request.getParameter("whichForm")) {
-
-        case "about":
+        
+        case REQUEST_ABOUT:
           //About message was posted
           String aboutMessage = request.getParameter("about");
 
@@ -97,14 +103,13 @@ public class ProfileServlet extends HttpServlet {
           owner.setAbout(cleanedAboutMessage);
 
           break;
-
-        case "hidden":
+        case REQUEST_HIDDEN:
           //Conversation to hide was posted
           UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
           owner.hideConversation(conversationToHide);
 
           break;
-        case "messageDeletion":
+        case REQUEST_MESSAGEDELETION:
           //  The user wants to change whether or not their messages will be deleted
           String delete = request.getParameter("delete");
 
@@ -112,7 +117,7 @@ public class ProfileServlet extends HttpServlet {
           owner.setAllowMessageDel(allowMessageDel);
 
           break;
-        case "reset":
+        case REQUEST_RESET:
           //User wants to show all their conversations again
           owner.showAllConversations();
 
