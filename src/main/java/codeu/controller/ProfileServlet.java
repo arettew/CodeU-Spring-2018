@@ -72,25 +72,36 @@ public class ProfileServlet extends HttpServlet {
       User owner = userStore.getUser(ownerName);
 
       if (userName == null) {
-        //  User is not logged in. Don't let them edit the message
+        //  User is not logged in. Don't let them change any element of the profile 
         response.sendRedirect("/login");
         return;
       }
 
       if (!userName.equals(ownerName)) {
-        //  This is not the users profile. Don't let them edit the message
+        //  This is not the user's profile. Don't let them change any element of the profile
         response.sendRedirect("/profile/" + ownerName);
         return;
       } 
 
-      String aboutMessage = request.getParameter("about");
+      if (request.getParameter("delete") != null) {
+        //  The user wants to change whether or not their messages will be deleted
+        String delete = request.getParameter("delete");
 
-      //  This cleans the message of HTML
-      String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
-      owner.setAbout(cleanedAboutMessage);
+        boolean allowMessageDel = (delete.equals("yes"));
+        owner.setAllowMessageDel(allowMessageDel);
 
-      // TODO: Make sure that the change to the message is properly stored
-      userStore.updateUser(owner);
+        userStore.updateUser(owner);
+      }
+      else {
+        //  The user wants to change their profile message
+        String aboutMessage = request.getParameter("about");
+
+        //  This cleans the message of HTML
+        String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
+        owner.setAbout(cleanedAboutMessage);
+
+        userStore.updateUser(owner);
+      }
 
       //  Redirect to a GET request
       response.sendRedirect("/profile/" + ownerName);

@@ -20,6 +20,9 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
+import codeu.model.store.basic.UserStore;
 
 /**
  * Store class that uses in-memory data structures to hold values and automatically loads from and
@@ -60,10 +63,15 @@ public class MessageStore {
   /** The in-memory list of Messages. */
   private List<Message> messages;
 
+  /** The in-memory list of Messages, organized by author Id */
+  private Map<UUID, List<Message>> messagesByAuthorId;
+
+
   /** This class is a singleton, so its constructor is private. Call getInstance() instead. */
   private MessageStore(PersistentStorageAgent persistentStorageAgent) {
     this.persistentStorageAgent = persistentStorageAgent;
     messages = new ArrayList<>();
+    messagesByAuthorId = new HashMap<>();
   }
 
   /**
@@ -75,6 +83,10 @@ public class MessageStore {
     boolean loaded = false;
     try {
       messages.addAll(DefaultDataStore.getInstance().getAllMessages());
+      for (Message message : messages) {
+        messagesByAuthorId.computeIfAbsent(
+          message.getAuthorId(), k -> new ArrayList()).add(message);
+      }
       loaded = true;
     } catch (Exception e) {
       loaded = false;
@@ -87,6 +99,21 @@ public class MessageStore {
   public void addMessage(Message message) {
     messages.add(message);
     persistentStorageAgent.writeThrough(message);
+  }
+
+  /** Delete a message from the current set of messages known to the application */
+  public void deleteMessage(Message message) {
+    messages.remove(message);
+    persistentStorageAgent.delete(message);
+  }
+
+  /** Delete an old message sent by this User */
+  public void deleteOldMessages(UUID userId, int numOfMessages) {
+    List<Message> messagesByAuthor = getMessagesByAuthor(userId); 
+    int numToRemove = Math.min(numOfMessages, messagesByAuthor.size());
+    List<Message> messagesToDelete = messagesByAuthor.subList(0, numToRemove);
+    messages.removeAll(messagesToDelete);
+    messagesToDelete.clear();
   }
 
   /** Access the current set of Messages within the given Conversation. */
@@ -106,11 +133,10 @@ public class MessageStore {
   /** Access the current set of Messages sent by a specific user. */
   public List<Message> getMessagesByAuthor(UUID authorId) {
 
-    List<Message> authorMessages = new ArrayList<>(messages);
-
-    //Removes messages from the list if their authorId doesn't match to the one given
-    authorMessages.removeIf(message-> !message.getAuthorId().equals(authorId));
-
+    if (!messagesByAuthorId.containsKey(authorId)) {
+      return  new ArrayList<>();
+    }
+    List<Message> authorMessages = messagesByAuthorId.get(authorId);
     //Sorts using the overriden compareTo method on the Message class
     Collections.sort(authorMessages);
 
@@ -120,5 +146,9 @@ public class MessageStore {
   /** Sets the List of Messages stored by this MessageStore. */
   public void setMessages(List<Message> messages) {
     this.messages = messages;
+    for (Message message : messages) {
+      messagesByAuthorId.computeIfAbsent(
+        message.getAuthorId(), k -> new ArrayList()).add(message);
+    }
   }
 }

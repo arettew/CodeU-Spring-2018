@@ -72,6 +72,18 @@ public class ConversationStoreTest {
     Mockito.verify(mockPersistentStorageAgent).writeThrough(inputConversation);
   }
 
+  @Test
+  public void testGetConversationById() {
+    UUID conversationId = UUID.randomUUID();
+    Conversation inputConversation = 
+      new Conversation(conversationId, UUID.randomUUID(), "test_conversation", Instant.now());
+
+    conversationStore.addConversation(inputConversation);
+    Conversation resultConversation = conversationStore.getConversationById(conversationId);
+
+    assertEquals(inputConversation, resultConversation);
+  }
+
   private void assertEquals(Conversation expectedConversation, Conversation actualConversation) {
     Assert.assertEquals(expectedConversation.getId(), actualConversation.getId());
     Assert.assertEquals(expectedConversation.getOwnerId(), actualConversation.getOwnerId());

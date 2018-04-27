@@ -2,6 +2,7 @@
 <%@ page import="codeu.model.store.basic.UserStore" %>
 <%@ page import="codeu.model.data.Message" %>
 <%@ page import="codeu.model.store.basic.MessageStore" %>
+<%@ page import="codeu.model.store.basic.ConversationStore" %>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.Date"%>
@@ -72,6 +73,25 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
         <br/>
         <button type="submit">Submit</button>
       </form>
+
+      <p> Would you like to allow your messages to be deleted after you've hit a high amount?</p>
+      <form action="/profile/<%= profileOwnerName%>" method="POST">
+        <% boolean allowMessageDel = 
+          UserStore.getInstance().getUser(profileOwnerName).getAllowMessageDel(); %>
+        <input type="radio" name="delete" value="yes" 
+          <%if(allowMessageDel) { %> 
+            checked
+            <% } %> 
+        >
+        Yes<br>
+        <input type="radio" name="delete" value="no"
+          <%if(!allowMessageDel) { %> 
+            checked
+            <% } %> 
+        >
+        No<br>
+        <button type="submit">Submit</button>
+      </form>
     <% } %>
     <h2><%= profileOwnerName %>'s sent messages</h2>
 
@@ -80,13 +100,16 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
       <ul>
     <% //This list contains messages written by the profile owner in order sorted by time
        List<Message> userMessages = MessageStore.getInstance().getMessagesByAuthor(profileOwnerId);
+       ConversationStore conversationStore = ConversationStore.getInstance();
     %>
 
     <% for (Message message : userMessages) { %>
     <%   // If the message is not empty, then print it %>
     <%   if(message.getContent() != null && !message.getContent().isEmpty()) { %>
           <li> <b> <%= formatter.format(Date.from(message.getCreationTime()))  %> 
-          </b>: <%= message.getContent() %> </li>
+          </b>: <a href=<%= "/chat/" 
+                + conversationStore.getConversationById(message.getConversationId()).getTitle() %> > 
+            <%= message.getContent() %> </a> </li>
     <%   } %>      
     <% }   %>
 

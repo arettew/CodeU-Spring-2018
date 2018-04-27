@@ -43,6 +43,9 @@ public class ChatServlet extends HttpServlet {
   /** Store class that gives access to Users. */
   private UserStore userStore;
 
+  /** Max amount of messages a User is allwoed to send */
+  private static int MAX_MESSAGES = 10000; 
+
   /** Set up state for handling chat requests. */
   @Override
   public void init() throws ServletException {
@@ -126,6 +129,15 @@ public class ChatServlet extends HttpServlet {
       // user was not found, don't let them add a message
       response.sendRedirect("/login");
       return;
+    }
+    
+    if ((user.getMessagesSent() > MAX_MESSAGES) && (user.getAllowMessageDel())) {
+      //  User has sent too many messages 
+      messageStore.deleteOldMessages(user.getId(), 1);
+    } 
+    else {
+      user.incMessagesSent();
+      userStore.updateUser(user);
     }
 
     String requestUrl = request.getRequestURI();

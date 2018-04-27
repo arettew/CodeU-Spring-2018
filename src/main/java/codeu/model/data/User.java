@@ -23,6 +23,8 @@ public class User {
   private final String name;
   private final String password;
   private String about; 
+  private boolean allowMessageDel;
+  private int messagesSent; 
   private final Instant creation;
 
   /**
@@ -32,13 +34,18 @@ public class User {
    * @param name the username of this User
    * @param password the password of this User
    * @param about the about me message of this User 
+   * @param allowMesssageDel does this User want messages deleted?
+   * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
    */
-  public User(UUID id, String name, String password, String about, Instant creation) {
+  public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
+              int messagesSent, Instant creation) {
     this.id = id;
     this.name = name;
     this.password = password;
     this.about = about;
+    this.allowMessageDel = allowMessageDel;
+    this.messagesSent = messagesSent;
     this.creation = creation;
   }
 
@@ -49,6 +56,8 @@ public class User {
    * @param name the username of this User
    * @param password the password of this User
    * @param about the about me message of this User 
+   * @param allowMessageDel does this User want messages deleted?
+   * @param messagesSent the number of messages this user sent
    * @param creation the creation time of this User
    */
    public User(UUID id, String name, String password, Instant creation) {
@@ -56,6 +65,8 @@ public class User {
     this.name = name;
     this.password = password;
     this.about = "Hi! I'm " + name + "!";
+    this.allowMessageDel = true;
+    this.messagesSent = 0; 
     this.creation = creation;
   }
 
@@ -87,5 +98,25 @@ public class User {
   /** Changes the "about me" message of this User */
   public void setAbout(String aboutMessage) {
     this.about = aboutMessage;
+  }
+
+  /** Returns whether this User allows message deletion */
+  public boolean getAllowMessageDel() {
+    return allowMessageDel;
+  }
+
+  /** Sets whether this User allows message deletion */
+  public void setAllowMessageDel(Boolean delete) {
+    this.allowMessageDel = delete;
+  }
+
+  /** Gets messages sent by this User */
+  public int getMessagesSent() {
+    return this.messagesSent;
+  }
+
+  /** Sets messages sent by this User */
+  public void incMessagesSent() {
+    this.messagesSent++;
   }
 }

@@ -34,6 +34,8 @@ public class UserTest {
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
     Assert.assertEquals("Hi! I'm test_username!", user.getAbout());
+    Assert.assertEquals(true, user.getAllowMessageDel());
+    Assert.assertEquals(0, user.getMessagesSent());
     Assert.assertEquals(creation, user.getCreationTime());
   }
 
@@ -44,26 +46,35 @@ public class UserTest {
     String about = "unique message";
     Instant creation = Instant.now();
     String password = "password";
+    boolean allowMessageDel = false;
+    int messagesSent = 10;
 
-    User user = new User(id, name, password, about, creation);
+    User user = new User(id, name, password, about, allowMessageDel, messagesSent, creation);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
     Assert.assertEquals("unique message", user.getAbout());
+    Assert.assertEquals(allowMessageDel, user.getAllowMessageDel());
+    Assert.assertEquals(messagesSent, user.getMessagesSent());
     Assert.assertEquals(creation, user.getCreationTime());
   }
 
   @Test
-  public void changeAbout() {
+  public void changeElements() {
     UUID id= UUID.randomUUID();
     String name = "test_username";
     Instant creation = Instant.now();
     String password = "password";
+    boolean allowMessageDel = false;
 
     User user = new User(id, name, password, creation);
     user.setAbout("new_message");
+    user.incMessagesSent();
+    user.setAllowMessageDel(false);
 
     Assert.assertEquals(user.getAbout(), "new_message");
+    Assert.assertEquals(user.getMessagesSent(), 1);
+    Assert.assertEquals(user.getAllowMessageDel(), allowMessageDel);
   }
 }

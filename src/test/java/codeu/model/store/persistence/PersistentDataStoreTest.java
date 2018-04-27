@@ -64,6 +64,7 @@ public class PersistentDataStoreTest {
     Assert.assertEquals(passwordOne, resultUserOne.getPassword());
     Assert.assertEquals("Hi! I'm test_username_one!", resultUserOne.getAbout());
     Assert.assertEquals(creationOne, resultUserOne.getCreationTime());
+    Assert.assertEquals(0, resultUserOne.getMessagesSent());
 
     User resultUserTwo = resultUsers.get(1);
     Assert.assertEquals(idTwo, resultUserTwo.getId());
@@ -71,6 +72,31 @@ public class PersistentDataStoreTest {
     Assert.assertEquals(passwordTwo, resultUserTwo.getPassword());
     Assert.assertEquals("Hi! I'm test_username_two!", resultUserTwo.getAbout());
     Assert.assertEquals(creationTwo, resultUserTwo.getCreationTime());
+    Assert.assertEquals(0, resultUserTwo.getMessagesSent());
+
+    //  update
+    inputUserOne.setAbout("unique_message");
+    persistentDataStore.update(inputUserOne);
+
+    // load
+    resultUsers = persistentDataStore.loadUsers();
+
+    // confirm that what we saved matches what we loaded
+    resultUserOne = resultUsers.get(0);
+    Assert.assertEquals(idOne, resultUserOne.getId());
+    Assert.assertEquals(nameOne, resultUserOne.getName());
+    Assert.assertEquals(passwordOne, resultUserOne.getPassword());
+    Assert.assertEquals("unique_message", resultUserOne.getAbout());
+    Assert.assertEquals(creationOne, resultUserOne.getCreationTime());
+    Assert.assertEquals(0, resultUserOne.getMessagesSent());
+
+    resultUserTwo = resultUsers.get(1);
+    Assert.assertEquals(idTwo, resultUserTwo.getId());
+    Assert.assertEquals(nameTwo, resultUserTwo.getName());
+    Assert.assertEquals(passwordTwo, resultUserTwo.getPassword());
+    Assert.assertEquals("Hi! I'm test_username_two!", resultUserTwo.getAbout());
+    Assert.assertEquals(creationTwo, resultUserTwo.getCreationTime()); 
+    Assert.assertEquals(0, resultUserTwo.getMessagesSent());
   }
 
   @Test
@@ -147,5 +173,19 @@ public class PersistentDataStoreTest {
     Assert.assertEquals(authorTwo, resultMessageTwo.getAuthorId());
     Assert.assertEquals(contentTwo, resultMessageTwo.getContent());
     Assert.assertEquals(creationTwo, resultMessageTwo.getCreationTime());
+
+    //  delete 
+    persistentDataStore.delete(inputMessageOne); 
+
+    //  reload
+    resultMessages = persistentDataStore.loadMessages();
+    
+    //  confirm that the message has been deleted
+    resultMessageTwo = resultMessages.get(0);
+    Assert.assertEquals(idTwo, resultMessageTwo.getId());
+    Assert.assertEquals(conversationTwo, resultMessageTwo.getConversationId());
+    Assert.assertEquals(authorTwo, resultMessageTwo.getAuthorId());
+    Assert.assertEquals(contentTwo, resultMessageTwo.getContent());
+    Assert.assertEquals(creationTwo, resultMessageTwo.getCreationTime());  
   }
 }
