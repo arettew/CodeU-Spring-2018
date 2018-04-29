@@ -61,54 +61,40 @@ public class AdminServlet extends HttpServlet {
     request.getRequestDispatcher("/WEB-INF/view/admin.jsp").forward(request, response);
   }
 
-  /**
-   * This function fires when a user submits the login form. It gets the username and password from
-   * the submitted form data, checks that they're valid, and either adds the user to the session
-   * so we know the user is logged in or shows an error to the user.
-   */
-   @Override
- public void doPost(HttpServletRequest request, HttpServletResponse response)
-     throws IOException, ServletException {
-       /* fill in when admin.jsp is made */
- }
-
- public List<User> mostActiveUsers(int x) throws PersistentDataStoreException {
+ public List<User> getMostActiveUsers(int x) throws PersistentDataStoreException {
    List<UUID> userIds = userStore.getUsers().stream().map(User::getId).collect(Collectors.toList());
    Map<UUID, Integer> numberOfMessagesByUserId = userIds.stream()
       .collect(Collectors.toMap(Function.identity(), userId -> (messageStore.getMessagesByUserId(userId)).size()));
-   List<User> sortedUsers = numberOfMessagesByUserId.entrySet().stream()
+   return numberOfMessagesByUserId.entrySet().stream()
       .sorted(Map.Entry.comparingByValue())
       .sorted(Collections.reverseOrder())
       .map(Map.Entry::getKey)
       .map(userId -> userStore.getUser(userId))
       .limit(x)
       .collect(Collectors.toList());
-    return sortedUsers;
  }
 
- public List<User> newestUsers(int x) throws PersistentDataStoreException {
-   List<User> newestUsers = userStore.getUsers().stream()
+ public List<User> getNewestUsers(int x) throws PersistentDataStoreException {
+   return userStore.getUsers().stream()
       .sorted(Collections.reverseOrder())
       .limit(x)
       .collect(Collectors.toList());
-   return newestUsers;
  }
 
- public List<User> wordiestUsers(int x) throws PersistentDataStoreException {
+ public List<User> getWordiestUsers(int x) throws PersistentDataStoreException {
    List<UUID> userIds = userStore.getUsers().stream().map(User::getId).collect(Collectors.toList());
    Map<UUID, Integer> numberOfWordsByUserId = userIds.stream()
       .collect(Collectors.toMap(Function.identity(), userId ->
       messageStore.getMessagesByUserId(userId).stream()
-        .mapToInt(m -> m.getWords())
+        .mapToInt(Message::getWords)
         .sum()));
-   List<User> sortedUsers = numberOfWordsByUserId.entrySet().stream()
+   return numberOfWordsByUserId.entrySet().stream()
       .sorted(Map.Entry.comparingByValue())
       .sorted(Collections.reverseOrder())
       .map(Map.Entry::getKey)
       .map(userId -> userStore.getUser(userId))
       .limit(x)
       .collect(Collectors.toList());
-    return sortedUsers;
  }
 
 }

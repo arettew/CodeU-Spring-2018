@@ -140,8 +140,4 @@ public class UserStore {
   public List<User> getUsers() throws PersistentDataStoreException {
     return persistentStorageAgent.loadUsers();
   }
-
-  /*public User getNewestUser(){
-    return users.get(users.size()-1);
-  }*/
 }

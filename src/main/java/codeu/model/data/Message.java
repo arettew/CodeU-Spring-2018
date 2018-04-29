@@ -68,7 +68,7 @@ public class Message {
     return creation;
   }
 
-  public int getWords(){
+  public int getWords() {
     return content.trim().split("\\s+").length;
   }
 }
