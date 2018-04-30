@@ -41,10 +41,12 @@ public class User {
    * @param allowMesssageDel does this User want messages deleted?
    * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
+   * @param conversationVisibilities the map that shows which conversations the user wants to hide
    *
    */
+
   public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
-              int messagesSent, Instant creation) {
+              int messagesSent, Instant creation, Map conversations) {
     this.id = id;
     this.name = name;
     this.password = password;
@@ -52,7 +54,7 @@ public class User {
     this.allowMessageDel = allowMessageDel;
     this.messagesSent = messagesSent;
     this.creation = creation;
-    this.conversationVisibilities = new HashMap();
+    this.conversationVisibilities = conversations;
   }
 
   /**
