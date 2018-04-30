@@ -16,6 +16,8 @@ package codeu.model.data;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -44,14 +46,16 @@ public class UserTest {
     String about = "unique message";
     Instant creation = Instant.now();
     String password = "password";
+    Map<UUID, Boolean> conversationVisibilities = new HashMap();
 
-    User user = new User(id, name, password, about, creation);
+    User user = new User(id, name, password, about, creation, conversationVisibilities);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
     Assert.assertEquals("unique message", user.getAbout());
     Assert.assertEquals(creation, user.getCreationTime());
+    Assert.assertEquals(conversationVisibilities, user.getConversations());
   }
 
   @Test
