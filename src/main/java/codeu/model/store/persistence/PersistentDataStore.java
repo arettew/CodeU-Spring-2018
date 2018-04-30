@@ -27,6 +27,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class handles all interactions with Google App Engine's Datastore service. On startup it
@@ -39,7 +41,10 @@ public class PersistentDataStore {
   private DatastoreService datastore;
 
   //  List of UserEntities that can be used alter user data
-  private List<Entity> userEntities; 
+  private Map<UUID, Entity> userEntitiesById; 
+  
+  //  List of Message Entities that can be used to alter message data
+  private Map<UUID, Entity> messageEntitiesById;  
 
   /**
    * Constructs a new PersistentDataStore and sets up its state to begin loading objects from the
@@ -58,7 +63,7 @@ public class PersistentDataStore {
   public List<User> loadUsers() throws PersistentDataStoreException {
 
     List<User> users = new ArrayList<>();
-    userEntities = new ArrayList<>();
+    userEntitiesById = new HashMap<>();
 
     // Retrieve all users from the datastore.
     Query query = new Query("chat-users");
@@ -70,10 +75,12 @@ public class PersistentDataStore {
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
-        Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
-        User user = new User(uuid, userName, password, about, creationTime);
+        boolean delete = (boolean) entity.getProperty("allowMessageDel");
+        int messagesSent = ((Long) entity.getProperty("messagesSent")).intValue();
+        Instant creationTime = Instant.parse((String) entity.getProperty("creation"));
+        User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime);
         users.add(user);
-        userEntities.add(entity);
+        userEntitiesById.put(uuid, entity);
       } catch (Exception e) {
         // In a production environment, errors should be very rare. Errors which may
         // occur include network errors, Datastore service errors, authorization errors,
@@ -127,6 +134,7 @@ public class PersistentDataStore {
   public List<Message> loadMessages() throws PersistentDataStoreException {
 
     List<Message> messages = new ArrayList<>();
+    messageEntitiesById = new HashMap<>();
 
     // Retrieve all messages from the datastore.
     Query query = new Query("chat-messages");
@@ -141,6 +149,7 @@ public class PersistentDataStore {
         String content = (String) entity.getProperty("content");
         Message message = new Message(uuid, conversationUuid, authorUuid, content, creationTime);
         messages.add(message);
+        messageEntitiesById.put(uuid, entity);
       } catch (Exception e) {
         // In a production environment, errors should be very rare. Errors which may
         // occur include network errors, Datastore service errors, authorization errors,
@@ -159,29 +168,24 @@ public class PersistentDataStore {
     userEntity.setProperty("username", user.getName());
     userEntity.setProperty("password", user.getPassword());
     userEntity.setProperty("about", user.getAbout());
-    userEntity.setProperty("creation_time", user.getCreationTime().toString());
+    userEntity.setProperty("messagesSent", user.getMessagesSent());
+    userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
+    userEntity.setProperty("creation", user.getCreationTime().toString());
     datastore.put(userEntity);
   }
 
-  /** Change some property of a user then re-add to datastore. Currently only changing the
-   * the about message are supported. This method may be inefficient 
-   * when there are many users. 
-   */
+  /** Change some property of a user then re-add to datastore. */
   public void update(User user) {
-    /** This will be inefficient for many users. I believe this could be done in constant time without 
-     *  storing entity objects if the Entity objects were saved with known keys related to the users
-     *  (keys as usernames or user IDs), though I believe this would require remaking the users currently 
-     *  stored in the datastore in order to reassign the keys. 
-     *  --Abby 
-     */
-    for (Entity userEntity : userEntities) {
-      String userName = (String) userEntity.getProperty("username");
-      if (userName.equals(user.getName())) {
-        userEntity.setProperty("about", user.getAbout());
-        datastore.put(userEntity);
-        break;
-      }
+    UUID userId = user.getId();
+    if (!userEntitiesById.containsKey(userId)) {
+      return;
     }
+    
+    Entity userEntity = userEntitiesById.get(userId);
+    userEntity.setProperty("about", user.getAbout());
+    userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
+    userEntity.setProperty("messagesSent", user.getMessagesSent());
+    datastore.put(userEntity);
   }
 
   /** Write a Message object to the Datastore service. */
@@ -193,6 +197,17 @@ public class PersistentDataStore {
     messageEntity.setProperty("content", message.getContent());
     messageEntity.setProperty("creation_time", message.getCreationTime().toString());
     datastore.put(messageEntity);
+  }
+
+  /** Delete a Message object from the Datastore service */
+  public void delete(Message message) {
+    UUID messageId = message.getId();
+    if (!messageEntitiesById.containsKey(messageId)) {
+      return;
+    }
+
+    Entity messageEntity = messageEntitiesById.get(messageId);
+    datastore.delete(messageEntity.getKey());
   }
 
   /** Write a Conversation object to the Datastore service. */

@@ -1,7 +1,16 @@
 <%@ page import="codeu.model.data.User" %>
 <%@ page import="codeu.model.store.basic.UserStore" %>
+<%@ page import="codeu.model.data.Message" %>
+<%@ page import="codeu.model.store.basic.MessageStore" %>
+<%@ page import="codeu.model.store.basic.ConversationStore" %>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.UUID"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="java.text.SimpleDateFormat"%>
 <%
 String profileOwnerName = (String) request.getAttribute("profileOwner");
+UUID profileOwnerId = (UUID) request.getAttribute("ownerId");
+SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 %>
 
 <!DOCTYPE html>
@@ -9,15 +18,30 @@ String profileOwnerName = (String) request.getAttribute("profileOwner");
 <head>
   <title>Profile</title>
   <link rel="stylesheet" href="/css/main.css">
+
   <style>
     label {
       display: inline-block;
       width: 100px;
     }
+    #messages {
+      background-color: white;
+      height: 500px;
+      overflow-y: scroll;
+    }
   </style>
+
+  <script>
+    // scroll the messages div to the bottom
+    function scrollMessage() {
+      var messageDiv = document.getElementById('messages');
+      messageDiv.scrollTop = messageDiv.scrollHeight;
+    };
+  </script>
 </head>
-<body>
-  
+
+<body onload="scrollMessage()"> 
+
   <nav>
     <a id="navTitle" href = "/">CodeU Chat App</a>
     <a href="/conversations">Conversation</a>
@@ -49,13 +73,49 @@ String profileOwnerName = (String) request.getAttribute("profileOwner");
         <br/>
         <button type="submit">Submit</button>
       </form>
+
+      <p> Would you like to allow your messages to be deleted after you've hit a high amount?</p>
+      <form action="/profile/<%= profileOwnerName%>" method="POST">
+        <% boolean allowMessageDel = 
+          UserStore.getInstance().getUser(profileOwnerName).getAllowMessageDel(); %>
+        <input type="radio" name="delete" value="yes" 
+          <%if(allowMessageDel) { %> 
+            checked
+            <% } %> 
+        >
+        Yes<br>
+        <input type="radio" name="delete" value="no"
+          <%if(!allowMessageDel) { %> 
+            checked
+            <% } %> 
+        >
+        No<br>
+        <button type="submit">Submit</button>
+      </form>
     <% } %>
-  </div>
+    <h2><%= profileOwnerName %>'s sent messages</h2>
 
-  <div id="container">
-    <h1>Messages will go here?</h1>
-  </div>
+    <!--This is where the user's sent messages will show up -->
+    <div id="messages">
+      <ul>
+    <% //This list contains messages written by the profile owner in order sorted by time
+       List<Message> userMessages = MessageStore.getInstance().getMessagesByAuthor(profileOwnerId);
+       ConversationStore conversationStore = ConversationStore.getInstance();
+    %>
 
+    <% for (Message message : userMessages) { %>
+    <%   // If the message is not empty, then print it %>
+    <%   if(message.getContent() != null && !message.getContent().isEmpty()) { %>
+          <li> <b> <%= formatter.format(Date.from(message.getCreationTime()))  %> 
+          </b>: <a href=<%= "/chat/" 
+                + conversationStore.getConversationById(message.getConversationId()).getTitle() %> > 
+            <%= message.getContent() %> </a> </li>
+    <%   } %>      
+    <% }   %>
+
+      </ul>
+    </div>
+  </div>
 
 </body>
 </html>
