@@ -37,15 +37,17 @@ public class User {
    * @param password the password of this User
    * @param about the about me message of this User 
    * @param creation the creation time of this User
+   * @param conversationVisibilities the map that shows which conversations the user wants to hide
    *
    */
-  public User(UUID id, String name, String password, String about, Instant creation) {
+  public User(UUID id, String name, String password, String about, Instant creation,
+              Map conversations) {
     this.id = id;
     this.name = name;
     this.password = password;
     this.about = about;
     this.creation = creation;
-    this.conversationVisibilities = new HashMap();
+    this.conversationVisibilities = conversations;
   }
 
   /**
