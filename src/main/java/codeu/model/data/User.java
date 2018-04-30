@@ -127,10 +127,7 @@ public class User {
   /** Sets messages sent by this User */
   public void incMessagesSent() {
     this.messagesSent++;
-
-  /** Returns the conversations in which the user has sent a message. */
-  public LinkedHashMap<UUID, Boolean> getConversations() {
-    return conversations;
+  }
 
   /** Returns the conversation in which the user has sent a message. */
   public Map<UUID, Boolean> getConversations() {

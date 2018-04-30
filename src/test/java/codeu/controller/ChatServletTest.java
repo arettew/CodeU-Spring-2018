@@ -35,6 +35,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import java.util.Map;
+import java.util.HashMap;
 
 public class ChatServletTest {
 
@@ -204,7 +206,9 @@ public class ChatServletTest {
     Mockito.when(mockSession.getAttribute("user")).thenReturn("test_username");
 
     UUID userId = UUID.randomUUID();
-    User fakeUser = new User(userId, "test_username","password", "", true, 15000, Instant.now());
+    Map<UUID, Boolean> conversationVisibilities = new HashMap();
+    User fakeUser = new User(userId, "test_username","password", "", true, 15000, Instant.now(),
+                             conversationVisibilities);
     Mockito.when(mockUserStore.getUser("test_username")).thenReturn(fakeUser);
 
     Conversation fakeConversation =
