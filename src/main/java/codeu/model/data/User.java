@@ -44,7 +44,6 @@ public class User {
    * @param conversationVisibilities the map that shows which conversations the user wants to hide
    *
    */
-
   public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
               int messagesSent, Instant creation, Map conversations) {
     this.id = id;

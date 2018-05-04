@@ -103,12 +103,14 @@ public class ProfileServlet extends HttpServlet {
           owner.setAbout(cleanedAboutMessage);
 
           break;
+
         case REQUEST_HIDDEN:
           //Conversation to hide was posted
           UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
           owner.hideConversation(conversationToHide);
 
           break;
+          
         case REQUEST_MESSAGEDELETION:
           //  The user wants to change whether or not their messages will be deleted
           String delete = request.getParameter("delete");
@@ -117,6 +119,7 @@ public class ProfileServlet extends HttpServlet {
           owner.setAllowMessageDel(allowMessageDel);
 
           break;
+
         case REQUEST_RESET:
           //User wants to show all their conversations again
           owner.showAllConversations();
