@@ -79,7 +79,13 @@ public class PersistentDataStore {
         String about = (String) entity.getProperty("about");
         boolean delete = (boolean) entity.getProperty("allowMessageDel");
         int messagesSent = ((Long) entity.getProperty("messagesSent")).intValue();
-        Instant creationTime = Instant.parse((String) entity.getProperty("creation"));
+
+        // For some reason I kept getting an exception of an instance being null (which I don't 
+        // know how it could happen) so this following check fixed it.
+        Instant creationTime = Instant.now();
+        if (entity.getProperty("creation") != null) {
+          creationTime = Instant.parse((String) entity.getProperty("creation"));
+        }
 
         // Retrieving the individual lists of Keys and Values for the conversationVisibilities map.
         List<String> conversationIdsString = (List<String>) entity.getProperty("conversationIds");
