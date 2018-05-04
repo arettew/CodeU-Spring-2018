@@ -26,6 +26,8 @@ import com.google.appengine.api.datastore.Query;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,10 +77,33 @@ public class PersistentDataStore {
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
-        boolean delete = (boolean) entity.getProperty("allowMessageDel");
-        int messagesSent = ((Long) entity.getProperty("messagesSent")).intValue();
-        Instant creationTime = Instant.parse((String) entity.getProperty("creation"));
-        User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime);
+        boolean delete = (entity.hasProperty("allowMessageDel"))
+                       ? (boolean) entity.getProperty("allowMessageDel")
+                       : false;
+        int messagesSent = (entity.hasProperty("messagesSent"))
+                         ? ((Long) entity.getProperty("messagesSent")).intValue()
+                         : -1;
+
+        // For some reason I kept getting an exception of an instance being null (which I don't 
+        // know how it could happen) so this following check fixed it.
+        Instant creationTime = Instant.now();
+        if (entity.getProperty("creation") != null) {
+          creationTime = Instant.parse((String) entity.getProperty("creation"));
+        }
+
+        // Retrieving the individual lists of Keys and Values for the conversationVisibilities map.
+        List<String> conversationIdsString = (List<String>) entity.getProperty("conversationIds");
+        List<UUID> conversationIds = convertListtoUUID(conversationIdsString);
+        List<Boolean> hiddenConversations = (List<Boolean>) entity.getProperty("hiddenConversations");
+
+        // A new map is created from the two lists
+        Map<UUID, Boolean> conversationVisibilities = new HashMap();
+        for (int i = 0; i < conversationIds.size(); ++i) {
+          conversationVisibilities.put(conversationIds.get(i), hiddenConversations.get(i));
+        }
+
+        User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime,
+                             conversationVisibilities);
         users.add(user);
         userEntitiesById.put(uuid, entity);
       } catch (Exception e) {
@@ -171,6 +196,18 @@ public class PersistentDataStore {
     userEntity.setProperty("messagesSent", user.getMessagesSent());
     userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
     userEntity.setProperty("creation", user.getCreationTime().toString());
+
+    /** Since the map of conversationVisibilities can't be stored on the user entity, a list of
+    *   its keys and a separate list of its values are stored. UUIDs are also not supported, so
+    *   the list is converted to contain Strings.
+    */
+    List<UUID> conversationIds = new ArrayList<UUID>(user.getConversations().keySet());
+    List<String> stringList = convertListtoString(conversationIds);
+    userEntity.setProperty("conversationIds", stringList);
+
+    List<Boolean> hiddenConversations = new ArrayList<Boolean>(user.getConversations().values());
+    userEntity.setProperty("hiddenConversations", hiddenConversations);
+
     datastore.put(userEntity);
   }
 
@@ -185,6 +222,18 @@ public class PersistentDataStore {
     userEntity.setProperty("about", user.getAbout());
     userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
     userEntity.setProperty("messagesSent", user.getMessagesSent());
+
+    /** Since the map of conversationVisibilities can't be stored on the user entity, a list of
+    *   its keys and a separate list of its values are stored. UUIDs are also not supported, so
+    *   the list is converted to contain Strings.
+    */
+    List<UUID> conversationIds = new ArrayList<UUID>(user.getConversations().keySet());
+    List<String> conversationIdString = convertListtoString(conversationIds);
+    userEntity.setProperty("conversationIds", conversationIdString);
+
+    List<Boolean> hiddenConversations = new ArrayList<Boolean>(user.getConversations().values());
+    userEntity.setProperty("hiddenConversations", hiddenConversations);
+
     datastore.put(userEntity);
   }
 
@@ -218,5 +267,25 @@ public class PersistentDataStore {
     conversationEntity.setProperty("title", conversation.getTitle());
     conversationEntity.setProperty("creation_time", conversation.getCreationTime().toString());
     datastore.put(conversationEntity);
+  }
+
+  /** Helper function to turn a List<UUID> into a List<String> */
+  private List<String> convertListtoString(List<UUID> inputList) {
+    List<String> stringList = new ArrayList();
+    for (UUID conversationId : inputList) {
+      stringList.add(conversationId.toString());
+    }
+    return stringList;
+  }
+
+  /** Helper function to turn a List<String> into a List<UUID> */
+  private List<UUID> convertListtoUUID(List<String> inputList) {
+    List<UUID> UUIDList = new ArrayList();
+    if (inputList != null) {
+      for (String conversationString : inputList) {
+        UUIDList.add(UUID.fromString(conversationString));
+      }
+    }
+    return UUIDList;
   }
 }
