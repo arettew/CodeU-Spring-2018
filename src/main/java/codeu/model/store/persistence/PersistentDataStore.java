@@ -77,8 +77,12 @@ public class PersistentDataStore {
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
-        boolean delete = (boolean) entity.getProperty("allowMessageDel");
-        int messagesSent = ((Long) entity.getProperty("messagesSent")).intValue();
+        boolean delete = (entity.hasProperty("allowMessageDel"))
+                       ? (boolean) entity.getProperty("allowMessageDel")
+                       : false;
+        int messagesSent = (entity.hasProperty("messagesSent"))
+                         ? ((Long) entity.getProperty("messagesSent")).intValue()
+                         : -1;
 
         // For some reason I kept getting an exception of an instance being null (which I don't 
         // know how it could happen) so this following check fixed it.
