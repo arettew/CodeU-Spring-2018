@@ -2,24 +2,26 @@ package codeu.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.Part;
-import codeu.model.data.User;
-import codeu.model.store.basic.UserStore;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 import java.util.UUID;
 import java.util.Base64.Encoder;
 import java.util.Base64;
 import java.util.Vector;
-import java.io.File;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.lang.IllegalArgumentException;
+import codeu.model.data.User;
+import codeu.model.store.basic.UserStore;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+import com.google.appengine.api.images;
 
 /**
   * Servlet class responsible for user profile pages
@@ -142,8 +144,8 @@ public class ProfileServlet extends HttpServlet {
           //  User wants to upload a profile picture
           Part filePart = request.getPart("picture");
           InputStream fileContent = filePart.getInputStream();
-          String encodedImage = encodeImagetoBase64(fileContent, filePart);
-          owner.setImage(encodedImage);
+          Image image = readImage(fileContent, filePart);
+          owner.setImage(image);
       }
 
       // Updates info before refreshing
@@ -153,23 +155,26 @@ public class ProfileServlet extends HttpServlet {
       response.sendRedirect("/profile/" + ownerName);
     }
 
-  //  Helper function which converts from an inputstream to Base64
-  private String encodeImagetoBase64(InputStream fileContent, Part filePart) {
-    String encodedImage = null;
+  //  Helper function which uses an inputstream to read the image bytes and returns an image
+  private String readImage(InputStream fileContent, Part filePart) {
+    String image = null;
 
     try{
       // Reading the bytes from the File
       byte[] inputBytes = new byte[(int)filePart.getSize()];
       fileContent.read(inputBytes);
 
-      encodedImage = Base64.getEncoder().encodeToString(inputBytes);
+      image = makeImage(inputBytes);
 
-      return encodedImage;
+      return image;
 
     } catch (FileNotFoundException e) {
         e.printStackTrace();
         return null;
     } catch (IOException e) {
+        e.printStackTrace();
+        return null;
+    } catch (IllegalArgumentException e) {
         e.printStackTrace();
         return null;
     }
