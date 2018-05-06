@@ -15,7 +15,7 @@
 package codeu.model.data;
 
 import java.time.Instant;
-import com.google.appengine.api.datastore.Text;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.Set;
 import java.util.Map;
@@ -58,7 +58,7 @@ public class User {
     this.allowMessageDel = allowMessageDel;
     this.messagesSent = messagesSent;
     this.creation = creation;
-    this.profilePicture = profilePicture;
+    this.profilePictureBytes = profilePicture;
     this.conversationVisibilities = conversations;
   }
 
@@ -78,7 +78,7 @@ public class User {
     this.allowMessageDel = true;
     this.messagesSent = 0; 
     this.creation = creation;
-    this.profilePicture = new byte[0];
+    this.profilePictureBytes = new byte[0];
     this.conversationVisibilities = new HashMap();
   }
 
@@ -139,12 +139,18 @@ public class User {
 
   /** Returns the profile picture of this User. */
   public byte[] getImageData() {
-    return profilePicture;
+    return profilePictureBytes;
+  }
+
+  /** Returns the profile picture of this User as a base64 string. */
+  public String getEncodedImage() {
+    String base64String = Base64.getEncoder().encodeToString(profilePictureBytes);
+    return base64String;
   }
 
   /** Changes the profile picture of this User, taking a byte array as input */
   public void setImageData(byte[] imageBytes) {
-    this.profilePicture = imageBytes;
+    this.profilePictureBytes = imageBytes;
   }
 
   /** Adds a conversation to the list */
