@@ -156,15 +156,15 @@ public class ProfileServlet extends HttpServlet {
     }
 
   //  Helper function which uses an inputstream to read the image bytes and returns an image
-  private String readImage(InputStream fileContent, Part filePart) {
-    String image = null;
+  private Image readImage(InputStream fileContent, Part filePart) {
+    Image image = null;
 
     try{
       // Reading the bytes from the File
       byte[] inputBytes = new byte[(int)filePart.getSize()];
       fileContent.read(inputBytes);
 
-      image = makeImage(inputBytes);
+      image.setImageData(inputBytes);
 
       return image;
 
