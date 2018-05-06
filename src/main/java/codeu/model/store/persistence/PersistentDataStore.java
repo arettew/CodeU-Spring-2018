@@ -18,7 +18,7 @@ import codeu.model.data.Conversation;
 import codeu.model.data.Message;
 import codeu.model.data.User;
 import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.*;
 import codeu.model.store.persistence.PersistentDataStoreException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -76,9 +76,9 @@ public class PersistentDataStore {
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
         Blob imageBlob = (Blob) entity.getProperty("profilePicture");
-        Image profilePicture = imageFactory.makeImage(imageBlob.getBytes());
+        byte[] profilePictureBytes = imageBlob.getBytes();
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
-        User user = new User(uuid, userName, password, about, creationTime, profilePicture);
+        User user = new User(uuid, userName, password, about, creationTime, profilePictureBytes);
         users.add(user);
         userEntities.add(entity);
       } catch (Exception e) {
@@ -167,7 +167,7 @@ public class PersistentDataStore {
     userEntity.setProperty("password", user.getPassword());
     userEntity.setProperty("about", user.getAbout());
     userEntity.setProperty("creation_time", user.getCreationTime().toString());
-    Blob profilePictureBlob = new Blob(user.getImage().getImageData());
+    Blob profilePictureBlob = new Blob(user.getImageData());
     userEntity.setProperty("profilePicture", profilePictureBlob);
     datastore.put(userEntity);
   }
@@ -187,7 +187,8 @@ public class PersistentDataStore {
       String userName = (String) userEntity.getProperty("username");
       if (userName.equals(user.getName())) {
         userEntity.setProperty("about", user.getAbout());
-        userEntity.setProperty("profilePicture", user.getImageAsText());
+        Blob profilePictureBlob = new Blob(user.getImageData());
+        userEntity.setProperty("profilePicture", profilePictureBlob);
         datastore.put(userEntity);
         break;
       }
