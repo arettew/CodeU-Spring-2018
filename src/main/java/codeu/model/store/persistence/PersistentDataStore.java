@@ -18,7 +18,7 @@ import codeu.model.data.Conversation;
 import codeu.model.data.Message;
 import codeu.model.data.User;
 import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.*;
 import codeu.model.store.persistence.PersistentDataStoreException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -99,7 +99,7 @@ public class PersistentDataStore {
         }
 
         Blob imageBlob = (Blob) entity.getProperty("profilePicture");
-        Image profilePicture = imageFactory.makeImage(imageBlob.getBytes());
+        byte[] profilePictureBytes = imageBlob.getBytes();
 
         // Retrieving the individual lists of Keys and Values for the conversationVisibilities map.
         List<String> conversationIdsString = (List<String>) entity.getProperty("conversationIds");
@@ -113,7 +113,7 @@ public class PersistentDataStore {
         }
 
         User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime,
-                             profilePicture, conversationVisibilities);
+                             profilePictureBytes, conversationVisibilities);
         users.add(user);
         userEntitiesById.put(uuid, entity);
       } catch (Exception e) {
@@ -207,7 +207,7 @@ public class PersistentDataStore {
     userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
     userEntity.setProperty("creation", user.getCreationTime().toString());
 
-    Blob profilePictureBlob = new Blob(user.getImage().getImageData());
+    Blob profilePictureBlob = new Blob(user.getImageData());
     userEntity.setProperty("profilePicture", profilePictureBlob);
 
     /** Since the map of conversationVisibilities can't be stored on the user entity, a list of
@@ -226,6 +226,7 @@ public class PersistentDataStore {
 
   /** Change some property of a user then re-add to datastore. */
   public void update(User user) {
+<<<<<<< 12d85c4e3aa1ba606b2e2ab13e80ea33cb232c98
     UUID userId = user.getId();
     if (!userEntitiesById.containsKey(userId)) {
       return;
@@ -235,6 +236,9 @@ public class PersistentDataStore {
     userEntity.setProperty("about", user.getAbout());
     userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
     userEntity.setProperty("messagesSent", user.getMessagesSent());
+
+    Blob profilePictureBlob = new Blob(user.getImageData());
+    userEntity.setProperty("profilePicture", profilePictureBlob);
 
     /** Since the map of conversationVisibilities can't be stored on the user entity, a list of
     *   its keys and a separate list of its values are stored. UUIDs are also not supported, so
