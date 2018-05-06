@@ -21,7 +21,7 @@ import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
-import com.google.appengine.api.images;
+import com.google.appengine.api.images.*;
 
 /**
   * Servlet class responsible for user profile pages
@@ -144,8 +144,8 @@ public class ProfileServlet extends HttpServlet {
           //  User wants to upload a profile picture
           Part filePart = request.getPart("picture");
           InputStream fileContent = filePart.getInputStream();
-          Image image = readImage(fileContent, filePart);
-          owner.setImage(image);
+          byte[] imageData = readImage(fileContent, filePart);
+          owner.setImageData(imageData);
       }
 
       // Updates info before refreshing
@@ -156,17 +156,14 @@ public class ProfileServlet extends HttpServlet {
     }
 
   //  Helper function which uses an inputstream to read the image bytes and returns an image
-  private Image readImage(InputStream fileContent, Part filePart) {
-    Image image = null;
+  private byte[] readImage(InputStream fileContent, Part filePart) {
 
     try{
       // Reading the bytes from the File
       byte[] inputBytes = new byte[(int)filePart.getSize()];
       fileContent.read(inputBytes);
 
-      image.setImageData(inputBytes);
-
-      return image;
+      return inputBytes;
 
     } catch (FileNotFoundException e) {
         e.printStackTrace();
