@@ -21,6 +21,7 @@ import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import com.google.appengine.api.images.*;
 
 /**
   * Servlet class responsible for user profile pages
@@ -30,6 +31,15 @@ public class ProfileServlet extends HttpServlet {
   
   /** Store class that gives access to users */
   private UserStore userStore;
+
+  /** Image Factory to create images and help with image resizing*/
+  private ImagesServiceFactory imageFactory;
+
+  /** Image service to call transforms on images */
+  private ImagesService imageService = imageFactory.getImagesService();
+
+  /** Transform to be used when resizing an image */
+  private final Transform imageResize = imageFactory.makeResize(300, 300);
 
   /** Set up state for handling profile requests. */
   @Override
@@ -126,7 +136,8 @@ public class ProfileServlet extends HttpServlet {
           Part filePart = request.getPart("picture");
           InputStream fileContent = filePart.getInputStream();
           byte[] imageData = readImage(fileContent, filePart);
-          owner.setImageData(imageData);
+          byte[] resizedImageData = resizeImage(imageData);
+          owner.setImageData(resizedImageData);
       }
 
       //Updates info before refreshing
@@ -156,6 +167,13 @@ public class ProfileServlet extends HttpServlet {
         e.printStackTrace();
         return null;
     }
+  }
+
+  // Helper function to resize the image
+  private byte[] resizeImage(byte[] inputImageData) {
+    Image currentImage = imageFactory.makeImage(inputImageData);
+    Image newImage = imageService.applyTransform(imageResize, currentImage);
+    return newImage.getImageData();
   }
 
 }
