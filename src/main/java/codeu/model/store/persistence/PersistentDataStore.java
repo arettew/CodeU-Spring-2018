@@ -50,9 +50,6 @@ public class PersistentDataStore {
   //  List of Message Entities that can be used to alter message data
   private Map<UUID, Entity> messageEntitiesById;  
 
-  // Image Factory to create images
-  private ImagesServiceFactory imageFactory;
-
   /**
    * Constructs a new PersistentDataStore and sets up its state to begin loading objects from the
    * Datastore service.
