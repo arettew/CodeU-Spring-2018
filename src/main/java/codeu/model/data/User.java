@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 import com.google.appengine.api.images;
+import com.google.appengine.api.images.*;
 
 /** Class representing a registered user. */
 public class User {
@@ -31,8 +32,8 @@ public class User {
   private boolean allowMessageDel;
   private int messagesSent; 
   private final Instant creation;
+  private byte[] profilePictureBytes;
   private Map<UUID, Boolean> conversationVisibilities;
-  private Image profilePicture;
 
   /**
    * Constructs a new User.
@@ -44,12 +45,12 @@ public class User {
    * @param allowMesssageDel does this User want messages deleted?
    * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
-   * @param profilePicture the profile picture of this User 
+   * @param profilePicture the profile picture data of this User 
    * @param conversation the map that shows which conversations the user wants to hide
    *
    */
   public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
-              int messagesSent, Instant creation, Image profilePicture, Map conversations) {
+              int messagesSent, Instant creation, byte[] profilePicture, Map conversations) {
     this.id = id;
     this.name = name;
     this.password = password;
@@ -77,7 +78,7 @@ public class User {
     this.allowMessageDel = true;
     this.messagesSent = 0; 
     this.creation = creation;
-    this.profilePicture = null;
+    this.profilePicture = new byte[0];
     this.conversationVisibilities = new HashMap();
   }
 
@@ -137,18 +138,13 @@ public class User {
   }
 
   /** Returns the profile picture of this User. */
-  public Image getImage() {
+  public byte[] getImageData() {
     return profilePicture;
-  }
-
-  /** Changes the profile picture of this User, taking an Image as input */
-  public void setImage(Image image) {
-    this.profilePicture = image;
   }
 
   /** Changes the profile picture of this User, taking a byte array as input */
   public void setImage(byte[] imageBytes) {
-    this.profilePicture.setImageData(imageBytes);
+    this.profilePicture = imageBytes;
   }
 
   /** Adds a conversation to the list */
