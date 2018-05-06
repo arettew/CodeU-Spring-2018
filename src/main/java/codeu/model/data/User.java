@@ -129,7 +129,7 @@ public class User {
   }
 
   /** Changes the profile picture of this User, taking a byte array as input */
-  public void setImage(byte[] imageBytes) {
+  public void setImageData(byte[] imageBytes) {
     this.profilePicture = imageBytes;
   }
 
