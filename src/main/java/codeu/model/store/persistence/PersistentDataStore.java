@@ -223,7 +223,6 @@ public class PersistentDataStore {
 
   /** Change some property of a user then re-add to datastore. */
   public void update(User user) {
-<<<<<<< 12d85c4e3aa1ba606b2e2ab13e80ea33cb232c98
     UUID userId = user.getId();
     if (!userEntitiesById.containsKey(userId)) {
       return;
