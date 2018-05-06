@@ -10,6 +10,7 @@
 <%@ page import="java.util.UUID"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="com.google.appengine.api.images"%>
 <%
 String profileOwnerName = (String) request.getAttribute("profileOwner");
 UUID profileOwnerId = (UUID) request.getAttribute("ownerId");
@@ -60,10 +61,11 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
     <h1><%= profileOwnerName %>'s Profile Page</h1>
     <hr>
 
-    <% String base64Image = UserStore.getInstance().getUser(profileOwnerName).getImage(); %>
-    <% if(base64Image != null) { %>
+    <% Image userProfilePicture = UserStore.getInstance().getUser(profileOwnerName).getImage(); %>
+    <% if(userProfilePicture != null) { %>
     <%  String format = "data:image/*;base64, "; %>
-        <img src="<%= format + base64Image %>" alt="<%= profileOwnerName%>" />
+        <img src="<%= format + userProfilePicture.getImageData() %>" 
+             alt="<%= profileOwnerName%>" />
     <% } %>
     <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
 
