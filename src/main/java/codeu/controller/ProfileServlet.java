@@ -124,6 +124,10 @@ public class ProfileServlet extends HttpServlet {
             //About message was posted
             String aboutMessage = request.getParameter("about");
 
+            //This cleans the message of HTML
+            String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
+            owner.setAbout(cleanedAboutMessage);
+
             break;
 
           case REQUEST_HIDDEN:
@@ -147,7 +151,6 @@ public class ProfileServlet extends HttpServlet {
             owner.showAllConversations();
 
             break;
-
         }
 
       } else {
