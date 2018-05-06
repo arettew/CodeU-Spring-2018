@@ -281,4 +281,24 @@ public class PersistentDataStore {
     conversationEntity.setProperty("creation_time", conversation.getCreationTime().toString());
     datastore.put(conversationEntity);
   }
+
+  /** Helper function to turn a List<UUID> into a List<String> */
+  private List<String> convertListtoString(List<UUID> inputList) {
+    List<String> stringList = new ArrayList();
+    for (UUID conversationId : inputList) {
+      stringList.add(conversationId.toString());
+    }
+    return stringList;
+  }
+
+  /** Helper function to turn a List<String> into a List<UUID> */
+  private List<UUID> convertListtoUUID(List<String> inputList) {
+    List<UUID> UUIDList = new ArrayList();
+    if (inputList != null) {
+      for (String conversationString : inputList) {
+        UUIDList.add(UUID.fromString(conversationString));
+      }
+    }
+    return UUIDList;
+  }
 }
