@@ -15,7 +15,7 @@
 package codeu.model.data;
 
 import java.time.Instant;
-import com.google.appengine.api.datastore.Text;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.Set;
 import java.util.LinkedHashMap;
@@ -48,7 +48,7 @@ public class User {
     this.password = password;
     this.about = about;
     this.creation = creation;
-    this.profilePicture = new Array();
+    this.profilePictureBytes = new byte[0];
     this.conversations = new LinkedHashMap();
   }
 
@@ -71,7 +71,7 @@ public class User {
     this.password = password;
     this.about = about;
     this.creation = creation;
-    this.profilePicture = profilePicture;
+    this.profilePictureBytes = profilePicture;
     this.conversations = new LinkedHashMap();
   }
 
@@ -89,7 +89,7 @@ public class User {
     this.password = password;
     this.about = "Hi! I'm " + name + "!";
     this.creation = creation;
-    this.profilePicture = new Array();
+    this.profilePictureBytes = new byte[0];
     this.conversations = new LinkedHashMap();
   }
 
@@ -125,12 +125,18 @@ public class User {
 
   /** Returns the profile picture of this User. */
   public byte[] getImageData() {
-    return profilePicture;
+    return profilePictureBytes;
+  }
+
+  /** Returns the profile picture of this User as a base64 string. */
+  public String getEncodedImage() {
+    String base64String = Base64.getEncoder().encodeToString(profilePictureBytes);
+    return base64String;
   }
 
   /** Changes the profile picture of this User, taking a byte array as input */
   public void setImageData(byte[] imageBytes) {
-    this.profilePicture = imageBytes;
+    this.profilePictureBytes = imageBytes;
   }
 
   /** Returns the conversations in which the user has sent a message. */
