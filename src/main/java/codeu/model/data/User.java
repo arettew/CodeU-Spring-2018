@@ -130,7 +130,7 @@ public class User {
 
   /** Changes the profile picture of this User, taking a byte array as input */
   public void setImage(byte[] imageBytes) {
-    this.profilePicture.setImageData(imageBytes);
+    this.profilePicture = imageBytes;
   }
 
   /** Returns the conversations in which the user has sent a message. */
