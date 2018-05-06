@@ -21,7 +21,6 @@ import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
-import com.google.appengine.api.images.*;
 
 /**
   * Servlet class responsible for user profile pages
