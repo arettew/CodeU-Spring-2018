@@ -19,7 +19,7 @@ import com.google.appengine.api.datastore.Text;
 import java.util.UUID;
 import java.util.Set;
 import java.util.LinkedHashMap;
-import com.google.appengine.api.images;
+import com.google.appengine.api.images.*;
 
 /** Class representing a registered user. */
 public class User {
@@ -28,7 +28,7 @@ public class User {
   private final String password;
   private String about; 
   private final Instant creation;
-  private Image profilePicture;
+  private byte[] profilePictureBytes;
   private LinkedHashMap<UUID, Boolean>  conversations;
 
   /**
@@ -48,7 +48,7 @@ public class User {
     this.password = password;
     this.about = about;
     this.creation = creation;
-    this.profilePicture = null;
+    this.profilePicture = new Array();
     this.conversations = new LinkedHashMap();
   }
 
@@ -64,7 +64,7 @@ public class User {
    * @param encodedImage the encoded profile picture of this User
    *
    */
-  public User(UUID id, String name, String password, String about, Instant creation, Image 
+  public User(UUID id, String name, String password, String about, Instant creation, byte[] 
               profilePicture) {
     this.id = id;
     this.name = name;
@@ -89,7 +89,7 @@ public class User {
     this.password = password;
     this.about = "Hi! I'm " + name + "!";
     this.creation = creation;
-    this.encodedImage = null;
+    this.profilePicture = new Array();
     this.conversations = new LinkedHashMap();
   }
 
@@ -124,14 +124,8 @@ public class User {
   }
 
   /** Returns the profile picture of this User. */
-  public Image getImage() {
+  public byte[] getImageData() {
     return profilePicture;
-  }
-
-
-  /** Changes the profile picture of this User, taking an Image as input */
-  public void setImage(Image image) {
-    this.profilePicture = image;
   }
 
   /** Changes the profile picture of this User, taking a byte array as input */
