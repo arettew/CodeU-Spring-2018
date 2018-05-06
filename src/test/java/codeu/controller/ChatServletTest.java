@@ -206,9 +206,10 @@ public class ChatServletTest {
     Mockito.when(mockSession.getAttribute("user")).thenReturn("test_username");
 
     UUID userId = UUID.randomUUID();
+    byte[] imageData = new byte[0];
     Map<UUID, Boolean> conversationVisibilities = new HashMap();
     User fakeUser = new User(userId, "test_username","password", "", true, 15000, Instant.now(),
-                             conversationVisibilities);
+                             imageData, conversationVisibilities);
     Mockito.when(mockUserStore.getUser("test_username")).thenReturn(fakeUser);
 
     Conversation fakeConversation =
