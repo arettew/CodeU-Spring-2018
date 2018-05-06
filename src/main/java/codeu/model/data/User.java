@@ -20,7 +20,6 @@ import java.util.UUID;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
-import com.google.appengine.api.images;
 import com.google.appengine.api.images.*;
 
 /** Class representing a registered user. */
