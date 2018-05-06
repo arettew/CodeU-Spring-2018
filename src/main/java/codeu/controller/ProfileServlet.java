@@ -105,8 +105,9 @@ public class ProfileServlet extends HttpServlet {
         return;
       } 
 
-      //  If whichform is null, it means the profile pic got uploaded because servlets can't handle
-      //  multipart form data the same way.
+      /**  If whichform is null, it means the profile pic got uploaded because servlets can't handle
+       *   multipart form data the same way and null is returned.
+       */
       if (request.getParameter("whichForm") != null) {
         switch(request.getParameter("whichForm")){
           case "about":
