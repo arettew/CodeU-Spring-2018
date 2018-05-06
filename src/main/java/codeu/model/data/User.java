@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
+import com.google.appengine.api.images;
 
 /** Class representing a registered user. */
 public class User {
@@ -30,8 +31,8 @@ public class User {
   private boolean allowMessageDel;
   private int messagesSent; 
   private final Instant creation;
-  private Text encodedImage;
   private Map<UUID, Boolean> conversationVisibilities;
+  private Image profilePicture;
 
   /**
    * Constructs a new User.
@@ -42,13 +43,13 @@ public class User {
    * @param about the about me message of this User 
    * @param allowMesssageDel does this User want messages deleted?
    * @param messagesSent number of messages this user sent 
-   * @param encodedImage the profile picture of this User 
    * @param creation the creation time of this User
-   * @param conversationVisibilities the map that shows which conversations the user wants to hide
+   * @param profilePicture the profile picture of this User 
+   * @param conversation the map that shows which conversations the user wants to hide
    *
    */
   public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
-              int messagesSent, Instant creation, Text encodedImage, Map conversations) {
+              int messagesSent, Instant creation, Image profilePicture, Map conversations) {
     this.id = id;
     this.name = name;
     this.password = password;
@@ -56,7 +57,7 @@ public class User {
     this.allowMessageDel = allowMessageDel;
     this.messagesSent = messagesSent;
     this.creation = creation;
-    this.encodedImage = encodedImage;
+    this.profilePicture = profilePicture;
     this.conversationVisibilities = conversations;
   }
 
@@ -66,7 +67,6 @@ public class User {
    * @param id the ID of this User
    * @param name the username of this User
    * @param password the password of this User
-   * @param about the about me message of this User 
    * @param creation the creation time of this User
    */
    public User(UUID id, String name, String password, Instant creation) {
@@ -77,8 +77,8 @@ public class User {
     this.allowMessageDel = true;
     this.messagesSent = 0; 
     this.creation = creation;
+    this.profilePicture = null;
     this.conversationVisibilities = new HashMap();
-    this.encodedImage = null;
   }
 
   /** Returns the ID of this User. */
@@ -136,26 +136,19 @@ public class User {
     return conversationVisibilities;
   }
 
-  /** Returns the encoded profile picture of this User. */
-  public String getImage() {
-    if (encodedImage == null) return null;
-    return encodedImage.getValue();
+  /** Returns the profile picture of this User. */
+  public Image getImage() {
+    return profilePicture;
   }
 
-  /** Returns the encoded profile picture of this User as Text. The datastore prefers Text because
-      it can store more bytes. */
-  public Text getImageAsText() {
-    return encodedImage;
+  /** Changes the profile picture of this User, taking an Image as input */
+  public void setImage(Image image) {
+    this.profilePicture = image;
   }
 
-  /** Changes the profile picture of this User, taking String as input */
-  public void setImage(String encodedImageInput) {
-    this.encodedImage = new Text(encodedImageInput);
-  }
-
-  /** Changes the profile picture of this User, taking Text as input */
-  public void setImage(Text encodedImageInput) {
-    this.encodedImage = encodedImageInput;
+  /** Changes the profile picture of this User, taking a byte array as input */
+  public void setImage(byte[] imageBytes) {
+    this.profilePicture.setImageData(imageBytes);
   }
 
   /** Adds a conversation to the list */
