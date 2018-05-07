@@ -89,7 +89,7 @@ public class PersistentDataStore {
 
         // For some reason I kept getting an exception of an instance being null (which I don't 
         // know how it could happen) so this following check fixed it.
-        Instant creationTime = Instant.now();
+        // Instant creationTime = Instant.now();
         if (entity.getProperty("creation") != null) {
           creationTime = Instant.parse((String) entity.getProperty("creation"));
         }
@@ -146,7 +146,7 @@ public class PersistentDataStore {
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
         String about = (String) entity.getProperty("about");        
         UUID uuid = UUID.fromString((String) entity.getProperty("uuid"));
-        User admin = new User(uuid, userName, password, about, creationTime, isAdmin);
+        User admin = new User(uuid, userName, password, creationTime, isAdmin);
         if (isAdmin) {
           admins.add(admin);
         }

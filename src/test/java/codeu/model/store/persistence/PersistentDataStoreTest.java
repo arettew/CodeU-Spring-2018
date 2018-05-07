@@ -41,18 +41,16 @@ public class PersistentDataStoreTest {
     UUID idOne = UUID.randomUUID();
     String nameOne = "test_username_one";
     String passwordOne = "password_one";
-    String aboutOne = "Hi! I'm test_username_one!";
     Instant creationOne = Instant.ofEpochMilli(1000);
     boolean isAdminOne = false;
-    User inputUserOne = new User(idOne, nameOne, passwordOne, aboutOne, creationOne, isAdminOne);
+    User inputUserOne = new User(idOne, nameOne, passwordOne, creationOne, isAdminOne);
 
     UUID idTwo = UUID.randomUUID();
     String nameTwo = "test_username_two";
     String passwordTwo = "password_two";
-    String aboutTwo = "Hi! I'm test_username_two!";
     Instant creationTwo = Instant.ofEpochMilli(2000);
     boolean isAdminTwo = true;
-    User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, aboutTwo, creationTwo, isAdminTwo);
+    User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, creationTwo, isAdminTwo);
 
     // save
     persistentDataStore.writeThrough(inputUserOne);
@@ -66,7 +64,6 @@ public class PersistentDataStoreTest {
     Assert.assertEquals(idOne, resultUserOne.getId());
     Assert.assertEquals(nameOne, resultUserOne.getName());
     Assert.assertEquals(passwordOne, resultUserOne.getPassword());
-    Assert.assertEquals(aboutOne, resultUserOne.getAbout());
     Assert.assertEquals(creationOne, resultUserOne.getCreationTime());
     Assert.assertEquals(isAdminOne, resultUserOne.getIsAdmin());
     Assert.assertEquals(0, resultUserOne.getMessagesSent());
@@ -76,7 +73,6 @@ public class PersistentDataStoreTest {
     Assert.assertEquals(idTwo, resultUserTwo.getId());
     Assert.assertEquals(nameTwo, resultUserTwo.getName());
     Assert.assertEquals(passwordTwo, resultUserTwo.getPassword());
-    Assert.assertEquals(aboutTwo, resultUserTwo.getAbout());
     Assert.assertEquals(creationTwo, resultUserTwo.getCreationTime());
 
     Assert.assertEquals(isAdminTwo, resultUserTwo.getIsAdmin());
@@ -87,18 +83,16 @@ public class PersistentDataStoreTest {
     UUID idOne = UUID.randomUUID();
     String nameOne = "test_username_one";
     String passwordOne = "password_one";
-    String aboutOne = "Hi! I'm test_username_one!";
     Instant creationOne = Instant.ofEpochMilli(1000);
     boolean isAdminOne = false;
-    User inputUserOne = new User(idOne, nameOne, passwordOne, aboutOne, creationOne, isAdminOne);
+    User inputUserOne = new User(idOne, nameOne, passwordOne, creationOne, isAdminOne);
 
     UUID idTwo = UUID.randomUUID();
     String nameTwo = "test_username_two";
     String passwordTwo = "password_two";
-    String aboutTwo = "Hi! I'm test_username_two!";
     Instant creationTwo = Instant.ofEpochMilli(2000);
     boolean isAdminTwo = true;
-    User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, aboutTwo, creationTwo, isAdminTwo);
+    User inputUserTwo = new User(idTwo, nameTwo, passwordTwo, creationTwo, isAdminTwo);
 
     // save
     persistentDataStore.writeThrough(inputUserOne);
@@ -112,34 +106,10 @@ public class PersistentDataStoreTest {
     Assert.assertEquals(idTwo, resultAdminTwo.getId());
     Assert.assertEquals(nameTwo, resultAdminTwo.getName());
     Assert.assertEquals(passwordTwo, resultAdminTwo.getPassword());
-    Assert.assertEquals(aboutTwo, resultAdminTwo.getAbout());
     Assert.assertEquals(creationTwo, resultAdminTwo.getCreationTime());
     Assert.assertEquals(isAdminTwo, resultAdminTwo.getIsAdmin());
-    Assert.assertEquals(0, resultUserTwo.getMessagesSent());
+    Assert.assertEquals(0, resultAdminTwo.getMessagesSent());
 
-    //  update
-    inputUserOne.setAbout("unique_message");
-    persistentDataStore.update(inputUserOne);
-
-    // load
-    resultUsers = persistentDataStore.loadUsers();
-
-    // confirm that what we saved matches what we loaded
-    resultUserOne = resultUsers.get(0);
-    Assert.assertEquals(idOne, resultUserOne.getId());
-    Assert.assertEquals(nameOne, resultUserOne.getName());
-    Assert.assertEquals(passwordOne, resultUserOne.getPassword());
-    Assert.assertEquals("unique_message", resultUserOne.getAbout());
-    Assert.assertEquals(creationOne, resultUserOne.getCreationTime());
-    Assert.assertEquals(0, resultUserOne.getMessagesSent());
-
-    resultUserTwo = resultUsers.get(1);
-    Assert.assertEquals(idTwo, resultUserTwo.getId());
-    Assert.assertEquals(nameTwo, resultUserTwo.getName());
-    Assert.assertEquals(passwordTwo, resultUserTwo.getPassword());
-    Assert.assertEquals("Hi! I'm test_username_two!", resultUserTwo.getAbout());
-    Assert.assertEquals(creationTwo, resultUserTwo.getCreationTime()); 
-    Assert.assertEquals(0, resultUserTwo.getMessagesSent());
   }
 
   @Test

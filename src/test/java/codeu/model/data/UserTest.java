@@ -32,7 +32,7 @@ public class UserTest {
     String about = "Hi! I'm test_username!";
     boolean isAdmin = false;
 
-    User user = new User(id, name, password, about, creation, isAdmin);
+    User user = new User(id, name, password, creation, isAdmin);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
@@ -66,6 +66,10 @@ public class UserTest {
     Assert.assertEquals(about, user.getAbout());
     Assert.assertEquals(creation, user.getCreationTime());
     Assert.assertEquals(isAdmin, user.getIsAdmin());
+    Assert.assertEquals("Hi! I'm test_username!", user.getAbout());
+    Assert.assertEquals(allowMessageDel, user.getAllowMessageDel());
+    Assert.assertEquals(messagesSent, user.getMessagesSent());  
+    Assert.assertEquals(conversationVisibilities, user.getConversations());
   }
 
   @Test
@@ -77,15 +81,10 @@ public class UserTest {
     String password = "password";
     boolean isAdmin = false;
 
-    User user = new User(id, name, password, about, creation, isAdmin);
+    User user = new User(id, name, password, creation, isAdmin);
     user.invertAdminStatus();
 
     Assert.assertEquals(true, user.getIsAdmin());
-    Assert.assertEquals("unique message", user.getAbout());
-    Assert.assertEquals(allowMessageDel, user.getAllowMessageDel());
-    Assert.assertEquals(messagesSent, user.getMessagesSent());
-    Assert.assertEquals(creation, user.getCreationTime());
-    Assert.assertEquals(conversationVisibilities, user.getConversations());
   }
 
   @Test
@@ -99,7 +98,7 @@ public class UserTest {
     boolean allowMessageDel = false;
 
 
-    User user = new User(id, name, password, about, isAdmin, creation, allowMessageDel);
+    User user = new User(id, name, password, creation, isAdmin);
     user.setAbout("new_message");
     user.incMessagesSent();
     user.setAllowMessageDel(false);

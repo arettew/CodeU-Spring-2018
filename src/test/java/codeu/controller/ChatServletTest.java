@@ -137,7 +137,7 @@ public class ChatServletTest {
     Mockito.when(mockRequest.getRequestURI()).thenReturn("/chat/test_conversation");
     Mockito.when(mockSession.getAttribute("user")).thenReturn("test_username");
 
-    User fakeUser = new User(UUID.randomUUID(), "test_username", "password", "about", Instant.now(), false);
+    User fakeUser = new User(UUID.randomUUID(), "test_username", "password", Instant.now(), false);
     Mockito.when(mockUserStore.getUser("test_username")).thenReturn(fakeUser);
 
     Mockito.when(mockConversationStore.getConversationWithTitle("test_conversation"))
@@ -154,7 +154,7 @@ public class ChatServletTest {
     Mockito.when(mockRequest.getRequestURI()).thenReturn("/chat/test_conversation");
     Mockito.when(mockSession.getAttribute("user")).thenReturn("test_username");
 
-    User fakeUser = new User(UUID.randomUUID(), "test_username","password", "about", Instant.now(), false);
+    User fakeUser = new User(UUID.randomUUID(), "test_username","password", Instant.now(), false);
     Mockito.when(mockUserStore.getUser("test_username")).thenReturn(fakeUser);
 
     Conversation fakeConversation =
@@ -179,7 +179,7 @@ public class ChatServletTest {
     Mockito.when(mockRequest.getRequestURI()).thenReturn("/chat/test_conversation");
     Mockito.when(mockSession.getAttribute("user")).thenReturn("test_username");
 
-    User fakeUser = new User(UUID.randomUUID(), "test_username", "password", "about", Instant.now(), false);
+    User fakeUser = new User(UUID.randomUUID(), "test_username", "password", Instant.now(), false);
     Mockito.when(mockUserStore.getUser("test_username")).thenReturn(fakeUser);
 
     Conversation fakeConversation =
@@ -207,7 +207,7 @@ public class ChatServletTest {
 
     UUID userId = UUID.randomUUID();
     Map<UUID, Boolean> conversationVisibilities = new HashMap();
-    User fakeUser = new User(userId, "test_username","password", "", true, 15000, Instant.now(),
+    User fakeUser = new User(userId, "test_username","password", "", true, true, 15000, Instant.now(),
                              conversationVisibilities);
     Mockito.when(mockUserStore.getUser("test_username")).thenReturn(fakeUser);
 
