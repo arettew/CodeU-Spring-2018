@@ -9,6 +9,7 @@ import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import java.util.UUID;
 
 /**
   * Servlet class responsible for user profile pages
@@ -18,6 +19,12 @@ public class ProfileServlet extends HttpServlet {
   
   /** Store class that gives access to users */
   private UserStore userStore;
+
+  /** Constant strings that describe the request for the DoPost function */
+  private static final String REQUEST_ABOUT = "about";
+  private static final String REQUEST_HIDDEN = "hidden";
+  private static final String REQUEST_RESET = "reset";
+  private static final String REQUEST_MESSAGEDELETION = "messageDeletion";
 
   /** Set up state for handling profile requests. */
   @Override
@@ -53,6 +60,7 @@ public class ProfileServlet extends HttpServlet {
       }
 
       request.setAttribute("profileOwner", user.getName());
+      request.setAttribute("ownerId", user.getId());
       request.getRequestDispatcher("/WEB-INF/view/profile.jsp").forward(request, response);
     }
 
@@ -71,24 +79,54 @@ public class ProfileServlet extends HttpServlet {
       User owner = userStore.getUser(ownerName);
 
       if (userName == null) {
-        //  User is not logged in. Don't let them edit the message
+        //  User is not logged in. Don't let them change any element of the profile 
         response.sendRedirect("/login");
         return;
       }
 
       if (!userName.equals(ownerName)) {
-        //  This is not the users profile. Don't let them edit the message
+        //  This is not the user's profile. Don't let them change any element of the profile
         response.sendRedirect("/profile/" + ownerName);
         return;
       } 
 
-      String aboutMessage = request.getParameter("about");
+      // The parameter whichForm from profile.jsp determines which form was submitted. This is 
+      // helpful to handle each post request differently.
+      switch (request.getParameter("whichForm")) {
+        
+        case REQUEST_ABOUT:
+          //About message was posted
+          String aboutMessage = request.getParameter("about");
 
-      //  This cleans the message of HTML
-      String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
-      owner.setAbout(cleanedAboutMessage);
+          //This cleans the message of HTML
+          String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
+          owner.setAbout(cleanedAboutMessage);
 
-      // TODO: Make sure that the change to the message is properly stored
+          break;
+
+        case REQUEST_HIDDEN:
+          //Conversation to hide was posted
+          UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
+          owner.hideConversation(conversationToHide);
+
+          break;
+          
+        case REQUEST_MESSAGEDELETION:
+          //  The user wants to change whether or not their messages will be deleted
+          String delete = request.getParameter("delete");
+
+          boolean allowMessageDel = (delete.equals("yes"));
+          owner.setAllowMessageDel(allowMessageDel);
+
+          break;
+
+        case REQUEST_RESET:
+          //User wants to show all their conversations again
+          owner.showAllConversations();
+
+          break;
+      }
+
       userStore.updateUser(owner);
 
       //  Redirect to a GET request

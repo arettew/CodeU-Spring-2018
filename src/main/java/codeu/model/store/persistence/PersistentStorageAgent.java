@@ -109,13 +109,18 @@ public class PersistentStorageAgent {
     persistentDataStore.update(user);
   }
 
-  /** Write a Message object to the Datastore service. */
+  /** Write a Conversation object to the Datastore service. */
   public void writeThrough(Conversation conversation) {
     persistentDataStore.writeThrough(conversation);
   }
 
-  /** Write a Conversation object to the Datastore service. */
+  /** Write a Messsage object to the Datastore service. */
   public void writeThrough(Message message) {
     persistentDataStore.writeThrough(message);
+  }
+
+  /** Delete a Message object from the Datastore service */
+  public void delete(Message message) {
+    persistentDataStore.delete(message);
   }
 }

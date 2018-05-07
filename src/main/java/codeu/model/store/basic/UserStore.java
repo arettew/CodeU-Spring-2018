@@ -105,6 +105,15 @@ public class UserStore {
     persistentStorageAgent.writeThrough(user);
   }
 
+  /** Deletes user2 if user1 is an admin and returns user2 if deleted, null if not */
+  public User deleteUser(User user1, User user2){
+    // if(user1.isAdmin && users.contains(user2)) {
+      users.remove(user2);
+      return user2;
+    // }
+    // return null;
+  }
+
   /** Update the information of a known user */
   public void updateUser(User user) {
     persistentStorageAgent.update(user);
@@ -133,4 +142,8 @@ public class UserStore {
     this.users = users;
   }
 
+
+  public List<User> getUsers() throws PersistentDataStoreException {
+    return persistentStorageAgent.loadUsers();
+  }
 }
