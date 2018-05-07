@@ -68,6 +68,10 @@ public class Message implements Comparable<Message> {
     return creation;
   }
 
+  public int getWords() {
+    return content.trim().split("\\s+").length;
+  }
+
   /** Compares the messages by time sent */
   @Override
   public int compareTo(Message other) {
