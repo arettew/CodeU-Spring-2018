@@ -68,7 +68,6 @@ public class Message implements Comparable<Message> {
     return creation;
   }
 
-
   public int getWords() {
     return content.trim().split("\\s+").length;
   }
