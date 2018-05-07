@@ -29,35 +29,58 @@ public class UserTest {
     String name = "test_username";
     Instant creation = Instant.now();
     String password = "password";
+    String about = "Hi! I'm test_username!";
+    boolean isAdmin = false;
 
-    User user = new User(id, name, password, creation);
+    User user = new User(id, name, password, about, creation, isAdmin);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
+    Assert.assertEquals(about, user.getAbout());
     Assert.assertEquals("Hi! I'm test_username!", user.getAbout());
     Assert.assertEquals(true, user.getAllowMessageDel());
     Assert.assertEquals(0, user.getMessagesSent());
     Assert.assertEquals(creation, user.getCreationTime());
+    Assert.assertEquals(isAdmin, user.getIsAdmin());
   }
 
   @Test
   public void testAltCreate() {
     UUID id = UUID.randomUUID();
     String name = "test_username";
-    String about = "unique message";
+    String about = "Hi! I'm test_username!";
     Instant creation = Instant.now();
     String password = "password";
+    boolean isAdmin = false;
     boolean allowMessageDel = false;
     int messagesSent = 10;
     Map<UUID, Boolean> conversationVisibilities = new HashMap();
 
-    User user = new User(id, name, password, about, allowMessageDel, messagesSent, creation,
+    User user = new User(id, name, password, about, isAdmin, allowMessageDel, messagesSent, creation,
                          conversationVisibilities);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
     Assert.assertEquals(password, user.getPassword());
+    Assert.assertEquals(about, user.getAbout());
+    Assert.assertEquals(creation, user.getCreationTime());
+    Assert.assertEquals(isAdmin, user.getIsAdmin());
+  }
+
+  @Test
+  public void changeAdminStatus() {
+    UUID id= UUID.randomUUID();
+    String name = "test_username";
+    Instant creation = Instant.now();
+    String about = "about";
+    String password = "password";
+    boolean isAdmin = false;
+
+    User user = new User(id, name, password, about, creation, isAdmin);
+    user.invertAdminStatus();
+
+    Assert.assertEquals(true, user.getIsAdmin());
     Assert.assertEquals("unique message", user.getAbout());
     Assert.assertEquals(allowMessageDel, user.getAllowMessageDel());
     Assert.assertEquals(messagesSent, user.getMessagesSent());
@@ -70,14 +93,18 @@ public class UserTest {
     UUID id= UUID.randomUUID();
     String name = "test_username";
     Instant creation = Instant.now();
+    String about = "about";
     String password = "password";
+    boolean isAdmin = false;
     boolean allowMessageDel = false;
 
-    User user = new User(id, name, password, creation);
+
+    User user = new User(id, name, password, about, isAdmin, creation, allowMessageDel);
     user.setAbout("new_message");
     user.incMessagesSent();
     user.setAllowMessageDel(false);
 
+    Assert.assertEquals("new_message", user.getAbout());
     Assert.assertEquals(user.getAbout(), "new_message");
     Assert.assertEquals(user.getMessagesSent(), 1);
     Assert.assertEquals(user.getAllowMessageDel(), allowMessageDel);

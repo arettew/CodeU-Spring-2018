@@ -17,6 +17,8 @@ import java.time.Instant;
 
 public class RegisterServlet extends HttpServlet {
 
+  private final String ADMIN_PASSWORD = "123";
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
@@ -31,6 +33,12 @@ public class RegisterServlet extends HttpServlet {
 
     String username = request.getParameter("username");
     String password = request.getParameter("password");
+    String about = request.getParameter("about");
+    boolean isAdmin = false;
+
+    if (ADMIN_PASSWORD.equals(request.getParameter("admin_password"))) {
+      isAdmin = true;
+    }
     String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
 
     if (!username.matches("[\\w*\\s*]*")) {
@@ -45,7 +53,7 @@ public class RegisterServlet extends HttpServlet {
       return;
     }
 
-    User user = new User(UUID.randomUUID(), username, passwordHash, Instant.now());
+    User user = new User(UUID.randomUUID(), username, passwordHash, about, Instant.now(), isAdmin);
     userStore.addUser(user);
 
     response.sendRedirect("/login");

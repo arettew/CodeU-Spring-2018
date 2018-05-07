@@ -1,11 +1,15 @@
+
 package codeu.controller;
 
 import org.mindrot.jbcrypt.BCrypt;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import codeu.model.data.Message;
+import codeu.model.store.basic.ConversationStore;
 import codeu.model.store.basic.MessageStore;
+import codeu.controller.ServletUrlStrings;
 import codeu.model.store.persistence.PersistentDataStoreException;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
@@ -21,12 +25,18 @@ import java.util.Collections;
 import java.util.stream.*;
 import java.util.function.*;
 
+
 /** Servlet class responsible for the login page. */
 public class AdminServlet extends HttpServlet {
 
   /** Store class that gives access to Users. */
   private UserStore userStore;
+
+  private ConversationStore conversationStore;
   private MessageStore messageStore;
+  public static final String ADMIN_URL = "/adminView/";
+  private MessageStore messageStore;
+
 
   /**
    * Set up state for handling login-related requests. This method is only called when running in a
@@ -47,6 +57,12 @@ public class AdminServlet extends HttpServlet {
     this.userStore = userStore;
   }
 
+
+  /**
+   * This function fires when a user requests the /adminview URL. It checks whether the user is an admin
+   * If they are, they will be forwarded to adminview.jsp, if not
+   * they are forwarded to conversations.jsp
+
   void setMessageStore(MessageStore messageStore){
     this.messageStore = messageStore;
   }
@@ -54,11 +70,30 @@ public class AdminServlet extends HttpServlet {
   /**
    * This function fires when a user requests the /login URL. It simply forwards the request to
    * login.jsp.
+
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-    request.getRequestDispatcher("/WEB-INF/view/admin.jsp").forward(request, response);
+    
+    String requestURL = request.getRequestURI();
+    String userName = requestURL.substring(ADMIN_URL.length());
+    User user = userStore.getUser(userName);
+    if (!user.getIsAdmin()) {
+      System.out.println("user not admin");
+      response.sendRedirect("/conversations");
+    }
+
+    int numMessages = messageStore.getNumMessages();
+    int numConversations = conversationStore.getNumConversations();
+    int numUsers = userStore.getNumUsers();
+
+    request.setAttribute("numMessages", numMessages);
+    request.setAttribute("numConversations", numConversations);
+    request.setAttribute("numUsers", numUsers);
+
+    request.getRequestDispatcher(ServletUrlStrings.adminViewJsp).forward(request, response);
+ 
   }
 
  public List<User> getMostActiveUsers(int x) throws PersistentDataStoreException {

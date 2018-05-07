@@ -128,6 +128,11 @@ public class UserStore {
     }
     return false;
   }
+  
+  // returns number of users
+  public int getNumUsers() {
+    return users.size();
+  }
 
   /**
    * Sets the List of Users stored by this UserStore. This should only be called once, when the data
@@ -136,6 +141,7 @@ public class UserStore {
   public void setUsers(List<User> users) {
     this.users = users;
   }
+
 
   public List<User> getUsers() throws PersistentDataStoreException {
     return persistentStorageAgent.loadUsers();

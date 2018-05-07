@@ -29,7 +29,9 @@ public class User {
   private boolean allowMessageDel;
   private int messagesSent; 
   private final Instant creation;
+  private boolean isAdmin;
   private Map<UUID, Boolean> conversationVisibilities;
+
 
   /**
    * Constructs a new User.
@@ -41,15 +43,20 @@ public class User {
    * @param allowMesssageDel does this User want messages deleted?
    * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
+   * @param isAdmin the isAdmin value of this User
+   */
+   public User(UUID id, String name, String password, String about, Instant creation, boolean isAdmin) {
+
    * @param conversationVisibilities the map that shows which conversations the user wants to hide
    *
    */
-  public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
+  public User(UUID id, String name, String password, String about, boolean isAdmin, boolean allowMessageDel, 
               int messagesSent, Instant creation, Map conversations) {
     this.id = id;
     this.name = name;
     this.password = password;
     this.about = about;
+    this.isAdmin = isAdmin;
     this.allowMessageDel = allowMessageDel;
     this.messagesSent = messagesSent;
     this.creation = creation;
@@ -67,7 +74,8 @@ public class User {
    * @param messagesSent the number of messages this user sent
    * @param creation the creation time of this User
    */
-   public User(UUID id, String name, String password, Instant creation) {
+   public User(UUID id, String name, String password, boolean isAdmin, Instant creation) {
+
     this.id = id;
     this.name = name;
     this.password = password;
@@ -75,7 +83,11 @@ public class User {
     this.allowMessageDel = true;
     this.messagesSent = 0; 
     this.creation = creation;
+    this.isAdmin = isAdmin;
+
+
     this.conversationVisibilities = new HashMap();
+
   }
 
   /** Returns the ID of this User. */
@@ -96,6 +108,15 @@ public class User {
   /** Returns the creation time of this User. */
   public Instant getCreationTime() {
     return creation;
+  }
+
+  /** Returns whether User is admin or not. */
+  public boolean getIsAdmin() {
+    return isAdmin;
+  }
+  /** Changes admin status of User */
+  public void invertAdminStatus() {
+    this.isAdmin = !(this.isAdmin);
   }
 
   /** Returns the "about me" message of this User. */
