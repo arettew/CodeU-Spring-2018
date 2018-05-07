@@ -35,7 +35,6 @@ public class AdminServlet extends HttpServlet {
   private ConversationStore conversationStore;
   private MessageStore messageStore;
   public static final String ADMIN_URL = "/adminView/";
-  private MessageStore messageStore;
 
 
   /**
@@ -56,21 +55,16 @@ public class AdminServlet extends HttpServlet {
   void setUserStore(UserStore userStore) {
     this.userStore = userStore;
   }
-
-
-  /**
-   * This function fires when a user requests the /adminview URL. It checks whether the user is an admin
-   * If they are, they will be forwarded to adminview.jsp, if not
-   * they are forwarded to conversations.jsp
-
   void setMessageStore(MessageStore messageStore){
     this.messageStore = messageStore;
   }
 
   /**
+   * This function fires when a user requests the /adminview URL. It checks whether the user is an admin
+   * If they are, they will be forwarded to adminview.jsp, if not
+   * they are forwarded to conversations.jsp
    * This function fires when a user requests the /login URL. It simply forwards the request to
    * login.jsp.
-
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)

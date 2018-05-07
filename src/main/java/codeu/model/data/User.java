@@ -44,9 +44,6 @@ public class User {
    * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
    * @param isAdmin the isAdmin value of this User
-   */
-   public User(UUID id, String name, String password, String about, Instant creation, boolean isAdmin) {
-
    * @param conversationVisibilities the map that shows which conversations the user wants to hide
    *
    */
@@ -74,7 +71,7 @@ public class User {
    * @param messagesSent the number of messages this user sent
    * @param creation the creation time of this User
    */
-   public User(UUID id, String name, String password, boolean isAdmin, Instant creation) {
+   public User(UUID id, String name, String password, Instant creation, boolean isAdmin) {
 
     this.id = id;
     this.name = name;
