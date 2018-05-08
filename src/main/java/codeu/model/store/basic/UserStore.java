@@ -105,13 +105,10 @@ public class UserStore {
     persistentStorageAgent.writeThrough(user);
   }
 
-  /** Deletes user2 if user1 is an admin and returns user2 if deleted, null if not */
-  public User deleteUser(User user1, User user2){
-    // if(user1.isAdmin && users.contains(user2)) {
-      users.remove(user2);
-      return user2;
-    // }
-    // return null;
+  /** Deletes user */
+  public void deleteUser(User user){
+    users.remove(user);
+    persistentStorageAgent.delete(user);
   }
 
   /** Update the information of a known user */
@@ -128,7 +125,7 @@ public class UserStore {
     }
     return false;
   }
-  
+
   // returns number of users
   public int getNumUsers() {
     return users.size();
