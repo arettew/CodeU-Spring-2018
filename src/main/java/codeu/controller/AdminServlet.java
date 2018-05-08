@@ -55,7 +55,8 @@ public class AdminServlet extends HttpServlet {
   void setUserStore(UserStore userStore) {
     this.userStore = userStore;
   }
-  void setMessageStore(MessageStore messageStore){
+
+  void setMessageStore(MessageStore messageStore) {
     this.messageStore = messageStore;
   }
 
@@ -69,7 +70,7 @@ public class AdminServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-    
+
     String requestURL = request.getRequestURI();
     String userName = requestURL.substring(ADMIN_URL.length());
     User user = userStore.getUser(userName);
@@ -78,52 +79,75 @@ public class AdminServlet extends HttpServlet {
       response.sendRedirect("/conversations");
     }
 
-    int numMessages = messageStore.getNumMessages();
-    int numConversations = conversationStore.getNumConversations();
     int numUsers = userStore.getNumUsers();
+    int numConversations = conversationStore.getNumConversations();
+    int numMessages = messageStore.getNumMessages();
+    String mostActiveUser = "";
+    String newestUser = "";
+    String wordiestUser = "";
+    try{
+      mostActiveUser = getMostActiveUsers(1).get(0).getName();
+      newestUser = getNewestUsers(1).get(0).getName();
+      wordiestUser = getWordiestUsers(1).get(0).getName();
+    } catch(PersistentDataStoreException p){
 
-    request.setAttribute("numMessages", numMessages);
-    request.setAttribute("numConversations", numConversations);
+    }
+
     request.setAttribute("numUsers", numUsers);
+    request.setAttribute("numConversations", numConversations);
+    request.setAttribute("numMessages", numMessages);
+    request.setAttribute("mostActiveUser", mostActiveUser);
+    request.setAttribute("newestUser", newestUser);
+    request.setAttribute("wordiestUser", wordiestUser);
 
     request.getRequestDispatcher(ServletUrlStrings.adminViewJsp).forward(request, response);
- 
   }
 
- public List<User> getMostActiveUsers(int x) throws PersistentDataStoreException {
-   List<UUID> userIds = userStore.getUsers().stream().map(User::getId).collect(Collectors.toList());
-   Map<UUID, Integer> numberOfMessagesByUserId = userIds.stream()
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws IOException, ServletException {
+    String username = request.getParameter("username");
+
+    if (userStore.isUserRegistered(username)) {
+      User user = userStore.getUser(username);
+      userStore.deleteUser(user);
+    }
+  }
+
+  public List<User> getMostActiveUsers(int x) throws PersistentDataStoreException {
+    List<UUID> userIds = userStore.getUsers().stream().map(User::getId).collect(Collectors.toList());
+    Map<UUID, Integer> numberOfMessagesByUserId = userIds.stream()
       .collect(Collectors.toMap(Function.identity(), userId -> (messageStore.getMessagesByUserId(userId)).size()));
-   return numberOfMessagesByUserId.entrySet().stream()
+    return numberOfMessagesByUserId.entrySet().stream()
       .sorted(Map.Entry.comparingByValue())
       .sorted(Collections.reverseOrder())
       .map(Map.Entry::getKey)
       .map(userId -> userStore.getUser(userId))
       .limit(x)
       .collect(Collectors.toList());
- }
+  }
 
- public List<User> getNewestUsers(int x) throws PersistentDataStoreException {
-   return userStore.getUsers().stream()
+  public List<User> getNewestUsers(int x) throws PersistentDataStoreException {
+    return userStore.getUsers().stream()
       .sorted(Collections.reverseOrder())
       .limit(x)
       .collect(Collectors.toList());
- }
+  }
 
- public List<User> getWordiestUsers(int x) throws PersistentDataStoreException {
-   List<UUID> userIds = userStore.getUsers().stream().map(User::getId).collect(Collectors.toList());
-   Map<UUID, Integer> numberOfWordsByUserId = userIds.stream()
+  public List<User> getWordiestUsers(int x) throws PersistentDataStoreException {
+    List<UUID> userIds = userStore.getUsers().stream().map(User::getId).collect(Collectors.toList());
+    Map<UUID, Integer> numberOfWordsByUserId = userIds.stream()
       .collect(Collectors.toMap(Function.identity(), userId ->
       messageStore.getMessagesByUserId(userId).stream()
         .mapToInt(Message::getWords)
         .sum()));
-   return numberOfWordsByUserId.entrySet().stream()
+    return numberOfWordsByUserId.entrySet().stream()
       .sorted(Map.Entry.comparingByValue())
       .sorted(Collections.reverseOrder())
       .map(Map.Entry::getKey)
       .map(userId -> userStore.getUser(userId))
       .limit(x)
       .collect(Collectors.toList());
- }
+  }
 
 }

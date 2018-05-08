@@ -41,16 +41,31 @@ String numMessages = (String) request.getAttribute("numMessages");
         <strong>Site Statistics</strong>
         Here are some site stats:
       </p>
-      <!-- TO:DO (rchen): link backend --> 
+      <!-- TO:DO (rchen): link backend -->
       <ul>
       	<li><strong>Users:</strong> <%= numUsers %> </li>
       	<li><strong>Conversations:</strong> <%= numConversations %> </li>
       	<li><strong>Messages:</strong> <%= numMessages %> </li>
-        <li><strong>Most Active User:</strong> (hard coded) rebecca </li>
-        <li><strong>Newest User:</strong> (hard coded) gautham </li>
-        <li><strong>Wordiest User:</strong> (hard coded) andres </li>
+        <li><strong>Most Active User:</strong> mostActiveUser </li>
+        <li><strong>Newest User:</strong> newestUser </li>
+        <li><strong>Wordiest User:</strong> wordiestUser </li>
       </ul>
     </div>
+  </div>
+
+  <div id="container">
+    <h1>Delete User</h1>
+
+    <% if(request.getAttribute("error") != null){ %>
+        <h2 style="color:red"><%= request.getAttribute("error") %></h2>
+    <% } %>
+
+    <form action="/login" method="POST">
+      <label for="username">Username: </label>
+      <input type="text" name="username" id="username">
+      <br/><br/>
+      <button type="submit">Delete User</button>
+    </form>
   </div>
 </body>
 </html>

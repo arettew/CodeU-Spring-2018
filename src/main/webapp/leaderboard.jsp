@@ -43,8 +43,8 @@ String numUsers = (String) request.getAttribute("numUsers");
       <ul>
         <!-- numUsers shows up as null for some reason? -->
         <li><strong>Users:</strong> <%= numUsers %> </li>
-        <li><strong>Newest User:</strong> (hard coded) gautham </li>
-        <li><strong>Wordiest User:</strong> (hard coded) andres </li>
+        <li><strong>Newest User:</strong> newestUser </li>
+        <li><strong>Wordiest User:</strong> wordiestUser </li>
       </ul>
     </div>
   </div>

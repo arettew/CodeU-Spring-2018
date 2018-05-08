@@ -43,10 +43,10 @@ public class PersistentDataStore {
   private DatastoreService datastore;
 
   //  List of UserEntities that can be used alter user data
-  private Map<UUID, Entity> userEntitiesById; 
-  
+  private Map<UUID, Entity> userEntitiesById;
+
   //  List of Message Entities that can be used to alter message data
-  private Map<UUID, Entity> messageEntitiesById;  
+  private Map<UUID, Entity> messageEntitiesById;
 
   /**
    * Constructs a new PersistentDataStore and sets up its state to begin loading objects from the
@@ -87,7 +87,7 @@ public class PersistentDataStore {
                          ? ((Long) entity.getProperty("messagesSent")).intValue()
                          : -1;
 
-        // For some reason I kept getting an exception of an instance being null (which I don't 
+        // For some reason I kept getting an exception of an instance being null (which I don't
         // know how it could happen) so this following check fixed it.
         // Instant creationTime = Instant.now();
         if (entity.getProperty("creation") != null) {
@@ -144,7 +144,7 @@ public class PersistentDataStore {
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         Instant creationTime = Instant.parse((String) entity.getProperty("creation_time"));
-        String about = (String) entity.getProperty("about");        
+        String about = (String) entity.getProperty("about");
         UUID uuid = UUID.fromString((String) entity.getProperty("uuid"));
         User admin = new User(uuid, userName, password, creationTime, isAdmin);
         if (isAdmin) {
@@ -262,7 +262,7 @@ public class PersistentDataStore {
     if (!userEntitiesById.containsKey(userId)) {
       return;
     }
-    
+
     Entity userEntity = userEntitiesById.get(userId);
     userEntity.setProperty("about", user.getAbout());
     userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
@@ -280,6 +280,17 @@ public class PersistentDataStore {
     userEntity.setProperty("hiddenConversations", hiddenConversations);
 
     datastore.put(userEntity);
+  }
+
+  /** Delete a User object from the Datastore service */
+  public void delete(User user) {
+    UUID userId = user.getId();
+    if (!userEntitiesById.containsKey(userId)) {
+      return;
+    }
+
+    Entity userEntity = userEntitiesById.get(userId);
+    datastore.delete(userEntity.getKey());
   }
 
   /** Write a Message object to the Datastore service. */

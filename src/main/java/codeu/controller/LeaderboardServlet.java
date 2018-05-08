@@ -17,6 +17,10 @@ package codeu.controller;
 // import org.mindrot.jbcrypt.*;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
+import codeu.model.data.Message;
+import codeu.model.store.basic.ConversationStore;
+import codeu.model.store.basic.MessageStore;
+import codeu.model.store.persistence.PersistentDataStoreException;
 import codeu.controller.ServletUrlStrings;
 import java.io.IOException;
 import java.time.Instant;
@@ -25,12 +29,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
+import java.util.stream.*;
+import java.util.function.*;
 
 /** Servlet class responsible for the login page. */
 public class LeaderboardServlet extends HttpServlet {
 
   /** Store class that gives access to Users. */
   private UserStore userStore;
+  private MessageStore messageStore;
 
   /**
    * Set up state for handling login-related requests. This method is only called when running in a
@@ -40,6 +52,7 @@ public class LeaderboardServlet extends HttpServlet {
   public void init() throws ServletException {
     super.init();
     setUserStore(UserStore.getInstance());
+    setMessageStore(MessageStore.getInstance());
   }
 
   /**
@@ -50,16 +63,54 @@ public class LeaderboardServlet extends HttpServlet {
     this.userStore = userStore;
   }
 
+  void setMessageStore(MessageStore messageStore) {
+    this.messageStore = messageStore;
+  }
+
   /**
-   * This function fires when a user navigates to the leaderboard page, calls the 
+   * This function fires when a user navigates to the leaderboard page, calls the
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-      
+
     int numUsers = userStore.getNumUsers();
+    String newestUser = "";
+    String wordiestUser = "";
+    try{
+      newestUser = getNewestUsers(1).get(0).getName();
+      wordiestUser = getWordiestUsers(1).get(0).getName();
+    } catch(PersistentDataStoreException p){
+
+    }
+
     request.setAttribute("numUsers", numUsers);
+    request.setAttribute("newestUser", newestUser);
+    request.setAttribute("wordiestUser", wordiestUser);
     request.getRequestDispatcher(ServletUrlStrings.leadershipJsp).forward(request, response);
+  }
+
+  public List<User> getNewestUsers(int x) throws PersistentDataStoreException {
+    return userStore.getUsers().stream()
+      .sorted(Collections.reverseOrder())
+      .limit(x)
+      .collect(Collectors.toList());
+  }
+
+  public List<User> getWordiestUsers(int x) throws PersistentDataStoreException {
+    List<UUID> userIds = userStore.getUsers().stream().map(User::getId).collect(Collectors.toList());
+    Map<UUID, Integer> numberOfWordsByUserId = userIds.stream()
+      .collect(Collectors.toMap(Function.identity(), userId ->
+      messageStore.getMessagesByUserId(userId).stream()
+        .mapToInt(Message::getWords)
+        .sum()));
+    return numberOfWordsByUserId.entrySet().stream()
+      .sorted(Map.Entry.comparingByValue())
+      .sorted(Collections.reverseOrder())
+      .map(Map.Entry::getKey)
+      .map(userId -> userStore.getUser(userId))
+      .limit(x)
+      .collect(Collectors.toList());
   }
 
 }
