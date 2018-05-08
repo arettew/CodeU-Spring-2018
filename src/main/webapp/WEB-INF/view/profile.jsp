@@ -90,7 +90,6 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
       <h3>Edit your about me. Only you can see this.</h3>
       <form action="/profile/<%= profileOwnerName%>" method="POST">
         <input type="text" name="about">
-        <input type="hidden" name="whichForm" value ="about">
         <br/>
         <button type="submit">Submit</button>
       </form>
@@ -99,20 +98,14 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
       <form action="/profile/<%= profileOwnerName%>" method="POST">
         <% boolean allowMessageDel = 
           UserStore.getInstance().getUser(profileOwnerName).getAllowMessageDel(); %>
-        <input type="radio" name="delete" value="yes" 
+        <input type="checkbox" name="delete" 
           <%if(allowMessageDel) { %> 
             checked
             <% } %> 
         >
-        Yes<br>
-        <input type="radio" name="delete" value="no"
-          <%if(!allowMessageDel) { %> 
-            checked
-            <% } %> 
-        >
-        No<br>
-        <input type="hidden" name="whichForm" value ="messageDeletion">
-        <button type="submit">Submit</button>
+        Allow Message Deletion<br>
+        <input type="hidden" name="deleteSubmitted" value ="messageDeletion">
+        <button type="submit">Update</button>
       </form>
     <% } %>
 
@@ -144,7 +137,7 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
       
     <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
         <form action="/profile/<%= profileOwnerName%>" method="POST">
-          <input type="hidden" name="whichForm" value ="reset">
+          <input type="hidden" name="reset" value ="reset">
           <button type="submit">Show All Conversations</button>
         </form>
     <%  } %>      
@@ -162,7 +155,6 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
     <%    if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
             <li><a href="../chat/<%=conversation.getTitle()%>"> <%= conversation.getTitle() %> </a>
               <form action="/profile/<%= profileOwnerName%>" method="POST">
-                <input type="hidden" name="whichForm" value ="hidden">
                 <button type="submit" name="convToHide" value="<%= key %>">Hide</button>
               </form>
             </li>
