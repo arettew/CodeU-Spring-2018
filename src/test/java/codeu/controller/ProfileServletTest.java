@@ -45,7 +45,7 @@ public class ProfileServletTest {
     Mockito.when(mockRequest.getRequestURI()).thenReturn("/profile/test_user");
 
     UUID fakeUserID = UUID.randomUUID();
-    User fakeUser = new User(fakeUserID, "test_user", "password", Instant.now());
+    User fakeUser = new User(fakeUserID, "test_user", "password", Instant.now(), false);
     Mockito.when(mockUserStore.getUser("test_user")).thenReturn(fakeUser);
 
     profileServlet.doGet(mockRequest, mockResponse);
@@ -71,7 +71,7 @@ public class ProfileServletTest {
     Mockito.when(mockSession.getAttribute("user")).thenReturn("test_user");
 
     UUID fakeUserID = UUID.randomUUID();
-    User fakeUser = new User(fakeUserID, "test_user", "password", Instant.now());
+    User fakeUser = new User(fakeUserID, "test_user", "password", Instant.now(), false);
     Mockito.when(mockUserStore.getUser("test_user")).thenReturn(fakeUser);
 
     Mockito.when(mockRequest.getParameter("about")).thenReturn("new_message");
@@ -89,7 +89,7 @@ public class ProfileServletTest {
     Mockito.when(mockSession.getAttribute("user")).thenReturn("bad_user");
 
     UUID fakeUserID = UUID.randomUUID();
-    User fakeUser = new User(fakeUserID, "test_user", "password", Instant.now());
+    User fakeUser = new User(fakeUserID, "test_user", "password", Instant.now(), false);
     Mockito.when(mockUserStore.getUser("test_user")).thenReturn(fakeUser);
 
     Mockito.when(mockRequest.getParameter("about")).thenReturn("new_message");

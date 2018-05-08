@@ -70,6 +70,16 @@ public class PersistentStorageAgent {
   }
 
   /**
+   * Retrieve all User objects who are admins from the Datastore service. The returned list may be empty.
+   *
+   * @throws PersistentDataStoreException if an error was detected during the load from the
+   *     Datastore service
+   */
+  public List<User> loadAdmins() throws PersistentDataStoreException {
+    return persistentDataStore.loadAdmins();
+  }
+
+  /**
    * Retrieve all Conversation objects from the Datastore service. The returned list may be empty.
    *
    * @throws PersistentDataStoreException if an error was detected during the load from the
@@ -97,6 +107,11 @@ public class PersistentStorageAgent {
   /** Update the information of a User within the Datastore */
   public void update(User user) {
     persistentDataStore.update(user);
+  }
+
+  /** Delete a User object from the Datastore service */
+  public void delete(User user) {
+    persistentDataStore.delete(user);
   }
 
   /** Write a Conversation object to the Datastore service. */

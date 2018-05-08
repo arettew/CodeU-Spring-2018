@@ -48,10 +48,10 @@ public class PersistentDataStore {
   private DatastoreService datastore;
 
   //  List of UserEntities that can be used alter user data
-  private Map<UUID, Entity> userEntitiesById; 
-  
+  private Map<UUID, Entity> userEntitiesById;
+
   //  List of Message Entities that can be used to alter message data
-  private Map<UUID, Entity> messageEntitiesById;  
+  private Map<UUID, Entity> messageEntitiesById;
 
   /**
    * Constructs a new PersistentDataStore and sets up its state to begin loading objects from the
@@ -82,6 +82,8 @@ public class PersistentDataStore {
         String userName = (String) entity.getProperty("username");
         String password = (String) entity.getProperty("password");
         String about = (String) entity.getProperty("about");
+        Instant creationTime = Instant.parse((String) entity.getProperty("creation"));
+        boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
 
         boolean delete = (entity.hasProperty("allowMessageDel"))
                        ? (boolean) entity.getProperty("allowMessageDel")
@@ -90,13 +92,6 @@ public class PersistentDataStore {
         int messagesSent = (entity.hasProperty("messagesSent"))
                          ? ((Long) entity.getProperty("messagesSent")).intValue()
                          : -1;
-
-        // For some reason I kept getting an exception of an instance being null (which I don't 
-        // know how it could happen) so this following check fixed it.
-        Instant creationTime = Instant.now();
-        if (entity.getProperty("creation") != null) {
-          creationTime = Instant.parse((String) entity.getProperty("creation"));
-        }
 
         Blob imageBlob = (Blob) entity.getProperty("profilePicture");
         byte[] profilePictureBytes = imageBlob.getBytes();
@@ -112,8 +107,8 @@ public class PersistentDataStore {
           conversationVisibilities.put(conversationIds.get(i), hiddenConversations.get(i));
         }
 
-        User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime,
-                             profilePictureBytes, conversationVisibilities);
+        User user = new User(uuid, userName, password, about, delete, messagesSent, creationTime, 
+                             isAdmin, profilePictureBytes, conversationVisibilities);
         users.add(user);
         userEntitiesById.put(uuid, entity);
       } catch (Exception e) {
@@ -125,6 +120,69 @@ public class PersistentDataStore {
     }
 
     return users;
+  }
+
+  /**
+   * Loads all User objects who are admins from the Datastore service and returns them in a List.
+   *
+   * @throws PersistentDataStoreException if an error was detected during the load from the
+   *     Datastore service
+   */
+  public List<User> loadAdmins() throws PersistentDataStoreException {
+
+    List<User> admins = new ArrayList<>();
+
+    // Retrieve all users from the datastore.
+    Query query = new Query("chat-users");
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity entity : results.asIterable()) {
+      try {
+        boolean isAdmin = (Boolean) entity.getProperty("isAdmin");
+        if(!isAdmin) {
+          continue;
+        }
+        String userName = (String) entity.getProperty("username");
+        String password = (String) entity.getProperty("password");
+        Instant creationTime = Instant.parse((String) entity.getProperty("creation"));
+        String about = (String) entity.getProperty("about");
+        UUID uuid = UUID.fromString((String) entity.getProperty("uuid"));
+
+        boolean delete = (entity.hasProperty("allowMessageDel"))
+                       ? (boolean) entity.getProperty("allowMessageDel")
+                       : false;
+
+        int messagesSent = (entity.hasProperty("messagesSent"))
+                         ? ((Long) entity.getProperty("messagesSent")).intValue()
+                         : -1;
+
+        Blob imageBlob = (Blob) entity.getProperty("profilePicture");
+        byte[] profilePictureBytes = imageBlob.getBytes();
+
+        // Retrieving the individual lists of Keys and Values for the conversationVisibilities map.
+        List<String> conversationIdsString = (List<String>) entity.getProperty("conversationIds");
+        List<UUID> conversationIds = convertListtoUUID(conversationIdsString);
+        List<Boolean> hiddenConversations = (List<Boolean>) entity.getProperty("hiddenConversations");
+
+        // A new map is created from the two lists
+        Map<UUID, Boolean> conversationVisibilities = new HashMap();
+        for (int i = 0; i < conversationIds.size(); ++i) {
+          conversationVisibilities.put(conversationIds.get(i), hiddenConversations.get(i));
+        }
+
+        User admin = new User(uuid, userName, password, about, delete, messagesSent, creationTime, 
+                             isAdmin, profilePictureBytes, conversationVisibilities);
+        if (isAdmin) {
+          admins.add(admin);
+        }
+      } catch (Exception e) {
+        // In a production environment, errors should be very rare. Errors which may
+        // occur include network errors, Datastore service errors, authorization errors,
+        // database entity definition mismatches, or service mismatches.
+        throw new PersistentDataStoreException(e);
+      }
+    }
+    return admins;
   }
 
   /**
@@ -203,6 +261,7 @@ public class PersistentDataStore {
     userEntity.setProperty("username", user.getName());
     userEntity.setProperty("password", user.getPassword());
     userEntity.setProperty("about", user.getAbout());
+    userEntity.setProperty("isAdmin", user.getIsAdmin());
     userEntity.setProperty("messagesSent", user.getMessagesSent());
     userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
     userEntity.setProperty("creation", user.getCreationTime().toString());
@@ -230,7 +289,7 @@ public class PersistentDataStore {
     if (!userEntitiesById.containsKey(userId)) {
       return;
     }
-    
+
     Entity userEntity = userEntitiesById.get(userId);
     userEntity.setProperty("about", user.getAbout());
     userEntity.setProperty("allowMessageDel", user.getAllowMessageDel());
@@ -251,6 +310,17 @@ public class PersistentDataStore {
     userEntity.setProperty("hiddenConversations", hiddenConversations);
 
     datastore.put(userEntity);
+  }
+
+  /** Delete a User object from the Datastore service */
+  public void delete(User user) {
+    UUID userId = user.getId();
+    if (!userEntitiesById.containsKey(userId)) {
+      return;
+    }
+
+    Entity userEntity = userEntitiesById.get(userId);
+    datastore.delete(userEntity.getKey());
   }
 
   /** Write a Message object to the Datastore service. */

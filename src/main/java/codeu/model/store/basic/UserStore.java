@@ -105,6 +105,12 @@ public class UserStore {
     persistentStorageAgent.writeThrough(user);
   }
 
+  /** Deletes user */
+  public void deleteUser(User user){
+    users.remove(user);
+    persistentStorageAgent.delete(user);
+  }
+
   /** Update the information of a known user */
   public void updateUser(User user) {
     persistentStorageAgent.update(user);
@@ -120,11 +126,21 @@ public class UserStore {
     return false;
   }
 
+  // returns number of users
+  public int getNumUsers() {
+    return users.size();
+  }
+
   /**
    * Sets the List of Users stored by this UserStore. This should only be called once, when the data
    * is loaded from Datastore.
    */
   public void setUsers(List<User> users) {
     this.users = users;
+  }
+
+
+  public List<User> getUsers() throws PersistentDataStoreException {
+    return persistentStorageAgent.loadUsers();
   }
 }

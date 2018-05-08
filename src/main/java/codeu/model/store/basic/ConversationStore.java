@@ -133,4 +133,13 @@ public class ConversationStore {
     conversationsByTitle.put(conversation.getTitle(), conversation);
     conversationsById.put(conversation.getId(), conversation);
   }
+
+
+  // returns number of conversations
+  public int getNumConversations() {
+    return conversations.size();
+  }
 }
+
+
+
