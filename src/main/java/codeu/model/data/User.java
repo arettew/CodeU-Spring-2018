@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
-import com.google.appengine.api.images.*;
+import com.google.appengine.api.images.Image;
 
 /** Class representing a registered user. */
 public class User {
@@ -45,7 +45,7 @@ public class User {
    * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
    * @param profilePicture the profile picture data of this User 
-   * @param conversation the map that shows which conversations the user wants to hide
+   * @param conversations the map that shows which conversations the user wants to hide
    *
    */
   public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
