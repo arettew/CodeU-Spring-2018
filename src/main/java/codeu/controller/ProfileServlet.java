@@ -21,7 +21,10 @@ import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
-import com.google.appengine.api.images.*;
+import com.google.appengine.api.images.Image;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.Transform;
 
 /**
   * Servlet class responsible for user profile pages
@@ -31,12 +34,6 @@ public class ProfileServlet extends HttpServlet {
   
   /** Store class that gives access to users */
   private UserStore userStore;
-
-  /** Constant strings that describe the request for the DoPost function */
-  private static final String REQUEST_ABOUT = "about";
-  private static final String REQUEST_HIDDEN = "hidden";
-  private static final String REQUEST_RESET = "reset";
-  private static final String REQUEST_MESSAGEDELETION = "messageDeletion";
 
   /** Image Factory to create images and help with image resizing*/
   private ImagesServiceFactory imageFactory;
@@ -111,58 +108,52 @@ public class ProfileServlet extends HttpServlet {
         return;
       } 
 
-      /**  If whichform is null, it means the profile pic got uploaded because servlets can't handle
-       *   multipart form data the same way and null is returned.
-       */
-      if (request.getParameter("whichForm") != null) {
+      //  The following if statements check whether a form was submitted or not
+      if (request.getParameter("about") != null) {
+        //  About message was posted
+        String aboutMessage = request.getParameter("about");
 
-        // The parameter whichForm from profile.jsp determines which form was submitted. This is 
-        // helpful to handle each post request differently.
-        switch (request.getParameter("whichForm")) {
-          
-          case REQUEST_ABOUT:
-            //About message was posted
-            String aboutMessage = request.getParameter("about");
-
-            //This cleans the message of HTML
-            String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
-            owner.setAbout(cleanedAboutMessage);
-
-            break;
-
-          case REQUEST_HIDDEN:
-            //Conversation to hide was posted
-            UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
-            owner.hideConversation(conversationToHide);
-
-            break;
-            
-          case REQUEST_MESSAGEDELETION:
-            //  The user wants to change whether or not their messages will be deleted
-            String delete = request.getParameter("delete");
-
-            boolean allowMessageDel = (delete.equals("yes"));
-            owner.setAllowMessageDel(allowMessageDel);
-
-            break;
-
-          case REQUEST_RESET:
-            //User wants to show all their conversations again
-            owner.showAllConversations();
-
-            break;
-        }
-
-      } else {
-          //  User wants to upload a profile picture
-          Part filePart = request.getPart("picture");
-          InputStream fileContent = filePart.getInputStream();
-          byte[] imageData = readImage(fileContent, filePart);
-          byte[] resizedImageData = resizeImage(imageData);
-          owner.setImageData(resizedImageData);
+        //  This cleans the message of HTML
+        String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
+        owner.setAbout(cleanedAboutMessage);
       }
 
-      // Updates info before refreshing
+      if (request.getParameter("convToHide") != null) {
+        //  Conversation to hide was posted
+        UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
+        owner.hideConversation(conversationToHide);
+      }
+
+      //  We still need a hidden parameter for the checkbox because it will return null if it is 
+      //  unchecked. Therefore, the value wouldn't update when the user unchecked it.
+      if (request.getParameter("deleteSubmitted") != null) {
+        //  The user wants to change whether or not their messages will be deleted
+        if (request.getParameter("delete") != null) {
+          owner.setAllowMessageDel(true);
+        } else {
+          owner.setAllowMessageDel(false);
+        }
+      }
+
+      //  A hidden parameter is also required here because it is the only input from the form. ie. 
+      //  it is only important whether the form was submitted or not.
+      if (request.getParameter("reset") != null) {
+        owner.showAllConversations();
+      }
+
+      //  The following statement checks whether the type of the form submitted is multitype since
+      //  this means the user wants to change their profile picture.
+      if (request.getContentType() != null && 
+          request.getContentType().toLowerCase().startsWith("multipart/form-data")) {
+        //  User wants to upload a profile picture
+        Part filePart = request.getPart("picture");
+        InputStream fileContent = filePart.getInputStream();
+        byte[] imageData = readImage(fileContent, filePart);
+        byte[] resizedImageData = resizeImage(imageData);
+        owner.setImageData(resizedImageData);
+      }
+
+      //  Updates info before refreshing
       userStore.updateUser(owner);
 
       //  Redirect to a GET request
@@ -172,26 +163,19 @@ public class ProfileServlet extends HttpServlet {
   //  Helper function which uses an inputstream to read the image bytes and returns an image
   private byte[] readImage(InputStream fileContent, Part filePart) {
 
-    try{
-      // Reading the bytes from the File
+    try {
+      //  Reading the bytes from the File
       byte[] inputBytes = new byte[(int)filePart.getSize()];
       fileContent.read(inputBytes);
 
       return inputBytes;
 
-    } catch (FileNotFoundException e) {
-        e.printStackTrace();
-        return null;
-    } catch (IOException e) {
-        e.printStackTrace();
-        return null;
-    } catch (IllegalArgumentException e) {
-        e.printStackTrace();
-        return null;
+    } catch (IOException | IllegalArgumentException ex) {
+      throw new RuntimeException("Unable to read image", ex);
     }
   }
 
-  // Helper function to resize the image
+  //  Helper function to resize an image
   private byte[] resizeImage(byte[] inputImageData) {
     Image currentImage = imageFactory.makeImage(inputImageData);
     Image newImage = imageService.applyTransform(imageResize, currentImage);
