@@ -16,6 +16,8 @@ package codeu.model.data;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Class representing a conversation, which can be thought of as a chat room. Conversations are
@@ -26,6 +28,8 @@ public class Conversation {
   public final UUID owner;
   public final Instant creation;
   public final String title;
+  public final boolean isGroup;
+  public final Set<UUID> participants;
 
   /**
    * Constructs a new Conversation.
@@ -40,6 +44,18 @@ public class Conversation {
     this.owner = owner;
     this.creation = creation;
     this.title = title;
+    isGroup = false;
+    this.participants = new HashSet<UUID>();
+  }
+
+  public Conversation(UUID id, UUID owner, String title, Instant creation, boolean isGroup) {
+    this.id = id;
+    this.owner = owner;
+    this.creation = creation;
+    this.title = title;
+    this.isGroup = isGroup;
+    this.participants = new HashSet<UUID>();
+    participants.add(owner);
   }
 
   /** Returns the ID of this Conversation. */
@@ -60,5 +76,28 @@ public class Conversation {
   /** Returns the creation time of this Conversation. */
   public Instant getCreationTime() {
     return creation;
+  }
+
+  public boolean getIsGroup() {
+    return isGroup;
+  }
+
+  public void addParticipant(UUID id) {
+    if(isGroup == true){
+      participants.add(id);
+    }
+  }
+
+  public void removeParticipants(UUID id) {
+    if(isGroup == true){
+      participants.remove(id);
+    }
+  }
+
+  public Set<UUID> getParticipants() {
+    if(isGroup == true){
+      return participants;
+    }
+    return new HashSet<UUID>();
   }
 }
