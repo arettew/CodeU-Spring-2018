@@ -82,6 +82,46 @@
     <%
     }
     %>
+
+    <% if(request.getSession().getAttribute("user") != null){ %>
+      <h1>New Group Conversation</h1>
+      <form action="/conversations" method="POST">
+          <div class="form-group">
+            <label class="form-control-label">Title:</label>
+          <input type="text" name="conversationTitle">
+        </div>
+
+        <button type="submit">Create</button>
+      </form>
+
+      <hr/>
+    <% } %>
+
+    <h1>Group Conversations</h1>
+
+    <%
+    List<Conversation> conversations1 =
+      (List<Conversation>) request.getAttribute("conversations");
+    if(conversations == null || conversations.isEmpty()){
+    %>
+      <p>Create a conversation to get started.</p>
+    <%
+    }
+    else{
+    %>
+      <ul class="mdl-list">
+    <%
+      for(Conversation conversation : conversations){
+    %>
+      <li><a href="/chat/<%= conversation.getTitle() %>">
+        <%= conversation.getTitle() %></a></li>
+    <%
+      }
+    %>
+      </ul>
+    <%
+    }
+    %>
     <hr/>
   </div>
 </body>
