@@ -12,8 +12,10 @@
 <%@ page import="java.text.SimpleDateFormat"%>
 <%
 String profileOwnerName = (String) request.getAttribute("profileOwner");
+User profileOwner = UserStore.getInstance().getUser(profileOwnerName);
 UUID profileOwnerId = (UUID) request.getAttribute("ownerId");
 SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+boolean isOwner = profileOwnerName.equals(request.getSession().getAttribute("user"));
 %>
 
 <!DOCTYPE html>
@@ -65,104 +67,118 @@ SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
     <%  String format = "data:image/*;base64, "; %>
         <img src="<%= format + base64Image %>" alt="<%= profileOwnerName%>" />
     <% } %>
-    <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
+    <% if (isOwner) { %>
 
       <h3> Update your Profile Picture: </h3>
       <form action ="/profile/<%= profileOwnerName%>" method = "POST" 
             enctype ="multipart/form-data">
-         <input type ="file" name ="picture" accept="image/*" />
-         <br />
-         <button type ="submit">Upload</button>
+        <input type ="file" name ="picture" accept="image/*" />
+        <button type="submit"> Update </button>
+        <br />
       </form>
 
     <% } %>
 
-    <h2>About <%= profileOwnerName %></h2>
-    <% String about = 
-      UserStore.getInstance().getUser(profileOwnerName).getAbout(); %>
-    <% if(about == null){ %>
-      <p>Hello I'm <%= profileOwnerName %>!</p>
-    <% } else{ %>
-      <p><%= about %></a></p>
-    <% } %>
+        <h2>About <%= profileOwnerName %></h2>
+        <% String about = profileOwner.getAbout(); %>
+        <% if (about == null) { %>
+            <p>Hello I'm <%= profileOwnerName %>!</p>
+        <% } else { %>
+            <p><%= about %></p>
+        <% } %>
 
-    <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
-      <h3>Edit your about me. Only you can see this.</h3>
-      <form action="/profile/<%= profileOwnerName%>" method="POST">
-        <input type="text" name="about">
-        <br/>
-        <button type="submit">Submit</button>
-      </form>
+        <% if (isOwner) { %>
+          <h3>Edit your about me. Only you can see this.</h3>
+            <form action ="/profile/<%= profileOwnerName%>" method = "POST" >
+              <input type="text" name="about">
+              <br/>
 
-      <p> Would you like to allow your messages to be deleted after you've hit a high amount?</p>
-      <form action="/profile/<%= profileOwnerName%>" method="POST">
-        <% boolean allowMessageDel = 
-          UserStore.getInstance().getUser(profileOwnerName).getAllowMessageDel(); %>
-        <input type="checkbox" name="delete" 
-          <%if(allowMessageDel) { %> 
-            checked
-            <% } %> 
-        >
-        Allow Message Deletion<br>
-        <input type="hidden" name="deleteSubmitted" value ="messageDeletion">
-        <button type="submit">Update</button>
-      </form>
-    <% } %>
+          <p> Would you like to allow your messages to be deleted after you've hit a high amount?
+          </p>
+            <% boolean allowMessageDel = 
+              UserStore.getInstance().getUser(profileOwnerName).getAllowMessageDel(); %>
+            <input type="checkbox" name="delete" 
+              <%if(allowMessageDel) { %> 
+                checked
+                <% } %> 
+            >
+            Allow Message Deletion<br>
+        <% } %>
 
-    <!--This is where the user's sent messages will show up -->
-    <h2><%= profileOwnerName %>'s sent messages</h2>
-    <div id="messages">
-      <ul>
-    <% //This list contains messages written by the profile owner in order sorted by time
-       List<Message> userMessages = MessageStore.getInstance().getMessagesByAuthor(profileOwnerId);
-       ConversationStore conversationStore = ConversationStore.getInstance();
-    %>
+        <!--This is where the user's sent messages will show up -->
+        <h2><%= profileOwnerName %>'s sent messages</h2>
+        <div id="messages">
+          <ul>
+        <% //This list contains messages written by the profile owner in order sorted by time
+           List<Message> userMessages = 
+           MessageStore.getInstance().getMessagesByAuthor(profileOwnerId);
 
-    <% for (Message message : userMessages) { %>
-    <%   // If the message is not empty, then print it %>
-    <%   if(message.getContent() != null && !message.getContent().isEmpty()) { %>
-          <li> <b> <%= formatter.format(Date.from(message.getCreationTime()))  %> 
-          </b>: <a href=<%= "/chat/" 
-                + conversationStore.getConversationById(message.getConversationId()).getTitle() %> > 
-            <%= message.getContent() %> </a> </li>
-    <%   } %>      
-    <% }   %>
+           ConversationStore conversationStore = ConversationStore.getInstance();
+        %>
 
-      </ul>
-    </div>
+        <% for (Message message : userMessages) { %>
+        <%   // If the message is not empty, then print it %>
+        <%   if(message.getContent() != null && !message.getContent().isEmpty()) { %>
+              <li> <b> <%= formatter.format(Date.from(message.getCreationTime()))  %> 
+              </b>: <a href=<%= "/chat/" 
+                    + conversationStore.getConversationById(message.getConversationId())
+                      .getTitle() %> > 
+                <%= message.getContent() %> </a> </li>
+        <%   } %>      
+        <% }   %>
 
-    <!-- This is where the user's non private conversations will be listed -->
-    <h2> <%= profileOwnerName %>'s conversations </h2>
-    <div id ="conversations">
-      
-    <% if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
-        <form action="/profile/<%= profileOwnerName%>" method="POST">
-          <input type="hidden" name="reset" value ="reset">
-          <button type="submit">Show All Conversations</button>
-        </form>
-    <%  } %>      
+          </ul>
+        </div>
 
-      <ul>
-    <% //This map contains the conversations where the profile owner has participated
-       User profileOwner = UserStore.getInstance().getUser(profileOwnerName);
-       Map<UUID, Boolean> userConversations = profileOwner.getConversations();
-       Set<UUID> uuids = userConversations.keySet();
-    %>
+        <!-- This is where the user's non private conversations will be listed -->
+        <h2> <%= profileOwnerName %>'s conversations </h2>
+        <div id ="conversations">
+          
+        <% if (isOwner) { %>
+              <input type="checkbox" name="showAllConvs"
+              <%if(profileOwner.getShowAllConversations()) { %> 
+                checked
+                <% } %> 
+              > 
+              Display All Conversations <br>
+        <%  } %>      
 
-    <% for (UUID key: uuids) { %>
-    <%  if (userConversations.get(key)) { %>
-    <%    Conversation conversation = ConversationStore.getInstance().getConversationById(key);%>
-    <%    if (profileOwnerName.equals(request.getSession().getAttribute("user"))) { %>
-            <li><a href="../chat/<%=conversation.getTitle()%>"> <%= conversation.getTitle() %> </a>
-              <form action="/profile/<%= profileOwnerName%>" method="POST">
-                <button type="submit" name="convToHide" value="<%= key %>">Hide</button>
-              </form>
-            </li>
-    <%    } %>
-    <%  }   %>  
-    <% }    %>
-    </ul>
-  </div>
+          <ul>
+        <% //This map contains the conversations where the profile owner has participated
+           Map<UUID, Boolean> userConversations = profileOwner.getConversations();
+           Set<UUID> uuids = userConversations.keySet();
+           boolean noConversations = true;
+        %>
 
-</body>
-</html>
+        <% 
+        for (UUID key: uuids) { 
+          if (profileOwner.getShowAllConversations() || userConversations.get(key)) {       
+            noConversations = false;                                                        
+            Conversation conversation = 
+            ConversationStore.getInstance().getConversationById(key);
+        %>
+            <li><a href="../chat/<%=conversation.getTitle()%>"> <%= conversation.getTitle() %>
+                </a>
+        <%    if (isOwner) { %>
+                    <input type="checkbox" name="<%=key%>" value="<%=key%>">
+                    Hide Conversation <br>
+                </li>
+        <%    } 
+            }     
+          }    
+        %>
+
+        <% if (noConversations) { %>
+             <p> Oops! <%= profileOwnerName %>'s conversation list is empty! </p> <br>
+        <% } %>
+
+        <% if(isOwner) { %>
+             <button type="submit"> Update Profile </button>
+        <% } %>
+
+          </form>
+        </ul>
+      </div>
+
+  </body>
+  </html>
