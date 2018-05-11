@@ -100,4 +100,8 @@ public class Conversation {
     }
     return new HashSet<UUID>();
   }
+
+  public boolean isParticipant(String user){
+    return true;
+  }
 }
