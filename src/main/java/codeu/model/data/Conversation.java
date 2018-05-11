@@ -88,7 +88,7 @@ public class Conversation {
     }
   }
 
-  public void removeParticipants(UUID id) {
+  public void removeParticipant(UUID id) {
     if(isGroup == true){
       participants.remove(id);
     }
