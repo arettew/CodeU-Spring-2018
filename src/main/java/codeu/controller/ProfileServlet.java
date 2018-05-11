@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.Base64.Encoder;
 import java.util.Base64;
 import java.util.Vector;
+import java.util.Set;
 import java.lang.IllegalArgumentException;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
@@ -96,6 +97,10 @@ public class ProfileServlet extends HttpServlet {
       String userName = (String) request.getSession().getAttribute("user");
       User owner = userStore.getUser(ownerName);
 
+      //  This boolean will be true if the user changes anything. If it isn't true, the user doesn't
+      //  need to be updated
+      boolean fieldUpdated = false;
+
       if (userName == null) {
         //  User is not logged in. Don't let them change any element of the profile 
         response.sendRedirect("/login");
@@ -108,53 +113,93 @@ public class ProfileServlet extends HttpServlet {
         return;
       } 
 
-      //  The following if statements check whether a form was submitted or not
-      if (request.getParameter("about") != null) {
-        //  About message was posted
-        String aboutMessage = request.getParameter("about");
+      //  This if statement checks whether the form submitted is a multipart form. The only 
+      //  multipart form is the profile picture submission.
+      if (request.getContentType() != null && 
+          request.getContentType().toLowerCase().startsWith("multipart/form-data")) {
+
+        Part filePart = request.getPart("picture");
+        InputStream fileContent = filePart.getInputStream();
+        byte[] imageData = readImage(fileContent, filePart);
+
+        //  Checking if the imageData is empty
+        if (imageData.length != 0) {
+          byte[] resizedImageData = resizeImage(imageData);
+          owner.setImageData(resizedImageData);
+
+          //  Updating the user right away and later returning, as nothing else needs to be updated
+          userStore.updateUser(owner);
+          //  Redirect to a GET request
+          response.sendRedirect("/profile/" + ownerName); 
+        }
+
+        return;
+      }
+
+      //  Checking if the user wrote a new about message or left the field blank
+      String aboutMessage = request.getParameter("about");
+      if (aboutMessage != null && !aboutMessage.isEmpty()) {
 
         //  This cleans the message of HTML
         String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
         owner.setAbout(cleanedAboutMessage);
+
+        fieldUpdated = true;
       }
 
-      if (request.getParameter("convToHide") != null) {
-        //  Conversation to hide was posted
-        UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
-        owner.hideConversation(conversationToHide);
+      //  The user wants to change whether or not their messages will be deleted
+      if (request.getParameter("delete") != null) {
+
+        //  This statement checks whether the parameter was already true so it can be determined
+        //  that nothing was really updated
+        if (!owner.getAllowMessageDel()) {
+          fieldUpdated = true;
+        }
+        owner.setAllowMessageDel(true);
+
+      } else {
+
+        if (!owner.getAllowMessageDel()) {
+          fieldUpdated = true;
+        }
+        owner.setAllowMessageDel(false);
+
       }
 
-      //  We still need a hidden parameter for the checkbox because it will return null if it is 
-      //  unchecked. Therefore, the value wouldn't update when the user unchecked it.
-      if (request.getParameter("deleteSubmitted") != null) {
-        //  The user wants to change whether or not their messages will be deleted
-        if (request.getParameter("delete") != null) {
-          owner.setAllowMessageDel(true);
-        } else {
-          owner.setAllowMessageDel(false);
+      //  Checking if the user wants to show all of their conversations 
+      if (request.getParameter("showAllConvs") != null) {
+
+        if (!owner.getShowAllConversations()) {
+          fieldUpdated = true;
+        }
+        owner.showAllConversations(true);
+
+      } else {
+
+        if (owner.getShowAllConversations()) {
+          fieldUpdated = true;
+        }
+        owner.showAllConversations(false);
+
+      }
+
+      //  Set of conversations the user has participated in
+      Set<UUID> conversations = owner.getConversations().keySet();
+
+      //  The servlet won't know what parameter to get to check which conversations the user wants
+      //  to hide. The following code loops through all the conversations as if they were 
+      //  parameter names to see which ones were sent.
+      for (UUID conversationId : conversations) {
+        if (request.getParameter(conversationId.toString()) != null) {
+          owner.hideConversation(conversationId);
+          fieldUpdated = true;
         }
       }
 
-      //  A hidden parameter is also required here because it is the only input from the form. ie. 
-      //  it is only important whether the form was submitted or not.
-      if (request.getParameter("reset") != null) {
-        owner.showAllConversations();
-      }
-
-      //  The following statement checks whether the type of the form submitted is multitype since
-      //  this means the user wants to change their profile picture.
-      if (request.getContentType() != null && 
-          request.getContentType().toLowerCase().startsWith("multipart/form-data")) {
-        //  User wants to upload a profile picture
-        Part filePart = request.getPart("picture");
-        InputStream fileContent = filePart.getInputStream();
-        byte[] imageData = readImage(fileContent, filePart);
-        byte[] resizedImageData = resizeImage(imageData);
-        owner.setImageData(resizedImageData);
-      }
-
       //  Updates info before refreshing
-      userStore.updateUser(owner);
+      if (fieldUpdated) {
+        userStore.updateUser(owner);
+      }
 
       //  Redirect to a GET request
       response.sendRedirect("/profile/" + ownerName);
