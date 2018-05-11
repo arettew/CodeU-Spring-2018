@@ -31,8 +31,9 @@ public class User {
   private boolean allowMessageDel;
   private int messagesSent; 
   private final Instant creation;
-  private byte[] profilePictureBytes;
+  private boolean showAllConversations;
   private boolean isAdmin;
+  private byte[] profilePictureBytes;
   private Map<UUID, Boolean> conversationVisibilities;
 
 
@@ -46,14 +47,15 @@ public class User {
    * @param allowMesssageDel does this User want messages deleted?
    * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
+   * @param showAllConversations whether the user wants to display all their conversations
    * @param isAdmin the isAdmin value of this User
    * @param profilePicture the profile picture data of this User 
    * @param conversations the map that shows which conversations the user wants to hide
    *
    */
   public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
-              int messagesSent, Instant creation, boolean isAdmin, byte[] profilePicture,
-              Map conversations) {
+              int messagesSent, Instant creation, boolean showAllConversations, 
+              boolean isAdmin, byte[] profilePicture, Map conversations) {
     this.id = id;
     this.name = name;
     this.password = password;
@@ -61,6 +63,7 @@ public class User {
     this.allowMessageDel = allowMessageDel;
     this.messagesSent = messagesSent;
     this.creation = creation;
+    this.showAllConversations = showAllConversations;
     this.isAdmin = isAdmin;
     this.profilePictureBytes = profilePicture;
     this.conversationVisibilities = conversations;
@@ -85,6 +88,7 @@ public class User {
     this.allowMessageDel = true;
     this.messagesSent = 0; 
     this.creation = creation;
+    this.showAllConversations = false;
     this.isAdmin = isAdmin;
     this.profilePictureBytes = new byte[0];
     this.conversationVisibilities = new HashMap();
@@ -173,16 +177,23 @@ public class User {
 
   /** Adds a conversation to the list */
   public void addConversation(UUID conversationId) {
-    conversationVisibilities.putIfAbsent(conversationId, true);
+    this.conversationVisibilities.put(conversationId, true);
   }
 
   /** Sets conversation value to false (will be private). */
   public void hideConversation(UUID conversationId) {
-    conversationVisibilities.computeIfPresent(conversationId, (k, v) -> false);
+    this.conversationVisibilities.computeIfPresent(conversationId, (k, v) -> false);
   }
 
-  /** Resets all conversation Booleans to true. */
-  public void showAllConversations() {
-    conversationVisibilities.replaceAll((k, v) -> true);
+  /** Profile page will ignore the values in conversationVisibilities and treat them as true if 
+   *  showAllConversations is set to true
+   */
+  public void showAllConversations(boolean showAllConversations) {
+    this.showAllConversations = showAllConversations;
+  }
+
+  /** Returns whether the user wants to show all of their conversations. */
+  public boolean getShowAllConversations() {
+    return showAllConversations;
   }
 }
