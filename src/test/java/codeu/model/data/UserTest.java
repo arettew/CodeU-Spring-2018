@@ -52,6 +52,7 @@ public class UserTest {
     String about = "Hi! I'm test_username!";
     Instant creation = Instant.now();
     String password = "password";
+    boolean showAllConvs = false;
     boolean isAdmin = false;
     boolean allowMessageDel = false;
     int messagesSent = 10;
@@ -59,7 +60,7 @@ public class UserTest {
     Map<UUID, Boolean> conversationVisibilities = new HashMap();
 
     User user = new User(id, name, password, about, allowMessageDel, messagesSent, creation,
-                         isAdmin, imageData, conversationVisibilities);
+                         showAllConvs, isAdmin, imageData, conversationVisibilities);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
