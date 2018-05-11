@@ -52,13 +52,15 @@ public class UserTest {
     String about = "Hi! I'm test_username!";
     Instant creation = Instant.now();
     String password = "password";
+    boolean showAllConvs = false;
     boolean isAdmin = false;
     boolean allowMessageDel = false;
     int messagesSent = 10;
+    byte[] imageData = new byte[0];
     Map<UUID, Boolean> conversationVisibilities = new HashMap();
 
-    User user = new User(id, name, password, about, isAdmin, allowMessageDel, messagesSent, creation,
-                         conversationVisibilities);
+    User user = new User(id, name, password, about, allowMessageDel, messagesSent, creation,
+                         showAllConvs, isAdmin, imageData, conversationVisibilities);
 
     Assert.assertEquals(id, user.getId());
     Assert.assertEquals(name, user.getName());
