@@ -113,7 +113,7 @@
     <%
       for(Conversation group : groups){
         // fix this line
-        if(group.isParticipant(request.getSession().getAttribute("user"))){
+        if(group.isParticipant((String)request.getSession().getAttribute("user"))){
     %>
       <li><a href="/chat/<%= group.getTitle() %>">
         <%= group.getTitle() %></a></li>
