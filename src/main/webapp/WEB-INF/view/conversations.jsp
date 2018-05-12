@@ -60,18 +60,16 @@
     <h1>Conversations</h1>
 
     <%
-    List<Conversation> conversations =
-      (List<Conversation>) request.getAttribute("conversations");
-    if(conversations == null || conversations.isEmpty()){
+    List<Conversation> conversations = (List<Conversation>) request.getAttribute("conversations");
+    if (conversations == null || conversations.isEmpty()) {
     %>
       <p>Create a conversation to get started.</p>
     <%
-    }
-    else{
+    } else{
     %>
       <ul class="mdl-list">
     <%
-      for(Conversation conversation : conversations){
+      for (Conversation conversation : conversations) {
     %>
       <li><a href="/chat/<%= conversation.getTitle() %>">
         <%= conversation.getTitle() %></a></li>
@@ -100,9 +98,8 @@
     <h1>Group Conversations</h1>
 
     <%
-    List<Conversation> groups =
-      (List<Conversation>) request.getAttribute("groups");
-    if(groups == null || groups.isEmpty()){
+    List<Conversation> groups = (List<Conversation>) request.getAttribute("groups");
+    if (groups == null || groups.isEmpty()) {
     %>
       <p>Create a group conversation to get started.</p>
     <%
@@ -111,9 +108,8 @@
     %>
       <ul class="mdl-list">
     <%
-      for(Conversation group : groups){
-        // fix this line
-        if(group.isParticipant((String)request.getSession().getAttribute("user"))){
+      for (Conversation group : groups) {
+        if (group.isParticipant((String) request.getSession().getAttribute("user"))) {
     %>
       <li><a href="/chat/<%= group.getTitle() %>">
         <%= group.getTitle() %></a></li>

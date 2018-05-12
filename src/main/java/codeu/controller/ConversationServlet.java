@@ -103,45 +103,36 @@ public class ConversationServlet extends HttpServlet {
 
     String conversationTitle = request.getParameter("conversationTitle");
     String groupTitle = request.getParameter("groupTitle");
-    if(conversationTitle != null){
-      if (!conversationTitle.matches("[\\w*]*")) {
-        request.setAttribute("error", "Please enter only letters and numbers.");
-        request.getRequestDispatcher("/WEB-INF/view/conversations.jsp").forward(request, response);
-        return;
-      }
 
-      if (conversationStore.isTitleTaken(conversationTitle)) {
-        // conversation title is already taken, just go into that conversation instead of creating a
-        // new one
-        response.sendRedirect("/chat/" + conversationTitle);
-        return;
-      }
-
-      Conversation conversation =
-          new Conversation(UUID.randomUUID(), user.getId(), conversationTitle, Instant.now());
-
-      conversationStore.addConversation(conversation);
-      response.sendRedirect("/chat/" + conversationTitle);
+    // Ensures either a conversationTitle or a groupTitle exists, both not both; essentially XOR
+    if ((conversationTitle == null) == (groupTitle == null)) {
+        throw new RuntimeException("Must have either conversationTitle OR groupTitle");
     }
-    else{
-      if (!groupTitle.matches("[\\w*]*")) {
-        request.setAttribute("error", "Please enter only letters and numbers.");
-        request.getRequestDispatcher("/WEB-INF/view/conversations.jsp").forward(request, response);
-        return;
-      }
 
-      if (conversationStore.isTitleTaken(groupTitle)) {
-        // conversation title is already taken, just go into that conversation instead of creating a
-        // new one
-        response.sendRedirect("/chat/" + groupTitle);
-        return;
-      }
-
-      Conversation groupConversation =
-          new Conversation(UUID.randomUUID(), user.getId(), groupTitle, Instant.now(), true);
-
-      conversationStore.addConversation(groupConversation);
-      response.sendRedirect("/chat/" + groupTitle);
+    boolean isGroupTitle = conversationTitle == null;
+    String title = isGroupTitle ? groupTitle : conversationTitle;
+    
+    if (!title.matches("[\\w*]*")) {
+      request.setAttribute("error", "Please enter only letters and numbers.");
+      request.getRequestDispatcher("/WEB-INF/view/conversations.jsp").forward(request, response);
+      return;
     }
+
+    if (conversationStore.isTitleTaken(title)) {
+      // conversation title is already taken, just go into that conversation instead of creating a
+      // new one
+      response.sendRedirect("/chat/" + title);
+      return;
+    }
+
+    Conversation conversation;
+    if (isGroupTitle) {
+      conversation = new Conversation(UUID.randomUUID(), user.getId(), title, Instant.now(), true);
+    } else {
+      conversation = new Conversation(UUID.randomUUID(), user.getId(), title, Instant.now());
+    }
+
+    conversationStore.addConversation(conversation);
+    response.sendRedirect("/chat/" + title);
   }
 }

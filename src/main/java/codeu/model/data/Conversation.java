@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.UUID;
 import java.util.Set;
 import java.util.HashSet;
+import codeu.model.store.basic.UserStore;
 
 /**
  * Class representing a conversation, which can be thought of as a chat room. Conversations are
@@ -83,25 +84,26 @@ public class Conversation {
   }
 
   public void addParticipant(UUID id) {
-    if(isGroup == true){
+    if (isGroup) {
       participants.add(id);
     }
   }
 
   public void removeParticipants(UUID id) {
-    if(isGroup == true){
+    if (isGroup) {
       participants.remove(id);
     }
   }
 
   public Set<UUID> getParticipants() {
-    if(isGroup == true){
+    if (isGroup) {
       return participants;
     }
     return new HashSet<UUID>();
   }
 
   public boolean isParticipant(String user){
-    return true;
+    UserStore userStore = UserStore.getInstance();
+    return participants.contains(userStore.getUser(user).getId());
   }
 }
