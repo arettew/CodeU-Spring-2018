@@ -93,6 +93,23 @@ List<Message> messages = (List<Message>) request.getAttribute("messages");
     </div>
 
     <hr/>
+    <!-- should only fire if the conversation is a group conversation -->
+    <% if (conversation.getIsGroup()) { %>
+    <form action="/chat/<%= conversation.getTitle() %>" method="POST">
+        <label for="added_user">Add: </label>
+        <input type="text" name="added_user" id="added_user">
+        <br/>
+        <button type="submit">Add</button>
+        <label for="removed_user">Remove: </label>
+        <input type="text" name="removed_user" id="removed_user">
+        <br/>
+        <button type="submit">Remove</button>
+    </form>
+    <% } %>
+
+    <hr/>
+
+    <hr/>
 
     <% if (request.getSession().getAttribute("user") != null) { %>
     <form action="/chat/<%= conversation.getTitle() %>" method="POST">

@@ -123,7 +123,7 @@ public class ChatServlet extends HttpServlet {
       response.sendRedirect("/login");
       return;
     }
-
+    
     User user = userStore.getUser(username);
     if (user == null) {
       // user was not found, don't let them add a message
@@ -148,6 +148,21 @@ public class ChatServlet extends HttpServlet {
       // couldn't find conversation, redirect to conversation list
       response.sendRedirect("/conversations");
       return;
+    }
+
+     //gets the username of the added/removed participant
+    String addedUsername = request.getParameter("addedUser");
+    String removedUsername = request.getParameter("removedUser");
+
+    User addedUser = userStore.getUser(addedUsername);
+    if (addedUser != null) {
+      //adds the added_user to the participants of the group chat if they exist
+      conversation.addParticipant(addedUser.getId());
+    }
+    User removedUser = userStore.getUser(removedUsername);
+    if (removedUser != null) {
+      //removes the removed_user to the participants of the group chat if they exist
+      conversation.removeParticipant(removedUser.getId());
     }
 
     String messageContent = request.getParameter("message");
