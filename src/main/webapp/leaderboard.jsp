@@ -7,6 +7,8 @@
 <%@ page import="java.util.Date"%>
 <%
 String numUsers = (String) request.getAttribute("numUsers");
+String newestUser = (String) request.getAttribute("newestUser");
+String wordiestUser = (String) request.getAttribute("wordiestUser");
 %>
 
 <!DOCTYPE html>

@@ -16,6 +16,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="codeu.model.data.Conversation" %>
 <%@ page import="codeu.model.data.Message" %>
+<%@ page import="codeu.model.data.User" %>
 <%@ page import="codeu.model.store.basic.UserStore" %>
 <%
 Conversation conversation = (Conversation) request.getAttribute("conversation");
@@ -72,7 +73,19 @@ List<Message> messages = (List<Message>) request.getAttribute("messages");
         String author = UserStore.getInstance()
           .getUser(message.getAuthorId()).getName();
     %>
-      <li><a href="/profile/<%= author %>"><%= author %>:</a> <%= message.getContent() %></li>
+      <% User user = UserStore.getInstance().getUser(author); %>
+      <% if (user.getImageData().length == 0) { %>
+        <img src="https://www.idyllwildarts.org/wp-content/uploads/2016/09/blank-profile-picture.jpg"
+         height = "40", width = "40" />
+      <% } else { %>
+        <% String base64Image = user.getEncodedImage(); %>
+        <% if(base64Image != null) { %>
+          <%  String format = "data:image/*;base64, "; %>
+              <img src="<%= format + base64Image %>" height = "40" width = "40" /> 
+          <% } %>
+        <% } %>
+      <a href="/profile/<%= author %>"><%= author %>:</a> <%= message.getContent() %>
+      <br/>
     <%
       }
     %>

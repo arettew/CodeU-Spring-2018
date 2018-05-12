@@ -1,30 +1,49 @@
 package codeu.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.Part;
+import java.util.UUID;
+import java.util.Base64.Encoder;
+import java.util.Base64;
+import java.util.Vector;
+import java.util.Set;
+import java.lang.IllegalArgumentException;
 import codeu.model.data.User;
 import codeu.model.store.basic.UserStore;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
-import java.util.UUID;
+import com.google.appengine.api.images.Image;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.Transform;
 
 /**
   * Servlet class responsible for user profile pages
   */
-
+@MultipartConfig
 public class ProfileServlet extends HttpServlet {
   
   /** Store class that gives access to users */
   private UserStore userStore;
 
-  /** Constant strings that describe the request for the DoPost function */
-  private static final String REQUEST_ABOUT = "about";
-  private static final String REQUEST_HIDDEN = "hidden";
-  private static final String REQUEST_RESET = "reset";
-  private static final String REQUEST_MESSAGEDELETION = "messageDeletion";
+  /** Image Factory to create images and help with image resizing*/
+  private ImagesServiceFactory imageFactory;
+
+  /** Image service to call transforms on images */
+  private ImagesService imageService = imageFactory.getImagesService();
+
+  /** Transform to be used when resizing an image */
+  private final Transform imageResize = imageFactory.makeResize(300, 300);
 
   /** Set up state for handling profile requests. */
   @Override
@@ -78,6 +97,10 @@ public class ProfileServlet extends HttpServlet {
       String userName = (String) request.getSession().getAttribute("user");
       User owner = userStore.getUser(ownerName);
 
+      //  This boolean will be true if the user changes anything. If it isn't true, the user doesn't
+      //  need to be updated
+      boolean fieldUpdated = false;
+
       if (userName == null) {
         //  User is not logged in. Don't let them change any element of the profile 
         response.sendRedirect("/login");
@@ -90,47 +113,118 @@ public class ProfileServlet extends HttpServlet {
         return;
       } 
 
-      // The parameter whichForm from profile.jsp determines which form was submitted. This is 
-      // helpful to handle each post request differently.
-      switch (request.getParameter("whichForm")) {
-        
-        case REQUEST_ABOUT:
-          //About message was posted
-          String aboutMessage = request.getParameter("about");
+      //  This if statement checks whether the form submitted is a multipart form. The only 
+      //  multipart form is the profile picture submission.
+      if (request.getContentType() != null && 
+          request.getContentType().toLowerCase().startsWith("multipart/form-data")) {
 
-          //This cleans the message of HTML
-          String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
-          owner.setAbout(cleanedAboutMessage);
+        Part filePart = request.getPart("picture");
+        InputStream fileContent = filePart.getInputStream();
+        byte[] imageData = readImage(fileContent, filePart);
 
-          break;
+        //  Checking if the imageData is empty
+        if (imageData.length != 0) {
+          byte[] resizedImageData = resizeImage(imageData);
+          owner.setImageData(resizedImageData);
 
-        case REQUEST_HIDDEN:
-          //Conversation to hide was posted
-          UUID conversationToHide = UUID.fromString(request.getParameter("convToHide"));
-          owner.hideConversation(conversationToHide);
+          //  Updating the user right away and later returning, as nothing else needs to be updated
+          userStore.updateUser(owner);
+          //  Redirect to a GET request
+          response.sendRedirect("/profile/" + ownerName); 
+        }
 
-          break;
-          
-        case REQUEST_MESSAGEDELETION:
-          //  The user wants to change whether or not their messages will be deleted
-          String delete = request.getParameter("delete");
-
-          boolean allowMessageDel = (delete.equals("yes"));
-          owner.setAllowMessageDel(allowMessageDel);
-
-          break;
-
-        case REQUEST_RESET:
-          //User wants to show all their conversations again
-          owner.showAllConversations();
-
-          break;
+        return;
       }
 
-      userStore.updateUser(owner);
+      //  Checking if the user wrote a new about message or left the field blank
+      String aboutMessage = request.getParameter("about");
+      if (aboutMessage != null && !aboutMessage.isEmpty()) {
+
+        //  This cleans the message of HTML
+        String cleanedAboutMessage = Jsoup.clean(aboutMessage, Whitelist.none());
+        owner.setAbout(cleanedAboutMessage);
+
+        fieldUpdated = true;
+      }
+
+      //  The user wants to change whether or not their messages will be deleted
+      if (request.getParameter("delete") != null) {
+
+        //  This statement checks whether the parameter was already true so it can be determined
+        //  that nothing was really updated
+        if (!owner.getAllowMessageDel()) {
+          fieldUpdated = true;
+        }
+        owner.setAllowMessageDel(true);
+
+      } else {
+
+        if (!owner.getAllowMessageDel()) {
+          fieldUpdated = true;
+        }
+        owner.setAllowMessageDel(false);
+
+      }
+
+      //  Checking if the user wants to show all of their conversations 
+      if (request.getParameter("showAllConvs") != null) {
+
+        if (!owner.getShowAllConversations()) {
+          fieldUpdated = true;
+        }
+        owner.showAllConversations(true);
+
+      } else {
+
+        if (owner.getShowAllConversations()) {
+          fieldUpdated = true;
+        }
+        owner.showAllConversations(false);
+
+      }
+
+      //  Set of conversations the user has participated in
+      Set<UUID> conversations = owner.getConversations().keySet();
+
+      //  The servlet won't know what parameter to get to check which conversations the user wants
+      //  to hide. The following code loops through all the conversations as if they were 
+      //  parameter names to see which ones were sent.
+      for (UUID conversationId : conversations) {
+        if (request.getParameter(conversationId.toString()) != null) {
+          owner.hideConversation(conversationId);
+          fieldUpdated = true;
+        }
+      }
+
+      //  Updates info before refreshing
+      if (fieldUpdated) {
+        userStore.updateUser(owner);
+      }
 
       //  Redirect to a GET request
       response.sendRedirect("/profile/" + ownerName);
-    } 
+    }
+
+  //  Helper function which uses an inputstream to read the image bytes and returns an image
+  private byte[] readImage(InputStream fileContent, Part filePart) {
+
+    try {
+      //  Reading the bytes from the File
+      byte[] inputBytes = new byte[(int)filePart.getSize()];
+      fileContent.read(inputBytes);
+
+      return inputBytes;
+
+    } catch (IOException | IllegalArgumentException ex) {
+      throw new RuntimeException("Unable to read image", ex);
+    }
+  }
+
+  //  Helper function to resize an image
+  private byte[] resizeImage(byte[] inputImageData) {
+    Image currentImage = imageFactory.makeImage(inputImageData);
+    Image newImage = imageService.applyTransform(imageResize, currentImage);
+    return newImage.getImageData();
+  }
 
 }

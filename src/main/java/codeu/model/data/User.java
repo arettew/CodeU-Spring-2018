@@ -15,10 +15,12 @@
 package codeu.model.data;
 
 import java.time.Instant;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
+import com.google.appengine.api.images.Image;
 
 /** Class representing a registered user. */
 public class User {
@@ -29,7 +31,9 @@ public class User {
   private boolean allowMessageDel;
   private int messagesSent; 
   private final Instant creation;
+  private boolean showAllConversations;
   private boolean isAdmin;
+  private byte[] profilePictureBytes;
   private Map<UUID, Boolean> conversationVisibilities;
 
 
@@ -43,20 +47,25 @@ public class User {
    * @param allowMesssageDel does this User want messages deleted?
    * @param messagesSent number of messages this user sent 
    * @param creation the creation time of this User
+   * @param showAllConversations whether the user wants to display all their conversations
    * @param isAdmin the isAdmin value of this User
-   * @param conversationVisibilities the map that shows which conversations the user wants to hide
+   * @param profilePicture the profile picture data of this User 
+   * @param conversations the map that shows which conversations the user wants to hide
    *
    */
-  public User(UUID id, String name, String password, String about, boolean isAdmin, boolean allowMessageDel, 
-              int messagesSent, Instant creation, Map conversations) {
+  public User(UUID id, String name, String password, String about, boolean allowMessageDel, 
+              int messagesSent, Instant creation, boolean showAllConversations, 
+              boolean isAdmin, byte[] profilePicture, Map conversations) {
     this.id = id;
     this.name = name;
     this.password = password;
     this.about = about;
-    this.isAdmin = isAdmin;
     this.allowMessageDel = allowMessageDel;
     this.messagesSent = messagesSent;
     this.creation = creation;
+    this.showAllConversations = showAllConversations;
+    this.isAdmin = isAdmin;
+    this.profilePictureBytes = profilePicture;
     this.conversationVisibilities = conversations;
   }
 
@@ -66,10 +75,9 @@ public class User {
    * @param id the ID of this User
    * @param name the username of this User
    * @param password the password of this User
-   * @param about the about me message of this User 
-   * @param allowMessageDel does this User want messages deleted?
-   * @param messagesSent the number of messages this user sent
    * @param creation the creation time of this User
+   * @param isAdmin the isAdmin value of this User
+   *
    */
    public User(UUID id, String name, String password, Instant creation, boolean isAdmin) {
 
@@ -80,11 +88,10 @@ public class User {
     this.allowMessageDel = true;
     this.messagesSent = 0; 
     this.creation = creation;
+    this.showAllConversations = false;
     this.isAdmin = isAdmin;
-
-
+    this.profilePictureBytes = new byte[0];
     this.conversationVisibilities = new HashMap();
-
   }
 
   /** Returns the ID of this User. */
@@ -151,18 +158,41 @@ public class User {
     return conversationVisibilities;
   }
 
+  /** Returns the profile picture of this User. */
+  public byte[] getImageData() {
+    return profilePictureBytes;
+  }
+
+  /** Returns the profile picture of this User as a base64 string. */
+  public String getEncodedImage() {
+    String base64String = Base64.getEncoder().encodeToString(profilePictureBytes);
+    return base64String;
+  }
+
+  /** Changes the profile picture of this User, taking a byte array as input */
+  public void setImageData(byte[] imageBytes) {
+    this.profilePictureBytes = imageBytes;
+  }
+
   /** Adds a conversation to the list */
   public void addConversation(UUID conversationId) {
-    conversationVisibilities.putIfAbsent(conversationId, true);
+    this.conversationVisibilities.put(conversationId, true);
   }
 
   /** Sets conversation value to false (will be private). */
   public void hideConversation(UUID conversationId) {
-    conversationVisibilities.computeIfPresent(conversationId, (k, v) -> false);
+    this.conversationVisibilities.computeIfPresent(conversationId, (k, v) -> false);
   }
 
-  /** Resets all conversation Booleans to true. */
-  public void showAllConversations() {
-    conversationVisibilities.replaceAll((k, v) -> true);
+  /** Profile page will ignore the values in conversationVisibilities and treat them as true if 
+   *  showAllConversations is set to true
+   */
+  public void showAllConversations(boolean showAllConversations) {
+    this.showAllConversations = showAllConversations;
+  }
+
+  /** Returns whether the user wants to show all of their conversations. */
+  public boolean getShowAllConversations() {
+    return showAllConversations;
   }
 }

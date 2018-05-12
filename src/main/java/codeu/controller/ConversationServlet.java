@@ -70,8 +70,10 @@ public class ConversationServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-    List<Conversation> conversations = conversationStore.getAllConversations();
+    List<Conversation> conversations = conversationStore.getAllNonGroupConversations();
     request.setAttribute("conversations", conversations);
+    List<Conversation> groups = conversationStore.getAllGroupConversations();
+    request.setAttribute("groups", groups);
     request.getRequestDispatcher("/WEB-INF/view/conversations.jsp").forward(request, response);
   }
 
@@ -100,23 +102,37 @@ public class ConversationServlet extends HttpServlet {
     }
 
     String conversationTitle = request.getParameter("conversationTitle");
-    if (!conversationTitle.matches("[\\w*]*")) {
+    String groupTitle = request.getParameter("groupTitle");
+
+    // Ensures either a conversationTitle or a groupTitle exists, both not both; essentially XOR
+    if ((conversationTitle == null) == (groupTitle == null)) {
+        throw new RuntimeException("Must have either conversationTitle OR groupTitle");
+    }
+
+    boolean isGroupTitle = conversationTitle == null;
+    String title = isGroupTitle ? groupTitle : conversationTitle;
+    
+    if (!title.matches("[\\w*]*")) {
       request.setAttribute("error", "Please enter only letters and numbers.");
       request.getRequestDispatcher("/WEB-INF/view/conversations.jsp").forward(request, response);
       return;
     }
 
-    if (conversationStore.isTitleTaken(conversationTitle)) {
+    if (conversationStore.isTitleTaken(title)) {
       // conversation title is already taken, just go into that conversation instead of creating a
       // new one
-      response.sendRedirect("/chat/" + conversationTitle);
+      response.sendRedirect("/chat/" + title);
       return;
     }
 
-    Conversation conversation =
-        new Conversation(UUID.randomUUID(), user.getId(), conversationTitle, Instant.now());
+    Conversation conversation;
+    if (isGroupTitle) {
+      conversation = new Conversation(UUID.randomUUID(), user.getId(), title, Instant.now(), true);
+    } else {
+      conversation = new Conversation(UUID.randomUUID(), user.getId(), title, Instant.now());
+    }
 
     conversationStore.addConversation(conversation);
-    response.sendRedirect("/chat/" + conversationTitle);
+    response.sendRedirect("/chat/" + title);
   }
 }
