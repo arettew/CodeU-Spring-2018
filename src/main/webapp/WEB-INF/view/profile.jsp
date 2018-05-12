@@ -62,10 +62,15 @@ boolean isOwner = profileOwnerName.equals(request.getSession().getAttribute("use
     <h1><%= profileOwnerName %>'s Profile Page</h1>
     <hr>
 
-    <% String base64Image = UserStore.getInstance().getUser(profileOwnerName).getEncodedImage(); %>
-    <% if(base64Image != null) { %>
-    <%  String format = "data:image/*;base64, "; %>
-        <img src="<%= format + base64Image %>" alt="<%= profileOwnerName%>" />
+    <% if(profileOwner.getImageData().length == 0) { %>
+      <img src="https://www.idyllwildarts.org/wp-content/uploads/2016/09/blank-profile-picture.jpg" 
+       height = "200" width = "200"/>
+    <% } else { %>
+      <% String base64Image = profileOwner.getEncodedImage(); %>
+      <% if(base64Image != null) { %>
+      <%  String format = "data:image/*;base64, "; %>
+          <img src="<%= format + base64Image %>" alt="<%= profileOwnerName%>" />
+      <% } %>
     <% } %>
     <% if (isOwner) { %>
 

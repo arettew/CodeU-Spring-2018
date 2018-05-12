@@ -92,7 +92,6 @@ public class User {
     this.isAdmin = isAdmin;
     this.profilePictureBytes = new byte[0];
     this.conversationVisibilities = new HashMap();
-
   }
 
   /** Returns the ID of this User. */
