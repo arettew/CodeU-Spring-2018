@@ -60,22 +60,61 @@
     <h1>Conversations</h1>
 
     <%
-    List<Conversation> conversations =
-      (List<Conversation>) request.getAttribute("conversations");
-    if(conversations == null || conversations.isEmpty()){
+    List<Conversation> conversations = (List<Conversation>) request.getAttribute("conversations");
+    if (conversations == null || conversations.isEmpty()) {
     %>
       <p>Create a conversation to get started.</p>
+    <%
+    } else{
+    %>
+      <ul class="mdl-list">
+    <%
+      for (Conversation conversation : conversations) {
+    %>
+      <li><a href="/chat/<%= conversation.getTitle() %>">
+        <%= conversation.getTitle() %></a></li>
+    <%
+      }
+    %>
+      </ul>
+    <%
+    }
+    %>
+
+    <% if(request.getSession().getAttribute("user") != null){ %>
+      <h1>New Group Conversation</h1>
+      <form action="/conversations" method="POST">
+          <div class="form-group">
+            <label class="form-control-label">Title:</label>
+          <input type="text" name="groupTitle">
+        </div>
+
+        <button type="submit">Create</button>
+      </form>
+
+      <hr/>
+    <% } %>
+
+    <h1>Group Conversations</h1>
+
+    <%
+    List<Conversation> groups = (List<Conversation>) request.getAttribute("groups");
+    if (groups == null || groups.isEmpty()) {
+    %>
+      <p>Create a group conversation to get started.</p>
     <%
     }
     else{
     %>
       <ul class="mdl-list">
     <%
-      for(Conversation conversation : conversations){
+      for (Conversation group : groups) {
+        if (group.isParticipant((String) request.getSession().getAttribute("user"))) {
     %>
-      <li><a href="/chat/<%= conversation.getTitle() %>">
-        <%= conversation.getTitle() %></a></li>
+      <li><a href="/chat/<%= group.getTitle() %>">
+        <%= group.getTitle() %></a></li>
     <%
+        }
       }
     %>
       </ul>

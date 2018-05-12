@@ -1,4 +1,3 @@
-
 package codeu.controller;
 
 import org.mindrot.jbcrypt.BCrypt;

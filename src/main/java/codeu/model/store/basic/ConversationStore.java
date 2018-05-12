@@ -92,6 +92,26 @@ public class ConversationStore {
     return conversations;
   }
 
+  public List<Conversation> getAllNonGroupConversations() {
+    List<Conversation> nongroups = new ArrayList<Conversation>();
+    for(Conversation c : conversations){
+      if(c.getIsGroup() == false){
+        nongroups.add(c);
+      }
+    }
+    return nongroups;
+  }
+
+  public List<Conversation> getAllGroupConversations() {
+    List<Conversation> groups = new ArrayList<Conversation>();
+    for(Conversation c : conversations){
+      if(c.getIsGroup() == true){
+        groups.add(c);
+      }
+    }
+    return groups;
+  }
+
   /** Add a new conversation to the current set of conversations known to the application. */
   public void addConversation(Conversation conversation) {
     conversations.add(conversation);
@@ -123,9 +143,9 @@ public class ConversationStore {
   /** Sets the List of Conversations stored by this ConversationStore. */
   public void setConversations(List<Conversation> conversations) {
     this.conversations = conversations;
-    conversationsByTitle = conversations.stream().collect(Collectors.toMap(Conversation::getTitle, 
+    conversationsByTitle = conversations.stream().collect(Collectors.toMap(Conversation::getTitle,
                                                                            Function.identity()));
-    conversationsById = conversations.stream().collect(Collectors.toMap(Conversation::getId, 
+    conversationsById = conversations.stream().collect(Collectors.toMap(Conversation::getId,
                                                                      Function.identity()));
   }
 
@@ -140,6 +160,3 @@ public class ConversationStore {
     return conversations.size();
   }
 }
-
-
-

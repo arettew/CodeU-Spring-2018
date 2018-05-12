@@ -10,6 +10,9 @@
 String numUsers = (String) request.getAttribute("numUsers");
 String numConversations = (String) request.getAttribute("numConversations");
 String numMessages = (String) request.getAttribute("numMessages");
+String mostActiveUser = (String) request.getAttribute("mostActiveUser");
+String newestUser = (String) request.getAttribute("newestUser");
+String wordiestUser = (String) request.getAttribute("wordiestUser");
 %>
 
 <!DOCTYPE html>
