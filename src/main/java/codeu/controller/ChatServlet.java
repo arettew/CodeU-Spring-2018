@@ -151,18 +151,18 @@ public class ChatServlet extends HttpServlet {
     }
 
      //gets the username of the added/removed participant
-    String added_username = request.getParameter("added_user");
-    String removed_username = request.getParameter("removed_user");
+    String addedUsername = request.getParameter("addedUser");
+    String removedUsername = request.getParameter("removedUser");
 
-    User added_user = userStore.getUser(added_username);
-    if (added_user != null) {
+    User addedUser = userStore.getUser(addedUsername);
+    if (addedUser != null) {
       //adds the added_user to the participants of the group chat if they exist
-      conversation.addParticipant(added_user.getId());
+      conversation.addParticipant(addedUser.getId());
     }
-    User removed_user = userStore.getUser(removed_username);
-    if (removed_user != null) {
+    User removedUser = userStore.getUser(removedUsername);
+    if (removedUser != null) {
       //removes the removed_user to the participants of the group chat if they exist
-      conversation.removeParticipant(removed_user.getId());
+      conversation.removeParticipant(removedUser.getId());
     }
 
     String messageContent = request.getParameter("message");
